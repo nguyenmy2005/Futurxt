@@ -209,7 +209,6 @@ export function SnapContainer({ children, showDots = true }: SnapContainerProps)
     };
 
     const onTouchEnd = (e: TouchEvent) => {
-      // Mobile: không can thiệp, scroll tự nhiên
       if (window.innerWidth < 1024) return;
       if (isAnimating.current) return;
 
@@ -247,7 +246,14 @@ export function SnapContainer({ children, showDots = true }: SnapContainerProps)
   if (isMobile) {
     return (
       <SnapContext.Provider value={{ activeIndex, totalSlides, goTo }}>
-        <div ref={containerRef} style={{ width: "100%", height: "auto" }}>
+        <div
+          ref={containerRef}
+          style={{
+            width: "100%",
+            height: "auto",
+            backgroundColor: "#000000",
+          }}
+        >
           {children}
         </div>
       </SnapContext.Provider>
@@ -271,8 +277,6 @@ export function SnapContainer({ children, showDots = true }: SnapContainerProps)
       >
         {children}
       </div>
-
-      
     </SnapContext.Provider>
   );
 }
@@ -361,7 +365,6 @@ export function SlideTransition({ slideIndex, children, direction = "up" }: Slid
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // Mobile: render thẳng không cần animation theo activeIndex
   if (isMobile) {
     return <div style={{ width: "100%", height: "100%" }}>{children}</div>;
   }
