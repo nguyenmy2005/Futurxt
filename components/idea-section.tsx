@@ -312,9 +312,13 @@ export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
   const [hyperspaceOver, setHyperspaceOver] = useState(false);
   const [stage, setStage] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const [vh, setVh] = useState<number | null>(null);
 
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
+    const check = () => {
+      setIsMobile(window.innerWidth < 768);
+      setVh(window.innerHeight);
+    };
     check();
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
@@ -397,8 +401,8 @@ export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
       style={{
         position: "relative",
         background: bgColor,
-        minHeight: "100svh",
-        height: "100svh",
+        minHeight: vh ? `${vh}px` : "100dvh",
+        height: vh ? `${vh}px` : "100dvh",
         transition: "background 0.5s ease",
         overflow: "hidden",
       }}
@@ -424,7 +428,6 @@ export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
         background: bgColor, transition: "background 0.5s ease",
         overflow: "hidden",
       }}>
-        {/* StarField chỉ nằm trong section này */}
         <StarField theme={theme} />
 
         <div style={{
