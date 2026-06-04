@@ -112,7 +112,6 @@ const TYPES_MAP: Record<string, string[]> = {
   Swift:      ["FuturxtEngine","Task","String","Int","Bool","Array"],
 };
 
-// Dark theme colors
 const CD = {
   keyword:     "rgba(255,255,255,0.98)",
   string:      "#7DD3C8",
@@ -126,7 +125,6 @@ const CD = {
   plain:       "rgba(255,255,255,0.82)",
 };
 
-// Light theme colors
 const CL = {
   keyword:     "#1a1a2e",
   string:      "#0d7377",
@@ -223,7 +221,6 @@ function CodeEditor({ theme }: { theme: Theme }) {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [visibleLines, charIdx]);
 
-  // Theme tokens for editor
   const editorBg        = isDark ? "rgba(22,22,28,0.75)"        : "rgba(248,249,252,0.95)";
   const editorBorder    = isDark ? "rgba(255,255,255,0.22)"      : "rgba(0,0,0,0.12)";
   const titleBarBg      = isDark ? "rgba(255,255,255,0.07)"      : "rgba(0,0,0,0.04)";
@@ -253,13 +250,19 @@ function CodeEditor({ theme }: { theme: Theme }) {
 
   return (
     <div style={{
-      width: "100%", borderRadius: 20,
+      width: "100%",
+      borderRadius: 20,
       border: `1px solid ${editorBorder}`,
       background: editorBg,
       backdropFilter: "blur(60px) saturate(200%) brightness(1.1)",
       WebkitBackdropFilter: "blur(60px) saturate(200%) brightness(1.1)",
-      overflow: "hidden", boxShadow,
+      overflow: "hidden",
+      boxShadow,
       transition: "background 0.5s ease, border 0.5s ease",
+      // ✅ Fixed height để tránh layout shift trên mobile
+      height: "clamp(380px, 50vw, 420px)",
+      display: "flex",
+      flexDirection: "column",
     }}>
       {/* Title bar */}
       <div style={{
@@ -268,6 +271,7 @@ function CodeEditor({ theme }: { theme: Theme }) {
         background: titleBarBg,
         borderBottom: `1px solid ${titleBarBorder}`,
         gap: 10, transition: "background 0.5s ease",
+        flexShrink: 0,
       }}>
         <div style={{ display: "flex", gap: 7 }}>
           {["rgba(255,95,86,0.9)","rgba(255,189,46,0.9)","rgba(40,200,64,0.9)"].map((bg, i) => (
@@ -301,6 +305,7 @@ function CodeEditor({ theme }: { theme: Theme }) {
         borderBottom: `1px solid ${tabsBorder}`,
         overflowX: "auto", scrollbarWidth: "none",
         transition: "background 0.5s ease",
+        flexShrink: 0,
       }}>
         {languages.map((l, i) => (
           <button key={l} onClick={() => setLangIdx(i)} style={{
@@ -324,12 +329,15 @@ function CodeEditor({ theme }: { theme: Theme }) {
         ))}
       </div>
 
-      {/* Code area */}
+      {/* Code area — flex: 1 thay cho minHeight/maxHeight */}
       <div ref={scrollRef} style={{
-        padding: "16px 0", minHeight: 280, maxHeight: 320,
-        overflowY: "auto", overflowX: "auto",
+        padding: "16px 0",
+        flex: 1,
+        overflowY: "auto",
+        overflowX: "auto",
         background: codeAreaBg,
-        scrollbarWidth: "thin", scrollbarColor: `${scrollbarColor} transparent`,
+        scrollbarWidth: "thin",
+        scrollbarColor: `${scrollbarColor} transparent`,
       }}>
         {lines.map((line, li) => {
           if (li > visibleLines) return null;
@@ -377,6 +385,7 @@ function CodeEditor({ theme }: { theme: Theme }) {
         padding: "6px 16px", background: statusBarBg,
         borderTop: `1px solid ${statusBarBorder}`,
         transition: "background 0.5s ease",
+        flexShrink: 0,
       }}>
         <span style={{ fontSize: 11, fontFamily: "monospace", color: statusColor }}>⎇ main</span>
         <span style={{ fontSize: 11, fontFamily: "monospace", color: statusColor, letterSpacing: "0.18em" }}>
@@ -511,7 +520,7 @@ export function AboutSection({ theme }: AboutSectionProps) {
         </div>
       </div>
 
-      {/* Keep scrolling — chỉ text, không mũi tên */}
+      {/* Keep scrolling */}
       <motion.button
         onClick={() => document.getElementById("team")?.scrollIntoView({ behavior: "smooth" })}
         initial={{ opacity: 0 }} animate={{ opacity: 1 }}
