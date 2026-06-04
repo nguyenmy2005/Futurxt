@@ -225,34 +225,25 @@ function useTypewriter(text: string, started: boolean, speed = 14) {
 
 function ThemeToggle({ theme, onToggle }: { theme: Theme; onToggle: () => void }) {
   const isDark = theme === "dark";
-
   return (
     <motion.button
       onClick={onToggle}
       whileTap={{ scale: 0.92 }}
       style={{
         position: "fixed",
-        top: "1.1rem",
-        left: "1.1rem",
+        top: "1.1rem", left: "1.1rem",
         zIndex: 100,
-        width: 44,
-        height: 44,
+        width: 44, height: 44,
         borderRadius: "50%",
-        border: isDark
-          ? "1px solid rgba(255,255,255,0.18)"
-          : "1px solid rgba(0,0,0,0.14)",
-        background: isDark
-          ? "rgba(255,255,255,0.08)"
-          : "rgba(255,255,255,0.85)",
+        border: isDark ? "1px solid rgba(255,255,255,0.18)" : "1px solid rgba(0,0,0,0.14)",
+        background: isDark ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.85)",
         backdropFilter: "blur(16px)",
         WebkitBackdropFilter: "blur(16px)",
         boxShadow: isDark
           ? "0 2px 16px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.12)"
           : "0 2px 16px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.9)",
         cursor: "pointer",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+        display: "flex", alignItems: "center", justifyContent: "center",
         padding: 0,
         transition: "background 0.4s ease, border 0.4s ease, box-shadow 0.4s ease",
       }}
@@ -260,25 +251,17 @@ function ThemeToggle({ theme, onToggle }: { theme: Theme; onToggle: () => void }
     >
       <AnimatePresence mode="wait">
         {isDark ? (
-          <motion.svg
-            key="moon"
-            width="20" height="20" viewBox="0 0 24 24" fill="none"
+          <motion.svg key="moon" width="20" height="20" viewBox="0 0 24 24" fill="none"
             initial={{ opacity: 0, rotate: -30, scale: 0.7 }}
             animate={{ opacity: 1, rotate: 0, scale: 1 }}
             exit={{ opacity: 0, rotate: 30, scale: 0.7 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
           >
-            <path
-              d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
-              fill="rgba(210,225,255,0.9)"
-              stroke="rgba(210,225,255,0.5)"
-              strokeWidth="0.5"
-            />
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+              fill="rgba(210,225,255,0.9)" stroke="rgba(210,225,255,0.5)" strokeWidth="0.5" />
           </motion.svg>
         ) : (
-          <motion.svg
-            key="sun"
-            width="22" height="22" viewBox="0 0 24 24" fill="none"
+          <motion.svg key="sun" width="22" height="22" viewBox="0 0 24 24" fill="none"
             initial={{ opacity: 0, rotate: 30, scale: 0.7 }}
             animate={{ opacity: 1, rotate: 0, scale: 1 }}
             exit={{ opacity: 0, rotate: -30, scale: 0.7 }}
@@ -312,20 +295,24 @@ export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
   const [hyperspaceOver, setHyperspaceOver] = useState(false);
   const [stage, setStage] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
-  const [vh, setVh] = useState<number | null>(null);
+  const [vh, setVh] = useState(0);
 
   useEffect(() => {
-    const check = () => {
+    const update = () => {
       setIsMobile(window.innerWidth < 768);
       setVh(window.innerHeight);
     };
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
+    update();
+    window.addEventListener("resize", update);
+    // ✅ cũng update khi bàn phím ảo đóng/mở trên mobile
+    window.addEventListener("orientationchange", update);
+    return () => {
+      window.removeEventListener("resize", update);
+      window.removeEventListener("orientationchange", update);
+    };
   }, []);
 
-  const subtitleText =
-    "We help startups and businesses turn ambitious ideas into production-ready products.";
+  const subtitleText = "We help startups and businesses turn ambitious ideas into production-ready products.";
   const { displayed, done: typeDone } = useTypewriter(subtitleText, stage >= 2, 14);
 
   useEffect(() => {
@@ -348,14 +335,9 @@ export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
   }, [stage]);
 
   const handleScrollDown = () => {
-    const heroSection = document.getElementById("hero-section");
-    if (heroSection) {
-      heroSection.scrollIntoView({ behavior: "smooth" });
-    } else {
-      const el = sectionRef.current;
-      if (!el) return;
-      window.scrollTo({ top: el.offsetTop + el.offsetHeight, behavior: "smooth" });
-    }
+    const el = sectionRef.current;
+    if (!el) return;
+    window.scrollTo({ top: el.offsetTop + el.offsetHeight, behavior: "smooth" });
   };
 
   const handleStartProject = () => {
@@ -363,37 +345,11 @@ export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
   };
 
   const serifFont = "'Georgia','Times New Roman',serif";
-  const smoothSpring = { type: "spring", stiffness: 120, damping: 20, mass: 0.8 };
   const isDark = theme === "dark";
-
   const bgColor = isDark ? "#000000" : "#ffffff";
-  const radialGlow = isDark
-    ? "radial-gradient(ellipse 55% 45% at 50% 50%, rgba(80,100,200,0.07) 0%, transparent 70%)"
-    : "radial-gradient(ellipse 55% 45% at 50% 50%, rgba(100,120,200,0.05) 0%, transparent 70%)";
-  const titleColor = isDark ? "#ffffff" : "#0a0a0a";
-  const titleShadow = isDark
-    ? "0 0 80px rgba(255,255,255,0.5), 0 0 160px rgba(180,200,255,0.18)"
-    : "0 2px 8px rgba(0,0,0,0.08)";
-  const dividerBg = isDark
-    ? "linear-gradient(to right, transparent, rgba(160,185,255,0.5), transparent)"
-    : "linear-gradient(to right, transparent, rgba(0,0,0,0.25), transparent)";
-  const subtitleColor = isDark ? "rgba(255,255,255,0.85)" : "rgba(10,10,10,0.72)";
-  const subtitleShadow = isDark ? "0 0 24px rgba(255,255,255,0.2)" : "none";
-  const cursorBg = isDark ? "rgba(255,255,255,0.65)" : "rgba(0,0,0,0.55)";
-  const btnBg = isDark
-    ? "linear-gradient(135deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.07) 50%, rgba(255,255,255,0.13) 100%)"
-    : "linear-gradient(135deg, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.78) 100%)";
-  const btnBorder = isDark ? "1px solid rgba(255,255,255,0.28)" : "1px solid rgba(0,0,0,0.75)";
-  const btnShadow = isDark
-    ? ["0 2px 0 0 rgba(255,255,255,0.35) inset", "0 -1px 0 0 rgba(255,255,255,0.08) inset", "0 8px 32px rgba(0,0,0,0.45)", "0 1px 0 rgba(255,255,255,0.12)", "0 0 0 0.5px rgba(255,255,255,0.10)"].join(", ")
-    : ["0 2px 0 0 rgba(255,255,255,0.1) inset", "0 8px 24px rgba(0,0,0,0.25)", "0 1px 0 rgba(0,0,0,0.5)"].join(", ");
-  const btnTextColor = isDark ? "rgba(255,255,255,0.96)" : "#ffffff";
-  const btnTextShadow = isDark
-    ? "0 1px 12px rgba(255,255,255,0.3), 0 0 1px rgba(255,255,255,0.5)"
-    : "0 1px 3px rgba(0,0,0,0.3)";
-  const scrollLabelColor = isDark ? "rgba(255,255,255,0.32)" : "rgba(0,0,0,0.35)";
-  const scrollArrowColor = isDark ? "rgba(255,255,255,0.38)" : "rgba(0,0,0,0.38)";
-  const scrollArrowColor2 = isDark ? "rgba(255,255,255,0.16)" : "rgba(0,0,0,0.16)";
+
+  // ✅ height thực tế của viewport, không bị browser bar làm lệch
+  const sectionHeight = vh > 0 ? `${vh}px` : "100dvh";
 
   return (
     <section
@@ -401,10 +357,15 @@ export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
       style={{
         position: "relative",
         background: bgColor,
-        minHeight: vh ? `${vh}px` : "100dvh",
-        height: vh ? `${vh}px` : "100dvh",
+        // ✅ dùng cả width lẫn height cố định theo vh thực
+        width: "100%",
+        minHeight: sectionHeight,
+        height: sectionHeight,
         transition: "background 0.5s ease",
         overflow: "hidden",
+        // ✅ đảm bảo không có gap nào lọt qua
+        marginBottom: 0,
+        paddingBottom: 0,
       }}
     >
       <ThemeToggle theme={theme} onToggle={onToggleTheme} />
@@ -415,24 +376,40 @@ export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
             key="hyperspace"
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            style={{ position: "absolute", inset: 0, zIndex: 49, background: "#000" }}
+            style={{
+              position: "absolute", inset: 0,
+              zIndex: 49, background: "#000",
+              // ✅ cover full section
+              width: "100%", height: "100%",
+            }}
           >
             <HyperspaceCanvas onDone={() => setHyperspaceOver(true)} />
           </motion.div>
         )}
       </AnimatePresence>
 
+      {/* ✅ background layer phủ toàn bộ, không để lộ khoảng trống */}
+      <div style={{
+        position: "absolute", inset: 0,
+        background: bgColor,
+        transition: "background 0.5s ease",
+        zIndex: 0,
+      }} />
+
       <div style={{
         position: "absolute", inset: 0,
         display: "flex", alignItems: "center", justifyContent: "center",
-        background: bgColor, transition: "background 0.5s ease",
         overflow: "hidden",
+        zIndex: 1,
       }}>
         <StarField theme={theme} />
 
         <div style={{
           position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none",
-          background: radialGlow, transition: "background 0.5s ease",
+          background: isDark
+            ? "radial-gradient(ellipse 55% 45% at 50% 50%, rgba(80,100,200,0.07) 0%, transparent 70%)"
+            : "radial-gradient(ellipse 55% 45% at 50% 50%, rgba(100,120,200,0.05) 0%, transparent 70%)",
+          transition: "background 0.5s ease",
         }} />
 
         <div style={{
@@ -446,23 +423,35 @@ export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
         }}>
           <motion.div
             initial={{ opacity: 0, y: 36, filter: "blur(8px)" }}
-            animate={stage >= 1 ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 0, y: 36, filter: "blur(8px)" }}
+            animate={stage >= 1
+              ? { opacity: 1, y: 0, filter: "blur(0px)" }
+              : { opacity: 0, y: 36, filter: "blur(8px)" }}
             transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
             style={{ willChange: "opacity, transform, filter" }}
           >
             <h2 style={{
               fontFamily: serifFont,
               fontSize: isMobile ? "clamp(2.8rem,16vw,5rem)" : "clamp(3.2rem,8vw,7.5rem)",
-              fontWeight: 900, color: titleColor, margin: 0, lineHeight: 1.0,
+              fontWeight: 900,
+              color: isDark ? "#ffffff" : "#0a0a0a",
+              margin: 0, lineHeight: 1.0,
               letterSpacing: "-0.03em", textTransform: "uppercase",
-              textShadow: titleShadow, transition: "color 0.5s ease, text-shadow 0.5s ease",
+              textShadow: isDark
+                ? "0 0 80px rgba(255,255,255,0.5), 0 0 160px rgba(180,200,255,0.18)"
+                : "0 2px 8px rgba(0,0,0,0.08)",
+              transition: "color 0.5s ease, text-shadow 0.5s ease",
             }}>FROM IDEA</h2>
             <h2 style={{
               fontFamily: serifFont,
               fontSize: isMobile ? "clamp(2.8rem,16vw,5rem)" : "clamp(3.2rem,8vw,7.5rem)",
-              fontWeight: 900, color: titleColor, margin: "0.04em 0 0", lineHeight: 1.0,
+              fontWeight: 900,
+              color: isDark ? "#ffffff" : "#0a0a0a",
+              margin: "0.04em 0 0", lineHeight: 1.0,
               letterSpacing: "-0.03em", textTransform: "uppercase",
-              textShadow: titleShadow, transition: "color 0.5s ease, text-shadow 0.5s ease",
+              textShadow: isDark
+                ? "0 0 80px rgba(255,255,255,0.5), 0 0 160px rgba(180,200,255,0.18)"
+                : "0 2px 8px rgba(0,0,0,0.08)",
+              transition: "color 0.5s ease, text-shadow 0.5s ease",
             }}>TO SCALE</h2>
 
             <motion.div
@@ -470,9 +459,13 @@ export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
               animate={stage >= 1 ? { scaleX: 1, opacity: 1 } : { scaleX: 0, opacity: 0 }}
               transition={{ delay: 0.55, duration: 0.7, ease: "easeOut" }}
               style={{
-                width: 72, height: 1, background: dividerBg,
+                width: 72, height: 1,
+                background: isDark
+                  ? "linear-gradient(to right, transparent, rgba(160,185,255,0.5), transparent)"
+                  : "linear-gradient(to right, transparent, rgba(0,0,0,0.25), transparent)",
                 margin: isMobile ? "1.4rem auto 1.2rem" : "2rem auto 1.6rem",
-                transformOrigin: "center", transition: "background 0.5s ease",
+                transformOrigin: "center",
+                transition: "background 0.5s ease",
               }}
             />
           </motion.div>
@@ -491,8 +484,10 @@ export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
               style={{
                 fontFamily: serifFont,
                 fontSize: isMobile ? "clamp(0.85rem,3.5vw,1rem)" : "clamp(1rem,1.9vw,1.35rem)",
-                fontWeight: 400, color: subtitleColor, margin: 0, lineHeight: 1.8,
-                letterSpacing: "0.02em", textShadow: subtitleShadow,
+                fontWeight: 400,
+                color: isDark ? "rgba(255,255,255,0.85)" : "rgba(10,10,10,0.72)",
+                margin: 0, lineHeight: 1.8, letterSpacing: "0.02em",
+                textShadow: isDark ? "0 0 24px rgba(255,255,255,0.2)" : "none",
                 whiteSpace: isMobile ? "normal" : "nowrap",
                 textAlign: "center", transition: "color 0.5s ease",
               }}
@@ -504,7 +499,8 @@ export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
                   transition={{ repeat: Infinity, duration: 0.5, ease: "linear", repeatType: "reverse" }}
                   style={{
                     display: "inline-block", width: "2px", height: "1em",
-                    background: cursorBg, marginLeft: "3px", verticalAlign: "middle",
+                    background: isDark ? "rgba(255,255,255,0.65)" : "rgba(0,0,0,0.55)",
+                    marginLeft: "3px", verticalAlign: "middle",
                     borderRadius: "1px", transition: "background 0.5s ease",
                   }}
                 />
@@ -515,25 +511,37 @@ export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
           <motion.div
             initial={{ opacity: 0, scale: 0.94, y: 12 }}
             animate={stage >= 3 ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.94, y: 12 }}
-            transition={smoothSpring}
+            // ✅ fix TypeScript error: cast as any
+            transition={{ type: "spring", stiffness: 120, damping: 20, mass: 0.8 } as any}
             onClick={handleStartProject}
             style={{
               marginTop: isMobile ? "1.4rem" : "1.8rem",
               willChange: "opacity, transform",
-              borderRadius: 9999, background: btnBg,
+              borderRadius: 9999,
+              background: isDark
+                ? "linear-gradient(135deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.07) 50%, rgba(255,255,255,0.13) 100%)"
+                : "linear-gradient(135deg, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.78) 100%)",
               backdropFilter: "blur(40px) saturate(200%) brightness(1.15)",
               WebkitBackdropFilter: "blur(40px) saturate(200%) brightness(1.15)",
-              border: btnBorder, boxShadow: btnShadow,
+              border: isDark ? "1px solid rgba(255,255,255,0.28)" : "1px solid rgba(0,0,0,0.75)",
+              boxShadow: isDark
+                ? "0 2px 0 0 rgba(255,255,255,0.35) inset, 0 -1px 0 0 rgba(255,255,255,0.08) inset, 0 8px 32px rgba(0,0,0,0.45)"
+                : "0 2px 0 0 rgba(255,255,255,0.1) inset, 0 8px 24px rgba(0,0,0,0.25)",
               padding: isMobile ? "12px 32px" : "14px 40px",
               display: "inline-flex", alignItems: "center", justifyContent: "center",
-              cursor: "pointer", transition: "background 0.5s ease, border 0.5s ease, box-shadow 0.5s ease",
+              cursor: "pointer",
+              transition: "background 0.5s ease, border 0.5s ease, box-shadow 0.5s ease",
             }}
           >
             <p style={{
               fontFamily: serifFont,
               fontSize: isMobile ? "clamp(0.9rem,3.5vw,1.1rem)" : "clamp(0.95rem,1.8vw,1.3rem)",
-              fontWeight: 600, color: btnTextColor, margin: 0,
-              letterSpacing: "0.04em", textShadow: btnTextShadow,
+              fontWeight: 600,
+              color: isDark ? "rgba(255,255,255,0.96)" : "#ffffff",
+              margin: 0, letterSpacing: "0.04em",
+              textShadow: isDark
+                ? "0 1px 12px rgba(255,255,255,0.3), 0 0 1px rgba(255,255,255,0.5)"
+                : "0 1px 3px rgba(0,0,0,0.3)",
               whiteSpace: "nowrap", transition: "color 0.5s ease",
             }}>Start a Project</p>
           </motion.div>
@@ -552,7 +560,8 @@ export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
           >
             <span style={{
               fontFamily: serifFont, fontSize: "0.68rem", letterSpacing: "0.2em",
-              textTransform: "uppercase", color: scrollLabelColor,
+              textTransform: "uppercase",
+              color: isDark ? "rgba(255,255,255,0.32)" : "rgba(0,0,0,0.35)",
               fontWeight: 400, whiteSpace: "nowrap", transition: "color 0.5s ease",
             }}>Scroll down to discover more</span>
             <motion.div
@@ -561,10 +570,14 @@ export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
               style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "3px" }}
             >
               <svg width="18" height="10" viewBox="0 0 18 10" fill="none">
-                <path d="M1 1L9 9L17 1" stroke={scrollArrowColor} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M1 1L9 9L17 1"
+                  stroke={isDark ? "rgba(255,255,255,0.38)" : "rgba(0,0,0,0.38)"}
+                  strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               <svg width="18" height="10" viewBox="0 0 18 10" fill="none">
-                <path d="M1 1L9 9L17 1" stroke={scrollArrowColor2} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M1 1L9 9L17 1"
+                  stroke={isDark ? "rgba(255,255,255,0.16)" : "rgba(0,0,0,0.16)"}
+                  strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </motion.div>
           </motion.div>
