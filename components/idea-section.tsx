@@ -117,8 +117,8 @@ function StarField({ theme }: { theme: Theme }) {
     let animId: number;
 
     const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
     };
     resize();
     window.addEventListener("resize", resize);
@@ -188,9 +188,9 @@ function StarField({ theme }: { theme: Theme }) {
     <canvas
       ref={canvasRef}
       style={{
-        position: "fixed",
+        position: "absolute",
         top: 0, left: 0,
-        width: "100vw", height: "100vh",
+        width: "100%", height: "100%",
         pointerEvents: "none",
         zIndex: 1,
       }}
@@ -400,9 +400,9 @@ export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
         minHeight: "100svh",
         height: "100svh",
         transition: "background 0.5s ease",
+        overflow: "hidden",
       }}
     >
-      {/* Toggle nhận onToggleTheme từ props — bấm đây ảnh hưởng cả Hero */}
       <ThemeToggle theme={theme} onToggle={onToggleTheme} />
 
       <AnimatePresence>
@@ -411,7 +411,7 @@ export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
             key="hyperspace"
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            style={{ position: "fixed", inset: 0, zIndex: 49, background: "#000" }}
+            style={{ position: "absolute", inset: 0, zIndex: 49, background: "#000" }}
           >
             <HyperspaceCanvas onDone={() => setHyperspaceOver(true)} />
           </motion.div>
@@ -419,10 +419,12 @@ export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
       </AnimatePresence>
 
       <div style={{
-        position: "sticky", top: 0, height: "100svh", overflow: "hidden",
+        position: "absolute", inset: 0,
         display: "flex", alignItems: "center", justifyContent: "center",
         background: bgColor, transition: "background 0.5s ease",
+        overflow: "hidden",
       }}>
+        {/* StarField chỉ nằm trong section này */}
         <StarField theme={theme} />
 
         <div style={{
