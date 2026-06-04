@@ -3,6 +3,8 @@
 import { useRef, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
+type Theme = "dark" | "light";
+
 function HyperspaceCanvas({ onDone }: { onDone: () => void }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -20,7 +22,7 @@ function HyperspaceCanvas({ onDone }: { onDone: () => void }) {
     const cx = W / 2;
     const cy = H / 2;
 
-    const STAR_COUNT = 600;
+    const STAR_COUNT = 500;
     const stars = Array.from({ length: STAR_COUNT }, () => ({
       x: (Math.random() - 0.5) * W * 2,
       y: (Math.random() - 0.5) * H * 2,
@@ -31,16 +33,16 @@ function HyperspaceCanvas({ onDone }: { onDone: () => void }) {
 
     let animId: number;
     let frame = 0;
-    const TOTAL_FRAMES = 55;
+    const TOTAL_FRAMES = 30;
 
     const draw = () => {
       frame++;
       const progress = frame / TOTAL_FRAMES;
       const speed = progress < 0.6
-        ? W * 0.07 * (1 - progress * 0.2)
-        : W * 0.04 * (1 - progress);
+        ? W * 0.09 * (1 - progress * 0.15)
+        : W * 0.05 * (1 - progress);
 
-      ctx.fillStyle = "rgba(0,0,0,0.25)";
+      ctx.fillStyle = "rgba(0,0,0,0.2)";
       ctx.fillRect(0, 0, W, H);
 
       stars.forEach((s) => {
@@ -56,13 +58,13 @@ function HyperspaceCanvas({ onDone }: { onDone: () => void }) {
         const sy = (s.y / s.z) * H + cy;
         const px = (s.x / s.pz) * W + cx;
         const py = (s.y / s.pz) * H + cy;
-        const size = Math.max(0.1, (1 - s.z / W) * 2.5);
-        const brightness = Math.floor((1 - s.z / W) * 255);
-        const alpha = Math.min(1, (1 - s.z / W) * 1.5);
+        const size = Math.max(0.1, (1 - s.z / W) * 2.8);
+        const b = Math.floor((1 - s.z / W) * 255);
+        const alpha = Math.min(1, (1 - s.z / W) * 1.6);
         ctx.beginPath();
         ctx.moveTo(px, py);
         ctx.lineTo(sx, sy);
-        ctx.strokeStyle = `rgba(${brightness},${Math.floor(brightness * 0.92)},255,${alpha.toFixed(2)})`;
+        ctx.strokeStyle = `rgba(${b},${b},${b},${alpha.toFixed(2)})`;
         ctx.lineWidth = size;
         ctx.stroke();
       });
@@ -72,8 +74,8 @@ function HyperspaceCanvas({ onDone }: { onDone: () => void }) {
       } else {
         let fadeAlpha = 1;
         const fadeOut = () => {
-          fadeAlpha -= 0.12;
-          ctx.fillStyle = `rgba(0,0,0,0.18)`;
+          fadeAlpha -= 0.18;
+          ctx.fillStyle = `rgba(0,0,0,0.22)`;
           ctx.fillRect(0, 0, W, H);
           if (fadeAlpha > 0) {
             requestAnimationFrame(fadeOut);
@@ -86,7 +88,7 @@ function HyperspaceCanvas({ onDone }: { onDone: () => void }) {
       }
     };
 
-    setTimeout(() => { draw(); }, 80);
+    setTimeout(() => { draw(); }, 60);
     return () => cancelAnimationFrame(animId);
   }, [onDone]);
 
@@ -94,9 +96,9 @@ function HyperspaceCanvas({ onDone }: { onDone: () => void }) {
     <canvas
       ref={canvasRef}
       style={{
-        position: "fixed",
+        position: "absolute",
         top: 0, left: 0,
-        width: "100vw", height: "100vh",
+        width: "100%", height: "100%",
         pointerEvents: "none",
         zIndex: 50,
       }}
@@ -104,7 +106,7 @@ function HyperspaceCanvas({ onDone }: { onDone: () => void }) {
   );
 }
 
-function StarField() {
+function StarField({ theme }: { theme: Theme }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -121,34 +123,51 @@ function StarField() {
     resize();
     window.addEventListener("resize", resize);
 
-    const stars = Array.from({ length: 280 }, () => ({
+    const stars = Array.from({ length: 300 }, () => ({
       x: Math.random() * window.innerWidth,
       y: Math.random() * window.innerHeight,
-      r: Math.random() * 1.4 + 0.2,
-      alpha: Math.random() * 0.18 + 0.06,
-      twinkleSpeed: Math.random() * 0.03 + 0.008,
+      r: Math.random() * 1.6 + 0.3,
+      alpha: Math.random() * 0.35 + 0.18,
+      twinkleSpeed: Math.random() * 0.025 + 0.006,
       phase: Math.random() * Math.PI * 2,
-      vx: (Math.random() - 0.5) * 0.3,
-      vy: (Math.random() - 0.5) * 0.3,
+      vx: (Math.random() - 0.5) * 0.25,
+      vy: (Math.random() - 0.5) * 0.25,
     }));
 
     let t = 0;
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       t += 1;
+
       stars.forEach((s) => {
-        const twinkle = s.alpha * (0.3 + 0.7 * (0.5 + 0.5 * Math.sin(t * s.twinkleSpeed + s.phase)));
-        const grd = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 3);
-        grd.addColorStop(0, `rgba(210,225,255,${(twinkle * 0.5).toFixed(3)})`);
-        grd.addColorStop(1, `rgba(180,210,255,0)`);
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.r * 3, 0, Math.PI * 2);
-        ctx.fillStyle = grd;
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(230,240,255,${twinkle.toFixed(3)})`;
-        ctx.fill();
+        const twinkle = s.alpha * (0.4 + 0.6 * (0.5 + 0.5 * Math.sin(t * s.twinkleSpeed + s.phase)));
+
+        if (theme === "dark") {
+          const grd = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 4);
+          grd.addColorStop(0, `rgba(200,220,255,${(twinkle * 0.55).toFixed(3)})`);
+          grd.addColorStop(1, `rgba(0,0,0,0)`);
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.r * 4, 0, Math.PI * 2);
+          ctx.fillStyle = grd;
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(230,240,255,${twinkle.toFixed(3)})`;
+          ctx.fill();
+        } else {
+          const grd = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 4);
+          grd.addColorStop(0, `rgba(80,90,120,${(twinkle * 0.4).toFixed(3)})`);
+          grd.addColorStop(1, `rgba(255,255,255,0)`);
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.r * 4, 0, Math.PI * 2);
+          ctx.fillStyle = grd;
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(60,70,100,${twinkle.toFixed(3)})`;
+          ctx.fill();
+        }
+
         s.x += s.vx;
         s.y += s.vy;
         if (s.x < -10) s.x = canvas.width + 10;
@@ -163,7 +182,7 @@ function StarField() {
       cancelAnimationFrame(animId);
       window.removeEventListener("resize", resize);
     };
-  }, []);
+  }, [theme]);
 
   return (
     <canvas
@@ -204,13 +223,96 @@ function useTypewriter(text: string, started: boolean, speed = 14) {
   return { displayed, done };
 }
 
-export function IdeaSection() {
+function ThemeToggle({ theme, onToggle }: { theme: Theme; onToggle: () => void }) {
+  const isDark = theme === "dark";
+
+  return (
+    <motion.button
+      onClick={onToggle}
+      whileTap={{ scale: 0.92 }}
+      style={{
+        position: "fixed",
+        top: "1.1rem",
+        left: "1.1rem",
+        zIndex: 100,
+        width: 44,
+        height: 44,
+        borderRadius: "50%",
+        border: isDark
+          ? "1px solid rgba(255,255,255,0.18)"
+          : "1px solid rgba(0,0,0,0.14)",
+        background: isDark
+          ? "rgba(255,255,255,0.08)"
+          : "rgba(255,255,255,0.85)",
+        backdropFilter: "blur(16px)",
+        WebkitBackdropFilter: "blur(16px)",
+        boxShadow: isDark
+          ? "0 2px 16px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.12)"
+          : "0 2px 16px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.9)",
+        cursor: "pointer",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 0,
+        transition: "background 0.4s ease, border 0.4s ease, box-shadow 0.4s ease",
+      }}
+      title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+    >
+      <AnimatePresence mode="wait">
+        {isDark ? (
+          <motion.svg
+            key="moon"
+            width="20" height="20" viewBox="0 0 24 24" fill="none"
+            initial={{ opacity: 0, rotate: -30, scale: 0.7 }}
+            animate={{ opacity: 1, rotate: 0, scale: 1 }}
+            exit={{ opacity: 0, rotate: 30, scale: 0.7 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+          >
+            <path
+              d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+              fill="rgba(210,225,255,0.9)"
+              stroke="rgba(210,225,255,0.5)"
+              strokeWidth="0.5"
+            />
+          </motion.svg>
+        ) : (
+          <motion.svg
+            key="sun"
+            width="22" height="22" viewBox="0 0 24 24" fill="none"
+            initial={{ opacity: 0, rotate: 30, scale: 0.7 }}
+            animate={{ opacity: 1, rotate: 0, scale: 1 }}
+            exit={{ opacity: 0, rotate: -30, scale: 0.7 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+          >
+            <circle cx="12" cy="12" r="5" fill="#f59e0b" />
+            <g stroke="#f59e0b" strokeWidth="2" strokeLinecap="round">
+              <line x1="12" y1="2" x2="12" y2="5" />
+              <line x1="12" y1="19" x2="12" y2="22" />
+              <line x1="4.22" y1="4.22" x2="6.34" y2="6.34" />
+              <line x1="17.66" y1="17.66" x2="19.78" y2="19.78" />
+              <line x1="2" y1="12" x2="5" y2="12" />
+              <line x1="19" y1="12" x2="22" y2="12" />
+              <line x1="4.22" y1="19.78" x2="6.34" y2="17.66" />
+              <line x1="17.66" y1="6.34" x2="19.78" y2="4.22" />
+            </g>
+          </motion.svg>
+        )}
+      </AnimatePresence>
+    </motion.button>
+  );
+}
+
+interface IdeaSectionProps {
+  theme: Theme;
+  onToggleTheme: () => void;
+}
+
+export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const [hyperspaceOver, setHyperspaceOver] = useState(false);
   const [stage, setStage] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Detect mobile để wrap subtitle
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
     check();
@@ -218,7 +320,8 @@ export function IdeaSection() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  const subtitleText = "We help startups and businesses turn ambitious ideas into production-ready products.";
+  const subtitleText =
+    "We help startups and businesses turn ambitious ideas into production-ready products.";
   const { displayed, done: typeDone } = useTypewriter(subtitleText, stage >= 2, 14);
 
   useEffect(() => {
@@ -257,24 +360,57 @@ export function IdeaSection() {
 
   const serifFont = "'Georgia','Times New Roman',serif";
   const smoothSpring = { type: "spring", stiffness: 120, damping: 20, mass: 0.8 };
+  const isDark = theme === "dark";
+
+  const bgColor = isDark ? "#000000" : "#ffffff";
+  const radialGlow = isDark
+    ? "radial-gradient(ellipse 55% 45% at 50% 50%, rgba(80,100,200,0.07) 0%, transparent 70%)"
+    : "radial-gradient(ellipse 55% 45% at 50% 50%, rgba(100,120,200,0.05) 0%, transparent 70%)";
+  const titleColor = isDark ? "#ffffff" : "#0a0a0a";
+  const titleShadow = isDark
+    ? "0 0 80px rgba(255,255,255,0.5), 0 0 160px rgba(180,200,255,0.18)"
+    : "0 2px 8px rgba(0,0,0,0.08)";
+  const dividerBg = isDark
+    ? "linear-gradient(to right, transparent, rgba(160,185,255,0.5), transparent)"
+    : "linear-gradient(to right, transparent, rgba(0,0,0,0.25), transparent)";
+  const subtitleColor = isDark ? "rgba(255,255,255,0.85)" : "rgba(10,10,10,0.72)";
+  const subtitleShadow = isDark ? "0 0 24px rgba(255,255,255,0.2)" : "none";
+  const cursorBg = isDark ? "rgba(255,255,255,0.65)" : "rgba(0,0,0,0.55)";
+  const btnBg = isDark
+    ? "linear-gradient(135deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.07) 50%, rgba(255,255,255,0.13) 100%)"
+    : "linear-gradient(135deg, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.78) 100%)";
+  const btnBorder = isDark ? "1px solid rgba(255,255,255,0.28)" : "1px solid rgba(0,0,0,0.75)";
+  const btnShadow = isDark
+    ? ["0 2px 0 0 rgba(255,255,255,0.35) inset", "0 -1px 0 0 rgba(255,255,255,0.08) inset", "0 8px 32px rgba(0,0,0,0.45)", "0 1px 0 rgba(255,255,255,0.12)", "0 0 0 0.5px rgba(255,255,255,0.10)"].join(", ")
+    : ["0 2px 0 0 rgba(255,255,255,0.1) inset", "0 8px 24px rgba(0,0,0,0.25)", "0 1px 0 rgba(0,0,0,0.5)"].join(", ");
+  const btnTextColor = isDark ? "rgba(255,255,255,0.96)" : "#ffffff";
+  const btnTextShadow = isDark
+    ? "0 1px 12px rgba(255,255,255,0.3), 0 0 1px rgba(255,255,255,0.5)"
+    : "0 1px 3px rgba(0,0,0,0.3)";
+  const scrollLabelColor = isDark ? "rgba(255,255,255,0.32)" : "rgba(0,0,0,0.35)";
+  const scrollArrowColor = isDark ? "rgba(255,255,255,0.38)" : "rgba(0,0,0,0.38)";
+  const scrollArrowColor2 = isDark ? "rgba(255,255,255,0.16)" : "rgba(0,0,0,0.16)";
 
   return (
     <section
       ref={sectionRef}
       style={{
         position: "relative",
-        background: "#000000",
-        // Mobile: min-h thay vì h cứng
+        background: bgColor,
         minHeight: "100svh",
         height: "100svh",
+        transition: "background 0.5s ease",
       }}
     >
+      {/* Toggle nhận onToggleTheme từ props — bấm đây ảnh hưởng cả Hero */}
+      <ThemeToggle theme={theme} onToggle={onToggleTheme} />
+
       <AnimatePresence>
         {!hyperspaceOver && (
           <motion.div
             key="hyperspace"
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
             style={{ position: "fixed", inset: 0, zIndex: 49, background: "#000" }}
           >
             <HyperspaceCanvas onDone={() => setHyperspaceOver(true)} />
@@ -283,20 +419,15 @@ export function IdeaSection() {
       </AnimatePresence>
 
       <div style={{
-        position: "sticky",
-        top: 0,
-        height: "100svh",   // ← svh thay vì vh, tránh bị thanh URL mobile che
-        overflow: "hidden",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "#000000",
+        position: "sticky", top: 0, height: "100svh", overflow: "hidden",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        background: bgColor, transition: "background 0.5s ease",
       }}>
-        <StarField />
+        <StarField theme={theme} />
 
         <div style={{
           position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none",
-          background: "radial-gradient(ellipse 55% 45% at 50% 50%, rgba(80,100,200,0.07) 0%, transparent 70%)",
+          background: radialGlow, transition: "background 0.5s ease",
         }} />
 
         <div style={{
@@ -304,75 +435,49 @@ export function IdeaSection() {
           display: "flex", flexDirection: "column",
           alignItems: "center", justifyContent: "center",
           textAlign: "center",
-          // Mobile: padding trái phải nhiều hơn
           paddingInline: isMobile ? "1.25rem" : "1.5rem",
           paddingBlock: isMobile ? "2rem" : "0",
           maxWidth: 960, width: "100%",
         }}>
-
-          {/* FROM IDEA TO SCALE */}
           <motion.div
             initial={{ opacity: 0, y: 36, filter: "blur(8px)" }}
-            animate={stage >= 1
-              ? { opacity: 1, y: 0, filter: "blur(0px)" }
-              : { opacity: 0, y: 36, filter: "blur(8px)" }
-            }
+            animate={stage >= 1 ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 0, y: 36, filter: "blur(8px)" }}
             transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
             style={{ willChange: "opacity, transform, filter" }}
           >
             <h2 style={{
               fontFamily: serifFont,
-              // Mobile: nhỏ hơn để vừa màn
               fontSize: isMobile ? "clamp(2.8rem,16vw,5rem)" : "clamp(3.2rem,8vw,7.5rem)",
-              fontWeight: 900,
-              color: "#ffffff",
-              margin: 0,
-              lineHeight: 1.0,
-              letterSpacing: "-0.03em",
-              textTransform: "uppercase",
-              textShadow: "0 0 80px rgba(255,255,255,0.5), 0 0 160px rgba(180,200,255,0.18)",
-            }}>
-              FROM IDEA
-            </h2>
+              fontWeight: 900, color: titleColor, margin: 0, lineHeight: 1.0,
+              letterSpacing: "-0.03em", textTransform: "uppercase",
+              textShadow: titleShadow, transition: "color 0.5s ease, text-shadow 0.5s ease",
+            }}>FROM IDEA</h2>
             <h2 style={{
               fontFamily: serifFont,
               fontSize: isMobile ? "clamp(2.8rem,16vw,5rem)" : "clamp(3.2rem,8vw,7.5rem)",
-              fontWeight: 900,
-              color: "#ffffff",
-              margin: "0.04em 0 0",
-              lineHeight: 1.0,
-              letterSpacing: "-0.03em",
-              textTransform: "uppercase",
-              textShadow: "0 0 80px rgba(255,255,255,0.5), 0 0 160px rgba(180,200,255,0.18)",
-            }}>
-              TO SCALE
-            </h2>
+              fontWeight: 900, color: titleColor, margin: "0.04em 0 0", lineHeight: 1.0,
+              letterSpacing: "-0.03em", textTransform: "uppercase",
+              textShadow: titleShadow, transition: "color 0.5s ease, text-shadow 0.5s ease",
+            }}>TO SCALE</h2>
 
             <motion.div
               initial={{ scaleX: 0, opacity: 0 }}
               animate={stage >= 1 ? { scaleX: 1, opacity: 1 } : { scaleX: 0, opacity: 0 }}
               transition={{ delay: 0.55, duration: 0.7, ease: "easeOut" }}
               style={{
-                width: 72, height: 1,
-                background: "linear-gradient(to right, transparent, rgba(160,185,255,0.5), transparent)",
+                width: 72, height: 1, background: dividerBg,
                 margin: isMobile ? "1.4rem auto 1.2rem" : "2rem auto 1.6rem",
-                transformOrigin: "center",
+                transformOrigin: "center", transition: "background 0.5s ease",
               }}
             />
           </motion.div>
 
-          {/* Subtitle — wrap trên mobile, nowrap trên desktop */}
           <div style={{
-            // Mobile: height auto để text wrap xuống dòng
             height: isMobile ? "auto" : "2.8rem",
             minHeight: isMobile ? "2.8rem" : undefined,
             marginBottom: isMobile ? "0.5rem" : 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            overflow: "hidden",
-            // Giới hạn width trên mobile
-            maxWidth: isMobile ? "320px" : "100%",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            overflow: "hidden", maxWidth: isMobile ? "320px" : "100%",
           }}>
             <motion.p
               initial={{ opacity: 0 }}
@@ -381,15 +486,10 @@ export function IdeaSection() {
               style={{
                 fontFamily: serifFont,
                 fontSize: isMobile ? "clamp(0.85rem,3.5vw,1rem)" : "clamp(1rem,1.9vw,1.35rem)",
-                fontWeight: 300,
-                color: "rgba(255,255,255,0.85)",
-                margin: 0,
-                lineHeight: 1.8,
-                letterSpacing: "0.02em",
-                textShadow: "0 0 24px rgba(255,255,255,0.2)",
-                // Mobile: wrap, Desktop: nowrap
+                fontWeight: 400, color: subtitleColor, margin: 0, lineHeight: 1.8,
+                letterSpacing: "0.02em", textShadow: subtitleShadow,
                 whiteSpace: isMobile ? "normal" : "nowrap",
-                textAlign: "center",
+                textAlign: "center", transition: "color 0.5s ease",
               }}
             >
               {displayed}
@@ -398,20 +498,15 @@ export function IdeaSection() {
                   animate={{ opacity: [1, 0] }}
                   transition={{ repeat: Infinity, duration: 0.5, ease: "linear", repeatType: "reverse" }}
                   style={{
-                    display: "inline-block",
-                    width: "2px",
-                    height: "1em",
-                    background: "rgba(255,255,255,0.65)",
-                    marginLeft: "3px",
-                    verticalAlign: "middle",
-                    borderRadius: "1px",
+                    display: "inline-block", width: "2px", height: "1em",
+                    background: cursorBg, marginLeft: "3px", verticalAlign: "middle",
+                    borderRadius: "1px", transition: "background 0.5s ease",
                   }}
                 />
               )}
             </motion.p>
           </div>
 
-          {/* CTA Button */}
           <motion.div
             initial={{ opacity: 0, scale: 0.94, y: 12 }}
             animate={stage >= 3 ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.94, y: 12 }}
@@ -420,41 +515,24 @@ export function IdeaSection() {
             style={{
               marginTop: isMobile ? "1.4rem" : "1.8rem",
               willChange: "opacity, transform",
-              borderRadius: 9999,
-              background: "linear-gradient(135deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.07) 50%, rgba(255,255,255,0.13) 100%)",
+              borderRadius: 9999, background: btnBg,
               backdropFilter: "blur(40px) saturate(200%) brightness(1.15)",
               WebkitBackdropFilter: "blur(40px) saturate(200%) brightness(1.15)",
-              border: "1px solid rgba(255,255,255,0.28)",
-              boxShadow: [
-                "0 2px 0 0 rgba(255,255,255,0.35) inset",
-                "0 -1px 0 0 rgba(255,255,255,0.08) inset",
-                "0 8px 32px rgba(0,0,0,0.45)",
-                "0 1px 0 rgba(255,255,255,0.12)",
-                "0 0 0 0.5px rgba(255,255,255,0.10)",
-              ].join(", "),
-              // Mobile: padding nhỏ hơn
+              border: btnBorder, boxShadow: btnShadow,
               padding: isMobile ? "12px 32px" : "14px 40px",
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
+              display: "inline-flex", alignItems: "center", justifyContent: "center",
+              cursor: "pointer", transition: "background 0.5s ease, border 0.5s ease, box-shadow 0.5s ease",
             }}
           >
             <p style={{
               fontFamily: serifFont,
               fontSize: isMobile ? "clamp(0.9rem,3.5vw,1.1rem)" : "clamp(0.95rem,1.8vw,1.3rem)",
-              fontWeight: 500,
-              color: "rgba(255,255,255,0.96)",
-              margin: 0,
-              letterSpacing: "0.04em",
-              textShadow: "0 1px 12px rgba(255,255,255,0.3), 0 0 1px rgba(255,255,255,0.5)",
-              whiteSpace: "nowrap",
-            }}>
-              Start a Project
-            </p>
+              fontWeight: 600, color: btnTextColor, margin: 0,
+              letterSpacing: "0.04em", textShadow: btnTextShadow,
+              whiteSpace: "nowrap", transition: "color 0.5s ease",
+            }}>Start a Project</p>
           </motion.div>
 
-          {/* Scroll down */}
           <motion.div
             initial={{ opacity: 0, y: 6 }}
             animate={stage >= 4 ? { opacity: 1, y: 0 } : { opacity: 0, y: 6 }}
@@ -462,41 +540,29 @@ export function IdeaSection() {
             onClick={handleScrollDown}
             style={{
               marginTop: isMobile ? "1.6rem" : "2.2rem",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: "0.55rem",
-              cursor: "pointer",
-              willChange: "opacity, transform",
-              userSelect: "none",
-              WebkitTapHighlightColor: "transparent",
+              display: "flex", flexDirection: "column", alignItems: "center",
+              gap: "0.55rem", cursor: "pointer", willChange: "opacity, transform",
+              userSelect: "none", WebkitTapHighlightColor: "transparent",
             }}
           >
             <span style={{
-              fontFamily: serifFont,
-              fontSize: "0.68rem",
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-              color: "rgba(255,255,255,0.32)",
-              fontWeight: 400,
-              whiteSpace: "nowrap",
-            }}>
-              Scroll down to discover more
-            </span>
+              fontFamily: serifFont, fontSize: "0.68rem", letterSpacing: "0.2em",
+              textTransform: "uppercase", color: scrollLabelColor,
+              fontWeight: 400, whiteSpace: "nowrap", transition: "color 0.5s ease",
+            }}>Scroll down to discover more</span>
             <motion.div
               animate={{ y: [0, 6, 0] }}
               transition={{ repeat: Infinity, duration: 1.6, ease: "easeInOut" }}
               style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "3px" }}
             >
               <svg width="18" height="10" viewBox="0 0 18 10" fill="none">
-                <path d="M1 1L9 9L17 1" stroke="rgba(255,255,255,0.38)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M1 1L9 9L17 1" stroke={scrollArrowColor} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               <svg width="18" height="10" viewBox="0 0 18 10" fill="none">
-                <path d="M1 1L9 9L17 1" stroke="rgba(255,255,255,0.16)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M1 1L9 9L17 1" stroke={scrollArrowColor2} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </motion.div>
           </motion.div>
-
         </div>
       </div>
     </section>

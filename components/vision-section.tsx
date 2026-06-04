@@ -47,7 +47,7 @@ In a world of noise, **design is trust**. And trust is revenue.`,
   {
     id: "04",
     tag: "The Vision",
-    tagColor: "gradient",
+    tagColor: "blue",
     title: "The future belongs to companies that build it.",
     content: `We are not here to maintain the status quo. We are here to **dismantle it**, rebuild it better, and hand it back to you — faster, smarter, more beautiful than before.
 
@@ -59,25 +59,50 @@ The companies that will define the next decade aren't waiting for the future. Th
   },
 ];
 
-const tagStyles: Record<string, { dot: string; text: string; bg: string; border: string }> = {
-  red:      { dot: "bg-red-400",    text: "text-red-400",    bg: "bg-red-400/8",    border: "border-red-400/20"    },
-  cyan:     { dot: "bg-cyan-400",   text: "text-cyan-400",   bg: "bg-cyan-400/8",   border: "border-cyan-400/20"   },
-  purple:   { dot: "bg-purple-400", text: "text-purple-400", bg: "bg-purple-400/8", border: "border-purple-400/20" },
-  gradient: { dot: "bg-white/60",   text: "text-white/60",   bg: "bg-white/5",      border: "border-white/10"      },
+type Theme = "dark" | "light";
+
+interface TagStyle {
+  dot: string;
+  text: string;
+  bg: string;
+  border: string;
+  accent: string;
+}
+
+const darkTagStyles: Record<string, TagStyle> = {
+  red:    { dot: "bg-red-400",    text: "text-red-400",    bg: "bg-red-400/10",    border: "border-red-400/25",    accent: "#F87171" },
+  cyan:   { dot: "bg-teal-400",   text: "text-teal-400",   bg: "bg-teal-400/10",   border: "border-teal-400/25",   accent: "#2DD4BF" },
+  purple: { dot: "bg-violet-400", text: "text-violet-400", bg: "bg-violet-400/10", border: "border-violet-400/25", accent: "#A78BFA" },
+  blue:   { dot: "bg-blue-400",   text: "text-blue-400",   bg: "bg-blue-400/10",   border: "border-blue-400/25",   accent: "#60A5FA" },
 };
 
-function parseContent(text: string) {
+const lightTagStyles: Record<string, TagStyle> = {
+  red:    { dot: "bg-red-500",    text: "text-red-600",    bg: "bg-red-50",    border: "border-red-200",    accent: "#DC2626" },
+  cyan:   { dot: "bg-teal-500",   text: "text-teal-700",   bg: "bg-teal-50",   border: "border-teal-200",   accent: "#0F766E" },
+  purple: { dot: "bg-violet-500", text: "text-violet-700", bg: "bg-violet-50", border: "border-violet-200", accent: "#6D28D9" },
+  blue:   { dot: "bg-blue-500",   text: "text-blue-700",   bg: "bg-blue-50",   border: "border-blue-200",   accent: "#1D4ED8" },
+};
+
+function parseContent(text: string, isDark: boolean) {
+  const color = isDark ? "rgba(255,255,255,0.95)" : "#0a0a0a";
   return text.replace(
     /\*\*(.*?)\*\*/g,
-    '<strong style="color: rgba(255,255,255,0.95); font-weight: 600;">$1</strong>'
+    `<strong style="color: ${color}; font-weight: 650;">$1</strong>`
   );
 }
 
-export function VisionSection() {
+interface VisionSectionProps {
+  theme?: Theme;
+}
+
+export function VisionSection({ theme = "dark" }: VisionSectionProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
   const [active, setActive] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const isDark = theme === "dark";
+
+  const tagStyles = isDark ? darkTagStyles : lightTagStyles;
   const current = chapters[active];
   const ts = tagStyles[current.tagColor];
 
@@ -88,24 +113,80 @@ export function VisionSection() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
+  // ── Token helpers ──
+  const sectionBg       = isDark ? "#000000" : "#ffffff";
+  const labelColor      = isDark ? "rgba(255,255,255,0.40)" : "rgba(0,0,0,0.40)";
+  const dividerColor    = isDark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.15)";
+  const headingColor    = isDark ? "#ffffff" : "#0a0a0a";
+  const subColor        = isDark ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.48)";
+  const panelBg         = isDark ? "rgba(8,8,18,0.75)" : "#ffffff";
+  const panelBorder     = isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.10)";
+  const panelShadow     = isDark
+    ? "0 40px 100px rgba(0,0,0,0.60), 0 0 0 0.5px rgba(255,255,255,0.06) inset"
+    : "0 20px 60px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04)";
+  const titleBarBg      = isDark ? "rgba(4,4,12,0.60)" : "#f5f5f7";
+  const titleBarBorder  = isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.08)";
+  const titleBarText    = isDark ? "rgba(255,255,255,0.16)" : "rgba(0,0,0,0.28)";
+  const sidebarBg       = isDark ? "rgba(4,4,12,0.40)" : "#fafafa";
+  const sidebarBorder   = isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.07)";
+  const sidebarLabel    = isDark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.28)";
+  const sidebarFooter   = isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.18)";
+  const breadcrumbBg    = isDark ? "rgba(6,6,16,0.25)" : "#f9f9fb";
+  const breadcrumbBorder= isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.07)";
+  const breadcrumbMuted = isDark ? "rgba(255,255,255,0.18)" : "rgba(0,0,0,0.30)";
+  const breadcrumbSlash = isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.18)";
+  const contentBg       = isDark ? "transparent" : "#ffffff";
+  const idColor         = isDark ? "rgba(255,255,255,0.20)" : "rgba(0,0,0,0.28)";
+  const inlineDivider   = isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.07)";
+  const bodyColor       = isDark ? "rgba(255,255,255,0.42)" : "rgba(0,0,0,0.55)";
+  const bottomNavBg     = isDark ? "rgba(4,4,12,0.35)" : "#f5f5f7";
+  const bottomNavBorder = isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.07)";
+  const navBtnColor     = isDark ? "rgba(255,255,255,0.30)" : "rgba(0,0,0,0.35)";
+  const navBtnHover     = isDark ? "rgba(255,255,255,0.80)" : "rgba(0,0,0,0.75)";
+  const dotInactive     = isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.15)";
+  const activeCardBg    = isDark ? "rgba(255,255,255,0.055)" : "#ffffff";
+  const activeCardBorder= isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.09)";
+  const activeCardShadow= isDark ? "none" : "0 2px 8px rgba(0,0,0,0.06)";
+  const inactiveTabText = isDark ? "rgba(255,255,255,0.28)" : "rgba(0,0,0,0.35)";
+  const inactiveDot     = isDark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.18)";
+  const tabsBg          = isDark ? "rgba(4,4,12,0.40)" : "#fafafa";
+  const mobileBtnBg     = isDark ? "rgba(255,255,255,0.05)" : "#ffffff";
+  const mobileBtnBorder = isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.10)";
+  const mobileBtnColor  = isDark ? "rgba(255,255,255,0.40)" : "rgba(0,0,0,0.45)";
+
   return (
     <section
-      id="vision"
-      className="relative overflow-hidden flex flex-col items-center justify-center py-10"
-    >
-      {/* Background */}
+  id="vision"
+  className="relative overflow-hidden flex flex-col items-center justify-center py-10"
+  style={{
+    background: sectionBg,
+    transition: "background 0.4s ease",
+    position: "relative",
+    zIndex: 10,
+    isolation: "isolate",
+    minHeight: "100vh",        // ← thêm dòng này
+    paddingBottom: "5rem",     // ← thêm dòng này
+  }}
+>
+      {/* Background glows */}
       <div className="absolute inset-0 pointer-events-none">
         <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[700px] rounded-full blur-[180px]"
-          style={{ background: "rgba(139,92,246,0.07)" }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[700px] rounded-full"
+          style={{
+            background: isDark
+              ? "rgba(139,92,246,0.07)"
+              : "rgba(139,92,246,0.04)",
+            filter: "blur(180px)",
+          }}
         />
         <div
-          className="absolute bottom-0 right-0 w-[500px] h-[400px] rounded-full blur-[120px]"
-          style={{ background: "rgba(34,211,238,0.05)" }}
-        />
-        <div
-          className="absolute top-0 left-0 w-[400px] h-[400px] rounded-full blur-[140px]"
-          style={{ background: "rgba(239,68,68,0.03)" }}
+          className="absolute bottom-0 right-0 w-[500px] h-[400px] rounded-full"
+          style={{
+            background: isDark
+              ? "rgba(34,211,238,0.05)"
+              : "rgba(14,165,233,0.04)",
+            filter: "blur(120px)",
+          }}
         />
       </div>
 
@@ -121,79 +202,77 @@ export function VisionSection() {
           className="text-center w-full"
         >
           <div className="flex items-center justify-center gap-3 mb-3">
-            <div className="w-8 h-[1px] bg-white/25" />
-            <span className="text-[10px] font-mono tracking-[0.28em] uppercase text-white/50">
+            <div className="w-8 h-[1px]" style={{ background: dividerColor }} />
+            <span className="text-[10px] font-mono tracking-[0.28em] uppercase" style={{ color: labelColor }}>
               Our Vision
             </span>
-            <div className="w-8 h-[1px] bg-white/25" />
+            <div className="w-8 h-[1px]" style={{ background: dividerColor }} />
           </div>
           <h2
             className="text-3xl md:text-5xl font-bold leading-tight tracking-tight mb-2"
             style={{
-              color: "#ffffff",
-              textShadow: "0 0 40px rgba(255,255,255,0.35), 0 0 80px rgba(255,255,255,0.15)",
+              color: headingColor,
+              textShadow: isDark
+                ? "0 0 40px rgba(255,255,255,0.35), 0 0 80px rgba(255,255,255,0.15)"
+                : "none",
+              transition: "color 0.4s ease",
             }}
           >
             We are building the next generation.
           </h2>
-          <p
-            className="text-sm max-w-md mx-auto leading-relaxed"
-            style={{ color: "rgba(255,255,255,0.45)" }}
-          >
+          <p className="text-sm max-w-md mx-auto leading-relaxed" style={{ color: subColor }}>
             Four principles. One system. A way of thinking about modern software.
           </p>
         </motion.div>
 
-        {/* Main UI */}
+        {/* Panel */}
         <motion.div
           initial={{ opacity: 0, y: 32 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="rounded-2xl border border-white/[0.08] overflow-hidden w-full"
+          className="rounded-2xl overflow-hidden w-full"
           style={{
-            background: "rgba(8,8,18,0.75)",
-            backdropFilter: "blur(48px) saturate(180%)",
-            WebkitBackdropFilter: "blur(48px) saturate(180%)",
-            boxShadow:
-              "0 0 0 0.5px rgba(255,255,255,0.06) inset, 0 40px 100px rgba(0,0,0,0.60), 0 0 60px rgba(139,92,246,0.06)",
+            background: panelBg,
+            border: `1px solid ${panelBorder}`,
+            boxShadow: panelShadow,
+            backdropFilter: isDark ? "blur(48px) saturate(180%)" : "none",
+            WebkitBackdropFilter: isDark ? "blur(48px) saturate(180%)" : "none",
+            transition: "background 0.4s ease, border 0.4s ease, box-shadow 0.4s ease",
           }}
         >
           {/* Title bar */}
           <div
-            className="flex items-center gap-3 px-5 py-3 border-b border-white/[0.06]"
+            className="flex items-center gap-3 px-5 py-3"
             style={{
-              background: "rgba(4,4,12,0.60)",
-              backdropFilter: "blur(20px)",
-              WebkitBackdropFilter: "blur(20px)",
+              background: titleBarBg,
+              borderBottom: `1px solid ${titleBarBorder}`,
+              transition: "background 0.4s ease",
             }}
           >
             <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full" style={{ background: "rgba(255,95,86,0.70)" }} />
-              <div className="w-3 h-3 rounded-full" style={{ background: "rgba(255,189,46,0.70)" }} />
-              <div className="w-3 h-3 rounded-full" style={{ background: "rgba(39,201,63,0.70)" }} />
+              <div className="w-3 h-3 rounded-full" style={{ background: "rgba(255,95,86,0.80)" }} />
+              <div className="w-3 h-3 rounded-full" style={{ background: "rgba(255,189,46,0.80)" }} />
+              <div className="w-3 h-3 rounded-full" style={{ background: "rgba(39,201,63,0.80)" }} />
             </div>
             <div className="flex-1 flex justify-center">
-              <span
-                className="text-xs font-mono tracking-wider"
-                style={{ color: "rgba(255,255,255,0.16)" }}
-              >
+              <span className="text-xs font-mono tracking-wider" style={{ color: titleBarText }}>
                 xinchao@futurxt / vision
               </span>
             </div>
             <div className="w-16" />
           </div>
 
-          {/* ── MOBILE LAYOUT ── */}
+          {/* ── MOBILE ── */}
           {isMobile ? (
             <div className="flex flex-col">
-              {/* Chapter tabs - horizontal scroll */}
               <div
-                className="flex border-b border-white/[0.06] overflow-x-auto"
+                className="flex border-b overflow-x-auto"
                 style={{
-                  background: "rgba(4,4,12,0.40)",
+                  background: tabsBg,
+                  borderColor: sidebarBorder,
                   scrollbarWidth: "none",
                   WebkitOverflowScrolling: "touch",
-                }}
+                } as React.CSSProperties}
               >
                 {chapters.map((ch, i) => {
                   const isActive = i === active;
@@ -204,26 +283,21 @@ export function VisionSection() {
                       onClick={() => setActive(i)}
                       className="relative flex flex-col items-center gap-1 px-4 py-3 shrink-0 transition-all duration-200"
                       style={{
-                        background: isActive ? "rgba(255,255,255,0.055)" : "transparent",
-                        borderBottom: isActive ? "2px solid rgba(255,255,255,0.5)" : "2px solid transparent",
+                        background: isActive
+                          ? isDark ? "rgba(255,255,255,0.055)" : "#ffffff"
+                          : "transparent",
+                        borderBottom: `2px solid ${isActive ? s.accent : "transparent"}`,
                         minWidth: 80,
                       }}
                     >
                       <div
-                        className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                          isActive ? s.dot : "bg-white/15"
-                        }`}
+                        className="w-1.5 h-1.5 rounded-full transition-all duration-300"
+                        style={{ background: isActive ? s.accent : inactiveDot }}
                       />
-                      <p
-                        className="text-[9px] font-mono"
-                        style={{ color: isActive ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.28)" }}
-                      >
+                      <p className="text-[9px] font-mono" style={{ color: isActive ? (isDark ? "rgba(255,255,255,0.50)" : "rgba(0,0,0,0.50)") : (isDark ? "rgba(255,255,255,0.18)" : "rgba(0,0,0,0.28)") }}>
                         {ch.id}
                       </p>
-                      <p
-                        className="text-[10px] font-medium whitespace-nowrap"
-                        style={{ color: isActive ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.30)" }}
-                      >
+                      <p className="text-[10px] font-semibold whitespace-nowrap" style={{ color: isActive ? headingColor : inactiveTabText }}>
                         {ch.tag}
                       </p>
                     </button>
@@ -231,7 +305,6 @@ export function VisionSection() {
                 })}
               </div>
 
-              {/* Content */}
               <AnimatePresence mode="wait">
                 <motion.div
                   key={active}
@@ -240,67 +313,45 @@ export function VisionSection() {
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.28, ease: [0.4, 0, 0.2, 1] }}
                   className="px-5 py-5"
+                  style={{ background: contentBg }}
                 >
                   <div className="flex items-center gap-3 mb-3">
-                    <span
-                      className="text-xs font-mono"
-                      style={{ color: "rgba(255,255,255,0.20)" }}
-                    >
-                      {current.id}
-                    </span>
-                    <div className="h-[1px] w-5 bg-white/[0.10]" />
-                    <span
-                      className={`text-[11px] font-mono px-2.5 py-0.5 rounded-full border ${ts.text} ${ts.bg} ${ts.border}`}
-                    >
+                    <span className="text-xs font-mono" style={{ color: idColor }}>{current.id}</span>
+                    <div className="h-[1px] w-5" style={{ background: inlineDivider }} />
+                    <span className={`text-[11px] font-mono px-2.5 py-0.5 rounded-full border ${ts.text} ${ts.bg} ${ts.border}`}>
                       {current.tag}
                     </span>
                   </div>
-
-                  <h3
-                    className="text-lg font-bold leading-snug tracking-tight mb-3"
-                    style={{ color: "rgba(255,255,255,0.95)" }}
-                  >
+                  <h3 className="text-lg font-bold leading-snug tracking-tight mb-3" style={{ color: headingColor }}>
                     {current.title}
                   </h3>
-
-                  <div className="h-[1px] mb-4" style={{ background: "rgba(255,255,255,0.05)" }} />
-
+                  <div className="h-[1px] mb-4" style={{ background: inlineDivider }} />
                   <div className="space-y-3">
                     {current.content.split("\n\n").map((para, i) => (
                       <p
                         key={i}
                         className="text-sm leading-[1.85]"
-                        style={{ color: "rgba(255,255,255,0.42)" }}
-                        dangerouslySetInnerHTML={{ __html: parseContent(para) }}
+                        style={{ color: bodyColor }}
+                        dangerouslySetInnerHTML={{ __html: parseContent(para, isDark) }}
                       />
                     ))}
                   </div>
                 </motion.div>
               </AnimatePresence>
 
-              {/* Bottom nav */}
               <div
-                className="px-5 py-3 border-t border-white/[0.06] flex items-center justify-between"
-                style={{
-                  background: "rgba(4,4,12,0.35)",
-                  backdropFilter: "blur(16px)",
-                  WebkitBackdropFilter: "blur(16px)",
-                }}
+                className="px-5 py-3 flex items-center justify-between"
+                style={{ background: bottomNavBg, borderTop: `1px solid ${bottomNavBorder}` }}
               >
                 <button
                   onClick={() => setActive((active - 1 + chapters.length) % chapters.length)}
-                  className="text-xs font-mono transition-all duration-200 px-3 py-1.5 rounded-lg"
-                  style={{
-                    color: "rgba(255,255,255,0.40)",
-                    background: "rgba(255,255,255,0.05)",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                  }}
+                  className="text-xs font-mono px-3 py-1.5 rounded-lg transition-all duration-200"
+                  style={{ color: mobileBtnColor, background: mobileBtnBg, border: `1px solid ${mobileBtnBorder}` }}
                 >
                   ← Prev
                 </button>
-
                 <div className="flex items-center gap-2">
-                  {chapters.map((_, i) => (
+                  {chapters.map((ch, i) => (
                     <button
                       key={i}
                       onClick={() => setActive(i)}
@@ -308,45 +359,34 @@ export function VisionSection() {
                       style={{
                         width: i === active ? 20 : 6,
                         height: 6,
-                        background:
-                          i === active
-                            ? "linear-gradient(90deg, rgba(139,92,246,0.9), rgba(34,211,238,0.9))"
-                            : "rgba(255,255,255,0.12)",
+                        background: i === active ? tagStyles[chapters[i].tagColor].accent : dotInactive,
                       }}
                     />
                   ))}
                 </div>
-
                 <button
                   onClick={() => setActive((active + 1) % chapters.length)}
-                  className="text-xs font-mono transition-all duration-200 px-3 py-1.5 rounded-lg"
-                  style={{
-                    color: "rgba(255,255,255,0.40)",
-                    background: "rgba(255,255,255,0.05)",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                  }}
+                  className="text-xs font-mono px-3 py-1.5 rounded-lg transition-all duration-200"
+                  style={{ color: mobileBtnColor, background: mobileBtnBg, border: `1px solid ${mobileBtnBorder}` }}
                 >
                   Next →
                 </button>
               </div>
             </div>
           ) : (
-            /* ── DESKTOP LAYOUT (giữ nguyên 100%) ── */
+            /* ── DESKTOP ── */
             <div className="flex" style={{ minHeight: 380 }}>
-              {/* Left: Chapter list */}
+              {/* Sidebar */}
               <div
-                className="w-52 shrink-0 border-r border-white/[0.06] flex flex-col py-4"
+                className="w-52 shrink-0 flex flex-col py-4"
                 style={{
-                  background: "rgba(4,4,12,0.40)",
-                  backdropFilter: "blur(20px)",
-                  WebkitBackdropFilter: "blur(20px)",
+                  background: sidebarBg,
+                  borderRight: `1px solid ${sidebarBorder}`,
+                  transition: "background 0.4s ease",
                 }}
               >
                 <div className="px-4 mb-4">
-                  <p
-                    className="text-[10px] font-mono tracking-[0.2em] uppercase"
-                    style={{ color: "rgba(255,255,255,0.15)" }}
-                  >
+                  <p className="text-[10px] font-mono tracking-[0.2em] uppercase" style={{ color: sidebarLabel }}>
                     FOS · Principles
                   </p>
                 </div>
@@ -359,34 +399,33 @@ export function VisionSection() {
                         key={ch.id}
                         onClick={() => setActive(i)}
                         className="w-full text-left px-3 py-2.5 rounded-xl transition-all duration-200 relative flex items-center gap-3"
-                        style={{ background: "transparent" }}
                       >
                         {isActive && (
                           <motion.div
-                            layoutId="activeChapter"
+                            layoutId="activeChapterVision"
                             className="absolute inset-0 rounded-xl"
                             style={{
-                              background: "rgba(255,255,255,0.055)",
-                              border: "0.5px solid rgba(255,255,255,0.10)",
+                              background: activeCardBg,
+                              border: `1px solid ${activeCardBorder}`,
+                              boxShadow: activeCardShadow,
                             }}
                             transition={{ type: "spring", bounce: 0.18, duration: 0.38 }}
                           />
                         )}
                         <div
-                          className={`relative w-1.5 h-1.5 rounded-full shrink-0 transition-all duration-300 ${
-                            isActive ? s.dot : "bg-white/15"
-                          }`}
+                          className="relative w-1.5 h-1.5 rounded-full shrink-0 transition-all duration-300"
+                          style={{ background: isActive ? s.accent : inactiveDot }}
                         />
                         <div className="relative flex-1 min-w-0">
                           <p
-                            className={`text-[10px] font-mono mb-0.5 ${isActive ? s.text : ""}`}
-                            style={!isActive ? { color: "rgba(255,255,255,0.18)" } : {}}
+                            className="text-[10px] font-mono mb-0.5"
+                            style={{ color: isActive ? s.accent : sidebarLabel }}
                           >
                             {ch.id}
                           </p>
                           <p
-                            className={`text-xs font-medium truncate ${isActive ? "text-white" : ""}`}
-                            style={!isActive ? { color: "rgba(255,255,255,0.28)" } : {}}
+                            className="text-xs font-semibold truncate"
+                            style={{ color: isActive ? headingColor : inactiveTabText }}
                           >
                             {ch.tag}
                           </p>
@@ -395,35 +434,25 @@ export function VisionSection() {
                     );
                   })}
                 </nav>
-                <div className="px-4 pt-4 border-t border-white/[0.06] mt-4">
-                  <p
-                    className="text-[10px] font-mono tracking-wide leading-relaxed"
-                    style={{ color: "rgba(255,255,255,0.10)" }}
-                  >
-                    FUTURXT OPERATING SYSTEM
-                    <br />
-                    v2026 ·
+                <div className="px-4 pt-4 mt-4" style={{ borderTop: `1px solid ${sidebarBorder}` }}>
+                  <p className="text-[10px] font-mono tracking-wide leading-relaxed" style={{ color: sidebarFooter }}>
+                    FUTURXT OPERATING SYSTEM<br />v2026 ·
                   </p>
                 </div>
               </div>
 
-              {/* Right: Content panel */}
+              {/* Content */}
               <div className="flex-1 flex flex-col min-w-0">
-                {/* Breadcrumb */}
                 <div
-                  className="flex items-center gap-2 px-7 py-3 border-b border-white/[0.06]"
+                  className="flex items-center gap-2 px-7 py-3"
                   style={{
-                    background: "rgba(6,6,16,0.25)",
-                    backdropFilter: "blur(12px)",
-                    WebkitBackdropFilter: "blur(12px)",
+                    background: breadcrumbBg,
+                    borderBottom: `1px solid ${breadcrumbBorder}`,
+                    transition: "background 0.4s ease",
                   }}
                 >
-                  <span className="text-xs font-mono" style={{ color: "rgba(255,255,255,0.18)" }}>
-                    Vision
-                  </span>
-                  <span className="text-xs" style={{ color: "rgba(255,255,255,0.10)" }}>
-                    /
-                  </span>
+                  <span className="text-xs font-mono" style={{ color: breadcrumbMuted }}>Vision</span>
+                  <span className="text-xs" style={{ color: breadcrumbSlash }}>/</span>
                   <AnimatePresence mode="wait">
                     <motion.span
                       key={current.tag}
@@ -431,14 +460,13 @@ export function VisionSection() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -4 }}
                       transition={{ duration: 0.18 }}
-                      className={`text-xs font-mono ${ts.text}`}
+                      className={`text-xs font-mono font-semibold ${ts.text}`}
                     >
                       {current.tag}
                     </motion.span>
                   </AnimatePresence>
                 </div>
 
-                {/* Content */}
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={active}
@@ -446,63 +474,51 @@ export function VisionSection() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.28, ease: [0.4, 0, 0.2, 1] }}
-                    className="flex-1 overflow-y-auto px-7 py-5"
+                    className="flex-1 overflow-y-auto px-7 py-6"
+                    style={{ background: contentBg, transition: "background 0.4s ease" }}
                   >
                     <div className="flex items-center gap-3 mb-4">
-                      <span
-                        className="text-xs font-mono"
-                        style={{ color: "rgba(255,255,255,0.20)" }}
-                      >
-                        {current.id}
-                      </span>
-                      <div className="h-[1px] w-5 bg-white/[0.10]" />
-                      <span
-                        className={`text-[11px] font-mono px-2.5 py-0.5 rounded-full border ${ts.text} ${ts.bg} ${ts.border}`}
-                      >
+                      <span className="text-xs font-mono" style={{ color: idColor }}>{current.id}</span>
+                      <div className="h-[1px] w-5" style={{ background: inlineDivider }} />
+                      <span className={`text-[11px] font-mono px-2.5 py-0.5 rounded-full border ${ts.text} ${ts.bg} ${ts.border}`}>
                         {current.tag}
                       </span>
                     </div>
                     <h3
                       className="text-xl md:text-2xl font-bold leading-snug tracking-tight mb-4"
-                      style={{ color: "rgba(255,255,255,0.95)" }}
+                      style={{ color: headingColor }}
                     >
                       {current.title}
                     </h3>
-                    <div className="h-[1px] mb-4" style={{ background: "rgba(255,255,255,0.05)" }} />
+                    <div className="h-[1px] mb-5" style={{ background: inlineDivider }} />
                     <div className="space-y-3 max-w-xl">
                       {current.content.split("\n\n").map((para, i) => (
                         <p
                           key={i}
                           className="text-sm leading-[1.85]"
-                          style={{ color: "rgba(255,255,255,0.42)" }}
-                          dangerouslySetInnerHTML={{ __html: parseContent(para) }}
+                          style={{ color: bodyColor }}
+                          dangerouslySetInnerHTML={{ __html: parseContent(para, isDark) }}
                         />
                       ))}
                     </div>
                   </motion.div>
                 </AnimatePresence>
 
-                {/* Bottom nav */}
                 <div
-                  className="px-7 py-3 border-t border-white/[0.06] flex items-center justify-between"
-                  style={{
-                    background: "rgba(4,4,12,0.35)",
-                    backdropFilter: "blur(16px)",
-                    WebkitBackdropFilter: "blur(16px)",
-                  }}
+                  className="px-7 py-3 flex items-center justify-between"
+                  style={{ background: bottomNavBg, borderTop: `1px solid ${bottomNavBorder}`, transition: "background 0.4s ease" }}
                 >
                   <button
                     onClick={() => setActive((active - 1 + chapters.length) % chapters.length)}
                     className="text-xs font-mono transition-all duration-200"
-                    style={{ color: "rgba(255,255,255,0.22)" }}
-                    onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.70)")}
-                    onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.22)")}
+                    style={{ color: navBtnColor }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = navBtnHover)}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = navBtnColor)}
                   >
                     ← Prev
                   </button>
-
                   <div className="flex items-center gap-2">
-                    {chapters.map((_, i) => (
+                    {chapters.map((ch, i) => (
                       <button
                         key={i}
                         onClick={() => setActive(i)}
@@ -510,21 +526,17 @@ export function VisionSection() {
                         style={{
                           width: i === active ? 20 : 6,
                           height: 6,
-                          background:
-                            i === active
-                              ? "linear-gradient(90deg, rgba(139,92,246,0.9), rgba(34,211,238,0.9))"
-                              : "rgba(255,255,255,0.12)",
+                          background: i === active ? tagStyles[chapters[i].tagColor].accent : dotInactive,
                         }}
                       />
                     ))}
                   </div>
-
                   <button
                     onClick={() => setActive((active + 1) % chapters.length)}
                     className="text-xs font-mono transition-all duration-200"
-                    style={{ color: "rgba(255,255,255,0.30)" }}
-                    onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.80)")}
-                    onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.30)")}
+                    style={{ color: navBtnColor }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = navBtnHover)}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = navBtnColor)}
                   >
                     Next →
                   </button>

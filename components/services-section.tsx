@@ -2,41 +2,83 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
-import { Globe, Pen, Server, Brain, ArrowRight, ChevronLeft, ChevronRight, Send, Sparkles, Bot, Sun, Moon } from "lucide-react";
+import { Globe, Pen, Server, Brain, ChevronLeft, ChevronRight, Send, Sparkles, Bot, Sun, Moon } from "lucide-react";
+
+type Theme = "dark" | "light";
 
 function hexRgb(h: string) {
   const r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(h);
   return r ? `${parseInt(r[1], 16)},${parseInt(r[2], 16)},${parseInt(r[3], 16)}` : "168,212,255";
 }
 
-function GlassCTA({ accent, label = "Start a project" }: { accent: string; label?: string }) {
+// ─── GlassCTA — bỏ mũi tên ───────────────────────────────────────────────────
+function GlassCTA({
+  accent,
+  label = "Start a project",
+  theme = "dark",
+}: {
+  accent: string;
+  label?: string;
+  theme?: Theme;
+}) {
   const rgb = hexRgb(accent);
+  const isDark = theme === "dark";
+
+  // Light mode dùng màu solid đậm hơn thay vì glass trắng mờ
+  const bg = isDark
+    ? `linear-gradient(145deg, rgba(${rgb},0.22) 0%, rgba(${rgb},0.10) 40%, rgba(255,255,255,0.05) 100%)`
+    : `linear-gradient(145deg, rgba(${rgb},0.18) 0%, rgba(${rgb},0.08) 40%, rgba(255,255,255,0.60) 100%)`;
+  const border = isDark ? `rgba(${rgb},0.50)` : `rgba(${rgb},0.55)`;
+  const shadow = isDark
+    ? [
+        `0 4px 32px rgba(${rgb},0.26)`,
+        `0 1px 8px rgba(0,0,0,0.4)`,
+        `inset 0 1.5px 0 rgba(255,255,255,0.32)`,
+        `inset 0 -1px 0 rgba(${rgb},0.14)`,
+      ].join(",")
+    : [
+        `0 4px 24px rgba(${rgb},0.22)`,
+        `0 1px 6px rgba(0,0,0,0.08)`,
+        `inset 0 1.5px 0 rgba(255,255,255,0.90)`,
+        `inset 0 -1px 0 rgba(${rgb},0.12)`,
+      ].join(",");
+  const color = isDark ? "#ffffff" : `rgb(${rgb})`;
+  const textShadow = isDark ? `0 0 24px rgba(${rgb},0.9)` : `0 0 16px rgba(${rgb},0.5)`;
+
   return (
     <motion.a
       href="#contact"
-      onClick={(e) => { e.preventDefault(); document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" }); }}
+      onClick={(e) => {
+        e.preventDefault();
+        document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+      }}
       whileHover={{ scale: 1.03 }}
       whileTap={{ scale: 0.97 }}
       style={{
-        display: "inline-flex", alignItems: "center", gap: 10,
-        padding: "14px 28px", borderRadius: 16,
-        background: `linear-gradient(145deg, rgba(${rgb},0.22) 0%, rgba(${rgb},0.10) 40%, rgba(255,255,255,0.05) 100%)`,
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 0,
+        padding: "14px 28px",
+        borderRadius: 16,
+        background: bg,
         backdropFilter: "blur(80px) saturate(240%) brightness(1.2)",
         WebkitBackdropFilter: "blur(80px) saturate(240%) brightness(1.2)",
-        border: `1px solid rgba(${rgb},0.50)`,
-        boxShadow: [`0 4px 32px rgba(${rgb},0.26)`, `0 1px 8px rgba(0,0,0,0.4)`, `inset 0 1.5px 0 rgba(255,255,255,0.32)`, `inset 0 -1px 0 rgba(${rgb},0.14)`].join(","),
-        color: "#ffffff", fontSize: 14, fontWeight: 700,
-        textDecoration: "none", cursor: "pointer",
-        letterSpacing: "0.01em", position: "relative", overflow: "hidden",
+        border: `1px solid ${border}`,
+        boxShadow: shadow,
+        color,
+        fontSize: 14,
+        fontWeight: 700,
+        textDecoration: "none",
+        cursor: "pointer",
+        letterSpacing: "0.01em",
+        position: "relative",
+        overflow: "hidden",
         transition: "all 0.28s cubic-bezier(0.16,1,0.3,1)",
       }}
     >
-      <div style={{ position: "absolute", top: 0, left: "10%", right: "10%", height: 1, background: "linear-gradient(90deg,transparent,rgba(255,255,255,0.60),transparent)", pointerEvents: "none" }} />
+      <div style={{ position: "absolute", top: 0, left: "10%", right: "10%", height: 1, background: isDark ? "linear-gradient(90deg,transparent,rgba(255,255,255,0.60),transparent)" : "linear-gradient(90deg,transparent,rgba(255,255,255,0.95),transparent)", pointerEvents: "none" }} />
       <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at 50% 0%, rgba(${rgb},0.18) 0%, transparent 65%)`, pointerEvents: "none" }} />
-      <span style={{ position: "relative", zIndex: 1, textShadow: `0 0 24px rgba(${rgb},0.9)` }}>{label}</span>
-      <motion.span style={{ position: "relative", zIndex: 1 }} animate={{ x: [0, 4, 0] }} transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}>
-        <ArrowRight size={15} />
-      </motion.span>
+      <span style={{ position: "relative", zIndex: 1, textShadow }}>{label}</span>
     </motion.a>
   );
 }
@@ -61,36 +103,88 @@ function SmartImage({ src, alt = "" }: { src: string; alt?: string }) {
   );
 }
 
-function PhotoGallery({ accent, photos }: { accent: string; photos: { url: string }[] }) {
+// ─── PhotoGallery — bỏ auto-slide 6 giây ────────────────────────────────────
+function PhotoGallery({
+  accent,
+  photos,
+  theme = "dark",
+}: {
+  accent: string;
+  photos: { url: string }[];
+  theme?: Theme;
+}) {
   const [current, setCurrent] = useState(0);
   const rgb = hexRgb(accent);
-  useEffect(() => { setCurrent(0); }, [photos]);
+  const isDark = theme === "dark";
+
   useEffect(() => {
-    const id = setInterval(() => setCurrent(c => (c + 1) % photos.length), 6000);
-    return () => clearInterval(id);
-  }, [photos.length]);
-  const prev = () => setCurrent(c => (c - 1 + photos.length) % photos.length);
-  const next = () => setCurrent(c => (c + 1) % photos.length);
+    setCurrent(0);
+  }, [photos]);
+
+  // ← REMOVED: auto-interval setInterval 6000
+
+  const prev = () => setCurrent((c) => (c - 1 + photos.length) % photos.length);
+  const next = () => setCurrent((c) => (c + 1) % photos.length);
+
+  const frameBg = isDark ? "#080812" : "#f5f7fa";
+  const frameBorder = isDark ? "rgba(255,255,255,0.09)" : "rgba(0,0,0,0.08)";
+  const frameInset = isDark ? "rgba(255,255,255,0.11)" : "rgba(255,255,255,0.90)";
+  const headerBg = isDark
+    ? "linear-gradient(180deg,rgba(255,255,255,0.06) 0%,rgba(255,255,255,0.02) 100%)"
+    : "linear-gradient(180deg,rgba(0,0,0,0.04) 0%,rgba(0,0,0,0.01) 100%)";
+  const headerBorder = isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)";
+  const navBtnBg = isDark ? "rgba(8,8,18,0.68)" : "rgba(255,255,255,0.80)";
+  const navBtnBorder = isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.10)";
+  const navBtnColor = isDark ? "rgba(255,255,255,0.85)" : "rgba(0,0,0,0.70)";
+  const dotInactive = isDark ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.20)";
+  const dotBoxShadow = isDark ? undefined : `0 0 8px ${accent}`;
+
   return (
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
-      <div style={{ position: "absolute", inset: -1.5, borderRadius: 24, border: `1.5px solid rgba(${rgb},0.30)`, pointerEvents: "none", zIndex: 0, boxShadow: `0 0 30px rgba(${rgb},0.12), inset 0 0 30px rgba(${rgb},0.04)` }} />
-      <div style={{
-        position: "relative", width: "100%", height: "100%",
-        borderRadius: 22, overflow: "hidden",
-        border: "1px solid rgba(255,255,255,0.09)",
-        boxShadow: ["0 32px 80px rgba(0,0,0,0.82)", "0 8px 24px rgba(0,0,0,0.55)", "inset 0 1px 0 rgba(255,255,255,0.11)"].join(","),
-        background: "#080812", zIndex: 1,
-        display: "flex", flexDirection: "column",
-      }}>
-        <div style={{
-          display: "flex", alignItems: "center", gap: 10,
-          padding: "10px 14px", flexShrink: 0,
-          background: "linear-gradient(180deg,rgba(255,255,255,0.06) 0%,rgba(255,255,255,0.02) 100%)",
-          borderBottom: "1px solid rgba(255,255,255,0.07)", zIndex: 2,
-        }}>
+      <div
+        style={{
+          position: "absolute",
+          inset: -1.5,
+          borderRadius: 24,
+          border: `1.5px solid rgba(${rgb},0.30)`,
+          pointerEvents: "none",
+          zIndex: 0,
+          boxShadow: `0 0 30px rgba(${rgb},0.12), inset 0 0 30px rgba(${rgb},0.04)`,
+        }}
+      />
+      <div
+        style={{
+          position: "relative",
+          width: "100%",
+          height: "100%",
+          borderRadius: 22,
+          overflow: "hidden",
+          border: `1px solid ${frameBorder}`,
+          boxShadow: isDark
+            ? ["0 32px 80px rgba(0,0,0,0.82)", "0 8px 24px rgba(0,0,0,0.55)", `inset 0 1px 0 ${frameInset}`].join(",")
+            : ["0 8px 40px rgba(0,0,0,0.10)", "0 2px 12px rgba(0,0,0,0.06)", `inset 0 1px 0 ${frameInset}`].join(","),
+          background: frameBg,
+          zIndex: 1,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        {/* Title bar */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            padding: "10px 14px",
+            flexShrink: 0,
+            background: headerBg,
+            borderBottom: `1px solid ${headerBorder}`,
+            zIndex: 2,
+          }}
+        >
           <div style={{ display: "flex", gap: 6 }}>
-            {[["#ff5f56","#ff3b30"],["#ffbd2e","#ff9500"],["#28c840","#34c759"]].map(([bg, glow], i) => (
-              <div key={i} style={{ width: 11, height: 11, borderRadius: "50%", background: bg, boxShadow: `0 0 5px ${glow}55` }} />
+            {[["#ff5f56", "#ff3b30"], ["#ffbd2e", "#ff9500"], ["#28c840", "#34c759"]].map(([bg2, glow], i) => (
+              <div key={i} style={{ width: 11, height: 11, borderRadius: "50%", background: bg2, boxShadow: `0 0 5px ${glow}55` }} />
             ))}
           </div>
           <div style={{ marginLeft: "auto" }}>
@@ -99,32 +193,79 @@ function PhotoGallery({ accent, photos }: { accent: string; photos: { url: strin
             </span>
           </div>
         </div>
+
+        {/* Slides */}
         <div style={{ flex: 1, position: "relative", overflow: "hidden", minHeight: 0 }}>
           {photos.map((photo, i) => (
-            <div key={i} style={{
-              position: "absolute", inset: 0,
-              opacity: i === current ? 1 : 0,
-              transition: "opacity 0.75s cubic-bezier(0.16,1,0.3,1)",
-              zIndex: i === current ? 1 : 0,
-            }}>
+            <div
+              key={i}
+              style={{
+                position: "absolute",
+                inset: 0,
+                opacity: i === current ? 1 : 0,
+                transition: "opacity 0.75s cubic-bezier(0.16,1,0.3,1)",
+                zIndex: i === current ? 1 : 0,
+              }}
+            >
               <SmartImage src={photo.url} />
-              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, transparent 55%, rgba(8,8,18,0.45) 100%)", pointerEvents: "none" }} />
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background: isDark
+                    ? "linear-gradient(180deg, transparent 55%, rgba(8,8,18,0.45) 100%)"
+                    : "linear-gradient(180deg, transparent 55%, rgba(245,247,250,0.45) 100%)",
+                  pointerEvents: "none",
+                }}
+              />
             </div>
           ))}
+
+          {/* Nav buttons */}
           {photos.length > 1 && (
             <>
-              <button onClick={prev} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", zIndex: 10, width: 34, height: 34, borderRadius: "50%", background: "rgba(8,8,18,0.68)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", border: "1px solid rgba(255,255,255,0.12)", cursor: "pointer", color: "rgba(255,255,255,0.85)", display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}>
+              <button
+                onClick={prev}
+                style={{
+                  position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)",
+                  zIndex: 10, width: 34, height: 34, borderRadius: "50%",
+                  background: navBtnBg, backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
+                  border: `1px solid ${navBtnBorder}`, cursor: "pointer",
+                  color: navBtnColor, display: "flex", alignItems: "center", justifyContent: "center", padding: 0,
+                }}
+              >
                 <ChevronLeft size={15} />
               </button>
-              <button onClick={next} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", zIndex: 10, width: 34, height: 34, borderRadius: "50%", background: "rgba(8,8,18,0.68)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", border: "1px solid rgba(255,255,255,0.12)", cursor: "pointer", color: "rgba(255,255,255,0.85)", display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}>
+              <button
+                onClick={next}
+                style={{
+                  position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)",
+                  zIndex: 10, width: 34, height: 34, borderRadius: "50%",
+                  background: navBtnBg, backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
+                  border: `1px solid ${navBtnBorder}`, cursor: "pointer",
+                  color: navBtnColor, display: "flex", alignItems: "center", justifyContent: "center", padding: 0,
+                }}
+              >
                 <ChevronRight size={15} />
               </button>
             </>
           )}
+
+          {/* Dots */}
           {photos.length > 1 && (
             <div style={{ position: "absolute", bottom: 12, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 5, zIndex: 10 }}>
               {photos.map((_, i) => (
-                <button key={i} onClick={() => setCurrent(i)} style={{ width: i === current ? 18 : 5, height: 5, borderRadius: 99, background: i === current ? accent : "rgba(255,255,255,0.25)", border: "none", cursor: "pointer", padding: 0, transition: "all 0.30s cubic-bezier(0.16,1,0.3,1)", boxShadow: i === current ? `0 0 8px ${accent}` : "none" }} />
+                <button
+                  key={i}
+                  onClick={() => setCurrent(i)}
+                  style={{
+                    width: i === current ? 18 : 5, height: 5, borderRadius: 99,
+                    background: i === current ? accent : dotInactive,
+                    border: "none", cursor: "pointer", padding: 0,
+                    transition: "all 0.30s cubic-bezier(0.16,1,0.3,1)",
+                    boxShadow: i === current ? dotBoxShadow : "none",
+                  }}
+                />
               ))}
             </div>
           )}
@@ -134,6 +275,7 @@ function PhotoGallery({ accent, photos }: { accent: string; photos: { url: strin
   );
 }
 
+// ─── FinanceAppDemo (không đổi, luôn light theme iOS) ──────────────────────
 function FinanceAppDemo({ accent }: { accent: string }) {
   const rgb = hexRgb(accent);
   const [activeTab, setActiveTab] = useState<"overview" | "budget" | "savings">("overview");
@@ -162,9 +304,12 @@ function FinanceAppDemo({ accent }: { accent: string }) {
     { month: "May", revenue: 5200, savings: 1300 },
     { month: "Jun", revenue: salary, savings: netSavings > 0 ? netSavings : 0 },
   ];
-  const maxRevenue = Math.max(...monthlyData.map(d => d.revenue));
+  const maxRevenue = Math.max(...monthlyData.map((d) => d.revenue));
 
-  const notify = (msg: string) => { setNotification(msg); setTimeout(() => setNotification(null), 2000); };
+  const notify = (msg: string) => {
+    setNotification(msg);
+    setTimeout(() => setNotification(null), 2000);
+  };
   const saveSalary = () => {
     const val = parseInt(salaryInput);
     if (!isNaN(val) && val > 0) { setSalary(val); notify("Salary updated ✓"); }
@@ -198,7 +343,7 @@ function FinanceAppDemo({ accent }: { accent: string }) {
             <p style={{ fontSize: 9, color: "#999", margin: 0, fontFamily: "monospace" }}>June 2025</p>
           </div>
           <div style={{ display: "flex", background: "#fff", padding: "6px 10px", gap: 4, borderBottom: "1px solid #f0f0f0" }}>
-            {(["overview", "budget", "savings"] as const).map(tab => (
+            {(["overview", "budget", "savings"] as const).map((tab) => (
               <button key={tab} onClick={() => setActiveTab(tab)} style={{ flex: 1, padding: "5px 0", borderRadius: 8, border: "none", cursor: "pointer", fontSize: 9, fontWeight: 700, background: activeTab === tab ? "#111" : "transparent", color: activeTab === tab ? "#fff" : "#999", transition: "all 0.18s", fontFamily: "inherit", letterSpacing: "0.02em", textTransform: "capitalize" }}>{tab}</button>
             ))}
           </div>
@@ -211,7 +356,7 @@ function FinanceAppDemo({ accent }: { accent: string }) {
                   {editingSalary ? (
                     <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
                       <span style={{ fontSize: 16, color: "#fff", fontWeight: 800 }}>$</span>
-                      <input autoFocus value={salaryInput} onChange={e => setSalaryInput(e.target.value)} onKeyDown={e => { if (e.key === "Enter") saveSalary(); if (e.key === "Escape") setEditingSalary(false); }} style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.25)", borderRadius: 6, padding: "3px 7px", fontSize: 15, color: "#fff", fontWeight: 800, width: 90, outline: "none", fontFamily: "inherit" }} />
+                      <input autoFocus value={salaryInput} onChange={(e) => setSalaryInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") saveSalary(); if (e.key === "Escape") setEditingSalary(false); }} style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.25)", borderRadius: 6, padding: "3px 7px", fontSize: 15, color: "#fff", fontWeight: 800, width: 90, outline: "none", fontFamily: "inherit" }} />
                       <button onClick={saveSalary} style={{ fontSize: 12, color: "#34c759", background: "none", border: "none", cursor: "pointer", fontWeight: 700 }}>✓</button>
                     </div>
                   ) : (
@@ -290,8 +435,8 @@ function FinanceAppDemo({ accent }: { accent: string }) {
                     </svg>
                   </div>
                   <div style={{ display: "flex", gap: 4 }}>
-                    {[100, 500, 1000].map(amt => (
-                      <button key={amt} onClick={() => { setCurrentSavings(s => Math.min(s + amt, savingsGoal)); notify(`+$${amt} added ✓`); }} style={{ flex: 1, padding: "6px 0", borderRadius: 8, border: "1px solid #e5e7eb", background: "#f9f9f9", fontSize: 9, fontWeight: 700, color: "#111", cursor: "pointer", fontFamily: "inherit" }}>+${amt}</button>
+                    {[100, 500, 1000].map((amt) => (
+                      <button key={amt} onClick={() => { setCurrentSavings((s) => Math.min(s + amt, savingsGoal)); notify(`+$${amt} added ✓`); }} style={{ flex: 1, padding: "6px 0", borderRadius: 8, border: "1px solid #e5e7eb", background: "#f9f9f9", fontSize: 9, fontWeight: 700, color: "#111", cursor: "pointer", fontFamily: "inherit" }}>+${amt}</button>
                     ))}
                   </div>
                 </div>
@@ -339,7 +484,7 @@ const LOCAL_RESPONSES: Record<string, string> = {
 function getLocalResponse(input: string): string {
   const q = input.toLowerCase();
   for (const [key, val] of Object.entries(LOCAL_RESPONSES)) {
-    if (q.includes(key) || key.split(" ").some(w => w.length > 3 && q.includes(w))) return val;
+    if (q.includes(key) || key.split(" ").some((w) => w.length > 3 && q.includes(w))) return val;
   }
   return "Great question! We'd love to give you a detailed answer. Drop us a message via the contact form below and we'll get back to you within 24 hours. 🚀";
 }
@@ -350,7 +495,11 @@ function useTypewriter(text: string, active: boolean) {
     if (!active || !text) return;
     setDisplayed("");
     let i = 0;
-    const tick = () => { i++; setDisplayed(text.slice(0, i)); if (i < text.length) setTimeout(tick, 13); };
+    const tick = () => {
+      i++;
+      setDisplayed(text.slice(0, i));
+      if (i < text.length) setTimeout(tick, 13);
+    };
     setTimeout(tick, 13);
   }, [text, active]);
   return displayed;
@@ -358,8 +507,8 @@ function useTypewriter(text: string, active: boolean) {
 
 type Message = { role: "user" | "assistant"; content: string; local?: boolean; typing?: boolean };
 
-function AiLiveDemo({ accent }: { accent: string }) {
-  const [isDark, setIsDark] = useState(true);
+function AiLiveDemo({ accent, theme = "dark" }: { accent: string; theme?: Theme }) {
+  const [isDark, setIsDark] = useState(theme === "dark");
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -407,7 +556,7 @@ function AiLiveDemo({ accent }: { accent: string }) {
         body: JSON.stringify({
           model: "gemini-2.0-flash", stream: true,
           system: "You are Futurxt AI — a sharp, concise AI assistant for a product engineering studio. Keep answers helpful and brief (2-4 sentences max unless asked for more). Focus on web development, UI/UX, and AI automation topics.",
-          messages: newMessages.map(m => ({ role: m.role, content: m.content })),
+          messages: newMessages.map((m) => ({ role: m.role, content: m.content })),
         }),
       });
       if (!res.ok || !res.body) throw new Error("API error");
@@ -427,7 +576,7 @@ function AiLiveDemo({ accent }: { accent: string }) {
         }
       }
       if (!full) throw new Error("Empty");
-      setMessages(prev => [...prev, { role: "assistant", content: full }]);
+      setMessages((prev) => [...prev, { role: "assistant", content: full }]);
       setStreamText("");
     } catch {
       setIsOffline(true);
@@ -439,10 +588,10 @@ function AiLiveDemo({ accent }: { accent: string }) {
   };
 
   const handleLocalFallback = async (msgs: Message[], userText: string) => {
-    await new Promise(r => setTimeout(r, 500));
+    await new Promise((r) => setTimeout(r, 500));
     const localReply = getLocalResponse(userText);
     const replyMsg: Message = { role: "assistant", content: localReply, local: true, typing: true };
-    setMessages(prev => {
+    setMessages((prev) => {
       const next = [...prev, replyMsg];
       setTypingMsgIdx(next.length - 1);
       return next;
@@ -475,7 +624,7 @@ function AiLiveDemo({ accent }: { accent: string }) {
             </div>
           </div>
         </div>
-        <motion.button onClick={() => setIsDark(d => !d)} whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.92 }} style={{ width: 38, height: 22, borderRadius: 99, cursor: "pointer", background: isDark ? "rgba(255,255,255,0.12)" : "#e5e7eb", border: `1px solid ${isDark ? "rgba(255,255,255,0.18)" : "#d1d5db"}`, display: "flex", alignItems: "center", padding: "0 3px", position: "relative", transition: "all 0.3s" }}>
+        <motion.button onClick={() => setIsDark((d) => !d)} whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.92 }} style={{ width: 38, height: 22, borderRadius: 99, cursor: "pointer", background: isDark ? "rgba(255,255,255,0.12)" : "#e5e7eb", border: `1px solid ${isDark ? "rgba(255,255,255,0.18)" : "#d1d5db"}`, display: "flex", alignItems: "center", padding: "0 3px", position: "relative", transition: "all 0.3s" }}>
           <motion.div animate={{ x: isDark ? 0 : 16 }} transition={{ type: "spring", stiffness: 500, damping: 30 }} style={{ width: 16, height: 16, borderRadius: "50%", background: isDark ? "#1a1a2e" : "#fff", border: isDark ? "1px solid rgba(255,255,255,0.20)" : "1px solid #e5e7eb", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: isDark ? "none" : "0 1px 4px rgba(0,0,0,0.15)" }}>
             {isDark ? <Moon size={8} color="rgba(255,255,255,0.7)" /> : <Sun size={8} color="#f59e0b" />}
           </motion.div>
@@ -527,7 +676,7 @@ function AiLiveDemo({ accent }: { accent: string }) {
               <Sparkles size={11} color={isDark ? "rgba(255,255,255,0.72)" : "#555"} />
             </div>
             <div style={{ padding: "12px 16px", borderRadius: "4px 16px 16px 16px", background: aiBubble, border: `1px solid ${border}`, display: "flex", alignItems: "center", gap: 5 }}>
-              {[0, 1, 2].map(i => (
+              {[0, 1, 2].map((i) => (
                 <motion.div key={i} animate={{ opacity: [0.2, 0.9, 0.2], y: [0, -4, 0] }} transition={{ duration: 1.0, repeat: Infinity, delay: i * 0.18 }} style={{ width: 5, height: 5, borderRadius: "50%", background: isDark ? "rgba(255,255,255,0.5)" : "#aaa" }} />
               ))}
             </div>
@@ -536,7 +685,7 @@ function AiLiveDemo({ accent }: { accent: string }) {
       </div>
       <div style={{ padding: "12px 14px", flexShrink: 0, borderTop: `1px solid ${border}`, background: headerBg, transition: "background 0.35s, border-color 0.35s" }}>
         <motion.div animate={{ borderColor: isFocused ? (isDark ? "rgba(255,255,255,0.28)" : "rgba(0,0,0,0.3)") : border }} style={{ display: "flex", alignItems: "center", gap: 8, background: inputBg, border: `1px solid ${border}`, borderRadius: 14, padding: "9px 9px 9px 14px", transition: "background 0.35s" }}>
-          <input ref={inputRef} value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } }} onFocus={() => setIsFocused(true)} onBlur={() => setIsFocused(false)} placeholder="Ask me anything…" disabled={loading} style={{ flex: 1, background: "none", border: "none", outline: "none", fontSize: 12.5, color: textPrimary, fontFamily: "inherit", caretColor: isDark ? "rgba(255,255,255,0.7)" : "#111", transition: "color 0.35s" }} />
+          <input ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } }} onFocus={() => setIsFocused(true)} onBlur={() => setIsFocused(false)} placeholder="Ask me anything…" disabled={loading} style={{ flex: 1, background: "none", border: "none", outline: "none", fontSize: 12.5, color: textPrimary, fontFamily: "inherit", caretColor: isDark ? "rgba(255,255,255,0.7)" : "#111", transition: "color 0.35s" }} />
           <motion.button onClick={() => sendMessage()} disabled={!input.trim() || loading} whileHover={input.trim() && !loading ? { scale: 1.08 } : {}} whileTap={input.trim() && !loading ? { scale: 0.92 } : {}} style={{ width: 32, height: 32, borderRadius: 10, flexShrink: 0, background: input.trim() && !loading ? (isDark ? "rgba(255,255,255,0.16)" : "#111") : (isDark ? "rgba(255,255,255,0.04)" : "#e5e7eb"), border: `1px solid ${input.trim() && !loading ? (isDark ? "rgba(255,255,255,0.24)" : "transparent") : border}`, cursor: input.trim() && !loading ? "pointer" : "not-allowed", display: "flex", alignItems: "center", justifyContent: "center", color: input.trim() && !loading ? (isDark ? "rgba(255,255,255,0.88)" : "#fff") : textMuted, transition: "all 0.2s", padding: 0 }}>
             <Send size={13} />
           </motion.button>
@@ -560,6 +709,7 @@ export const SERVICE_DATA = [
       { icon: "✓", label: "SEO optimized" },
     ],
     accent: "#A8D4FF",
+    accentLight: "#2563EB",
     photos: [{ url: "/web1.png" }, { url: "/web2.png" }, { url: "/web3.png" }, { url: "/web4.png" }, { url: "/web5.png" }, { url: "/web6.png" }, { url: "/web7.png" }, { url: "/web8.png" }],
     aiDemo: false, webAppDemo: false,
   },
@@ -576,6 +726,7 @@ export const SERVICE_DATA = [
       { icon: "✓", label: "WCAG AA" },
     ],
     accent: "#D4AAFF",
+    accentLight: "#7C3AED",
     photos: [{ url: "/UX1.png" }, { url: "/UX2.png" }, { url: "/UX3.png" }, { url: "/UX4.png" }, { url: "/UX5.png" }, { url: "/UX6.png" }],
     aiDemo: false, webAppDemo: false,
   },
@@ -592,6 +743,7 @@ export const SERVICE_DATA = [
       { icon: "🚀", label: "Edge deployment" },
     ],
     accent: "#7DD3C8",
+    accentLight: "#0F766E",
     photos: [], aiDemo: false, webAppDemo: true,
   },
   {
@@ -607,43 +759,100 @@ export const SERVICE_DATA = [
       { icon: "◉", label: "n8n workflows" },
     ],
     accent: "#FFFFFF",
+    accentLight: "#111111",
     photos: [], aiDemo: true, webAppDemo: false,
   },
 ];
 
-function AnimatedBackground({ accent, rgb }: { accent: string; rgb: string }) {
+// ─── AnimatedBackground — ĐÃ BỎ PARTICLES ───────────────────────────────────
+function AnimatedBackground({ accent, rgb, theme = "dark" }: { accent: string; rgb: string; theme?: Theme }) {
+  const isDark = theme === "dark";
+
   const orbs = [
-    { w: 600, h: 600, x: "72%", y: "-15%", opacity: 0.13, dur: 18 },
-    { w: 450, h: 450, x: "-8%", y: "55%",  opacity: 0.08, dur: 22 },
-    { w: 320, h: 320, x: "45%", y: "60%",  opacity: 0.06, dur: 15 },
-    { w: 200, h: 200, x: "20%", y: "5%",   opacity: 0.05, dur: 26 },
+    { w: 600, h: 600, x: "72%", y: "-15%", opacity: isDark ? 0.13 : 0.08, dur: 18 },
+    { w: 450, h: 450, x: "-8%", y: "55%",  opacity: isDark ? 0.08 : 0.05, dur: 22 },
+    { w: 320, h: 320, x: "45%", y: "60%",  opacity: isDark ? 0.06 : 0.04, dur: 15 },
+    { w: 200, h: 200, x: "20%", y: "5%",   opacity: isDark ? 0.05 : 0.03, dur: 26 },
   ];
-  const particles = Array.from({ length: 22 }, (_, i) => ({
-    id: i, x: 5 + (i * 4.3) % 90, y: 10 + (i * 7.1) % 80,
-    size: 1 + (i % 3) * 0.8, delay: (i * 0.7) % 6, dur: 10 + (i % 5) * 3,
-  }));
+
   return (
     <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
-      <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse 80% 70% at 78% 38%, rgba(${rgb},0.14) 0%, transparent 60%), radial-gradient(ellipse 55% 45% at 15% 72%, rgba(${rgb},0.08) 0%, transparent 55%), radial-gradient(ellipse 40% 35% at 50% 8%, rgba(${rgb},0.06) 0%, transparent 50%)`, transition: "background 1s ease" }} />
+      {/* Radial gradients */}
+      <div style={{
+        position: "absolute", inset: 0,
+        background: isDark
+          ? `radial-gradient(ellipse 80% 70% at 78% 38%, rgba(${rgb},0.14) 0%, transparent 60%), radial-gradient(ellipse 55% 45% at 15% 72%, rgba(${rgb},0.08) 0%, transparent 55%), radial-gradient(ellipse 40% 35% at 50% 8%, rgba(${rgb},0.06) 0%, transparent 50%)`
+          : `radial-gradient(ellipse 80% 70% at 78% 38%, rgba(${rgb},0.10) 0%, transparent 60%), radial-gradient(ellipse 55% 45% at 15% 72%, rgba(${rgb},0.06) 0%, transparent 55%), radial-gradient(ellipse 40% 35% at 50% 8%, rgba(${rgb},0.04) 0%, transparent 50%)`,
+        transition: "background 0.6s ease",
+      }} />
+
+      {/* Floating orbs */}
       {orbs.map((orb, i) => (
-        <motion.div key={i} style={{ position: "absolute", width: orb.w, height: orb.h, left: orb.x, top: orb.y, borderRadius: "50%", background: `radial-gradient(ellipse, rgba(${rgb},${orb.opacity}) 0%, transparent 70%)`, filter: "blur(40px)" }} animate={{ scale: [1, 1.15, 1], x: [0, 20, 0], y: [0, -15, 0] }} transition={{ duration: orb.dur, repeat: Infinity, ease: "easeInOut", delay: i * 1.5 }} />
+        <motion.div
+          key={i}
+          style={{
+            position: "absolute", width: orb.w, height: orb.h,
+            left: orb.x, top: orb.y, borderRadius: "50%",
+            background: `radial-gradient(ellipse, rgba(${rgb},${orb.opacity}) 0%, transparent 70%)`,
+            filter: "blur(40px)",
+          }}
+          animate={{ scale: [1, 1.15, 1], x: [0, 20, 0], y: [0, -15, 0] }}
+          transition={{ duration: orb.dur, repeat: Infinity, ease: "easeInOut", delay: i * 1.5 }}
+        />
       ))}
-      <div style={{ position: "absolute", inset: 0, backgroundImage: `linear-gradient(rgba(${rgb},0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(${rgb},0.04) 1px, transparent 1px)`, backgroundSize: "80px 80px", maskImage: "radial-gradient(ellipse 85% 85% at 50% 50%, black 30%, transparent 100%)", WebkitMaskImage: "radial-gradient(ellipse 85% 85% at 50% 50%, black 30%, transparent 100%)" }} />
-      <div style={{ position: "absolute", top: "-30%", right: "26%", width: 1.5, height: "160%", background: `linear-gradient(180deg, transparent, rgba(${rgb},0.20) 35%, rgba(${rgb},0.12) 65%, transparent)`, transform: "rotate(16deg)" }} />
-      <div style={{ position: "absolute", inset: 0, backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,255,255,0.007) 3px, rgba(255,255,255,0.007) 4px)" }} />
-      <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 100% 100% at 50% 50%, transparent 35%, rgba(0,0,0,0.65) 100%)" }} />
-      {particles.map(p => (
-        <motion.div key={p.id} style={{ position: "absolute", left: `${p.x}%`, top: `${p.y}%`, width: p.size, height: p.size, borderRadius: "50%", background: accent, boxShadow: `0 0 ${p.size * 5}px ${accent}`, opacity: 0 }} animate={{ opacity: [0, 0.55, 0], y: [0, -40, -80] }} transition={{ duration: p.dur, delay: p.delay, repeat: Infinity, ease: "easeInOut" }} />
-      ))}
-      <div style={{ position: "absolute", bottom: 0, left: "15%", right: "15%", height: 1, background: `linear-gradient(90deg, transparent, rgba(${rgb},0.30), transparent)`, boxShadow: `0 0 30px rgba(${rgb},0.20)` }} />
+
+      {/* Grid */}
+      <div style={{
+        position: "absolute", inset: 0,
+        backgroundImage: `linear-gradient(rgba(${rgb},${isDark ? "0.04" : "0.03"}) 1px, transparent 1px), linear-gradient(90deg, rgba(${rgb},${isDark ? "0.04" : "0.03"}) 1px, transparent 1px)`,
+        backgroundSize: "80px 80px",
+        maskImage: "radial-gradient(ellipse 85% 85% at 50% 50%, black 30%, transparent 100%)",
+        WebkitMaskImage: "radial-gradient(ellipse 85% 85% at 50% 50%, black 30%, transparent 100%)",
+      }} />
+
+      {/* Diagonal line */}
+      <div style={{
+        position: "absolute", top: "-30%", right: "26%",
+        width: 1.5, height: "160%",
+        background: `linear-gradient(180deg, transparent, rgba(${rgb},${isDark ? "0.20" : "0.12"}) 35%, rgba(${rgb},${isDark ? "0.12" : "0.07"}) 65%, transparent)`,
+        transform: "rotate(16deg)",
+      }} />
+
+      {/* Scanlines — dark only */}
+      {isDark && (
+        <div style={{
+          position: "absolute", inset: 0,
+          backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,255,255,0.007) 3px, rgba(255,255,255,0.007) 4px)",
+        }} />
+      )}
+
+      {/* Vignette */}
+      <div style={{
+        position: "absolute", inset: 0,
+        background: isDark
+          ? "radial-gradient(ellipse 100% 100% at 50% 50%, transparent 35%, rgba(0,0,0,0.65) 100%)"
+          : "radial-gradient(ellipse 100% 100% at 50% 50%, transparent 35%, rgba(255,255,255,0.50) 100%)",
+      }} />
+
+      {/* Bottom accent line */}
+      <div style={{
+        position: "absolute", bottom: 0, left: "15%", right: "15%", height: 1,
+        background: `linear-gradient(90deg, transparent, rgba(${rgb},0.30), transparent)`,
+        boxShadow: `0 0 30px rgba(${rgb},0.20)`,
+      }} />
+
+      {/* ← REMOVED: particles / ngôi sao chấm li ti */}
     </div>
   );
 }
 
-export function ServiceSlide({ svcIndex }: { svcIndex: number }) {
+// ─── ServiceSlide — nhận theme prop ─────────────────────────────────────────
+export function ServiceSlide({ svcIndex, theme = "dark" }: { svcIndex: number; theme?: Theme }) {
   const svc = SERVICE_DATA[svcIndex];
   const Icon = svc.icon;
-  const rgb = hexRgb(svc.accent);
+  const isDark = theme === "dark";
+  const accentColor = isDark ? svc.accent : svc.accentLight;
+  const rgb = hexRgb(accentColor);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -655,14 +864,35 @@ export function ServiceSlide({ svcIndex }: { svcIndex: number }) {
 
   const mobileDemoHeight = svc.webAppDemo ? 580 : 520;
 
+  // ── Light mode background & text tokens ──
+  const sectionBg = isDark ? "#000000" : "#ffffff";
+  const headingColor = isDark ? "#ffffff" : "#0a0a0a";
+  const headingShadow = isDark ? `0 0 60px rgba(${rgb},0.20)` : `0 2px 8px rgba(0,0,0,0.06)`;
+  const labelOpacity = isDark ? 0.68 : 0.75;
+  const descColor = isDark ? "rgba(255,255,255,0.65)" : "rgba(10,10,10,0.60)";
+  const featureBg = isDark ? "rgba(255,255,255,0.022)" : "rgba(0,0,0,0.025)";
+  const featureBorder = isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.07)";
+  const featureText = isDark ? "rgba(255,255,255,0.76)" : "rgba(10,10,10,0.70)";
+  const edgeLineTop = isDark ? `rgba(${rgb},0.22)` : `rgba(${rgb},0.18)`;
+  const edgeLineBottom = isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)";
+  const iconBg = isDark ? `rgba(${rgb},0.10)` : `rgba(${rgb},0.12)`;
+  const iconBorder = isDark ? `rgba(${rgb},0.28)` : `rgba(${rgb},0.35)`;
+  const iconGlow = isDark ? `rgba(${rgb},0.18)` : `rgba(${rgb},0.14)`;
+  const iconInset = isDark ? "rgba(255,255,255,0.14)" : "rgba(255,255,255,0.80)";
+  const ruleGradient = isDark
+    ? `linear-gradient(90deg,${accentColor},${accentColor}30)`
+    : `linear-gradient(90deg,${accentColor},${accentColor}50)`;
+  const ruleShadow = isDark ? `0 0 12px ${accentColor}55` : `0 0 10px ${accentColor}40`;
+
   return (
     <div style={{
       position: "relative", width: "100%",
       minHeight: "100vh",
       display: "flex", alignItems: isMobile ? "flex-start" : "center",
-      background: "#000000", overflow: "hidden",
+      background: sectionBg, overflow: "hidden",
+      transition: "background 0.4s ease",
     }}>
-      <AnimatedBackground accent={svc.accent} rgb={rgb} />
+      <AnimatedBackground accent={accentColor} rgb={rgb} theme={theme} />
 
       <div style={{
         position: "relative", zIndex: 10,
@@ -677,18 +907,18 @@ export function ServiceSlide({ svcIndex }: { svcIndex: number }) {
 
         {/* LEFT */}
         <motion.div
-          key={`l-${svcIndex}`}
+          key={`l-${svcIndex}-${theme}`}
           initial={{ opacity: 0, x: isMobile ? 0 : -28, y: isMobile ? 20 : 0 }}
           animate={{ opacity: 1, x: 0, y: 0 }}
           transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-            <div style={{ width: 36, height: 36, borderRadius: 12, background: `rgba(${rgb},0.10)`, border: `1px solid rgba(${rgb},0.28)`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 20px rgba(${rgb},0.18), inset 0 1px 0 rgba(255,255,255,0.14)` }}>
-              <Icon size={17} color={svc.accent} strokeWidth={1.7} />
+            <div style={{ width: 36, height: 36, borderRadius: 12, background: iconBg, border: `1px solid ${iconBorder}`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 20px ${iconGlow}, inset 0 1px 0 ${iconInset}` }}>
+              <Icon size={17} color={accentColor} strokeWidth={1.7} />
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <div style={{ width: 22, height: 1, background: svc.accent, opacity: 0.4 }} />
-              <span style={{ fontSize: 9.5, fontFamily: "monospace", letterSpacing: "0.28em", color: svc.accent, textTransform: "uppercase", opacity: 0.68 }}>Our Services</span>
+              <div style={{ width: 22, height: 1, background: accentColor, opacity: 0.4 }} />
+              <span style={{ fontSize: 9.5, fontFamily: "monospace", letterSpacing: "0.28em", color: accentColor, textTransform: "uppercase", opacity: labelOpacity }}>Our Services</span>
             </div>
           </div>
 
@@ -696,16 +926,30 @@ export function ServiceSlide({ svcIndex }: { svcIndex: number }) {
             fontFamily: "'Georgia','Times New Roman',serif",
             fontSize: isMobile ? "clamp(2rem,8vw,2.8rem)" : "clamp(2.6rem,3.7vw,4.4rem)",
             fontWeight: 900, lineHeight: 0.96,
-            letterSpacing: "-0.040em", color: "#ffffff",
+            letterSpacing: "-0.040em",
+            color: headingColor,
             margin: "0 0 20px", whiteSpace: "pre-line",
-            textShadow: `0 0 60px rgba(${rgb},0.20)`,
+            textShadow: headingShadow,
+            transition: "color 0.4s ease, text-shadow 0.4s ease",
           }}>
             {svc.title}
           </h2>
 
-          <motion.div key={`rule-${svcIndex}`} initial={{ width: 0 }} animate={{ width: 52 }} transition={{ duration: 0.5, delay: 0.2 }} style={{ height: 2.5, borderRadius: 99, background: `linear-gradient(90deg,${svc.accent},${svc.accent}30)`, marginBottom: 20, boxShadow: `0 0 12px ${svc.accent}55` }} />
+          <motion.div
+            key={`rule-${svcIndex}-${theme}`}
+            initial={{ width: 0 }}
+            animate={{ width: 52 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            style={{ height: 2.5, borderRadius: 99, background: ruleGradient, marginBottom: 20, boxShadow: ruleShadow }}
+          />
 
-          <p style={{ fontSize: isMobile ? 14 : 15, lineHeight: 1.88, color: "rgba(255,255,255,0.65)", margin: "0 0 24px", maxWidth: isMobile ? "100%" : 400, fontWeight: 400, letterSpacing: "0.005em" }}>
+          <p style={{
+            fontSize: isMobile ? 14 : 15, lineHeight: 1.88,
+            color: descColor,
+            margin: "0 0 24px", maxWidth: isMobile ? "100%" : 400,
+            fontWeight: 400, letterSpacing: "0.005em",
+            transition: "color 0.4s ease",
+          }}>
             {svc.desc}
           </p>
 
@@ -716,36 +960,37 @@ export function ServiceSlide({ svcIndex }: { svcIndex: number }) {
             maxWidth: isMobile ? "100%" : 400,
           }}>
             {svc.features.map((f, idx) => (
-              <motion.div key={f.label} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.2 + idx * 0.055 }}
-                style={{ display: "flex", alignItems: "center", gap: 9, padding: isMobile ? "8px 10px" : "9px 12px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.022)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}>
+              <motion.div
+                key={f.label}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.2 + idx * 0.055 }}
+                style={{ display: "flex", alignItems: "center", gap: 9, padding: isMobile ? "8px 10px" : "9px 12px", borderRadius: 10, border: `1px solid ${featureBorder}`, background: featureBg, backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}
+              >
                 <span style={{ fontSize: 12, opacity: 0.78, flexShrink: 0 }}>{f.icon}</span>
-                <span style={{ fontSize: isMobile ? 11 : 12, fontWeight: 500, color: "rgba(255,255,255,0.76)", letterSpacing: "-0.01em", lineHeight: 1.3 }}>{f.label}</span>
+                <span style={{ fontSize: isMobile ? 11 : 12, fontWeight: 500, color: featureText, letterSpacing: "-0.01em", lineHeight: 1.3, transition: "color 0.4s ease" }}>{f.label}</span>
               </motion.div>
             ))}
           </div>
 
-          <GlassCTA accent={svc.accent} label="Start a project" />
+          <GlassCTA accent={accentColor} label="Start a project" theme={theme} />
         </motion.div>
 
         {/* RIGHT */}
         <motion.div
-          key={`r-${svcIndex}`}
+          key={`r-${svcIndex}-${theme}`}
           initial={{ opacity: 0, x: isMobile ? 0 : 32, y: isMobile ? 20 : 0, scale: 0.97 }}
           animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
           transition={{ duration: 0.65, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
-          style={{
-            height: isMobile ? mobileDemoHeight : 520,
-            width: "100%",
-            position: "relative",
-          }}
+          style={{ height: isMobile ? mobileDemoHeight : 520, width: "100%", position: "relative" }}
         >
-          <div style={{ position: "absolute", inset: -30, background: `radial-gradient(ellipse at 50% 45%, rgba(${rgb},0.16) 0%, transparent 62%)`, borderRadius: 40, pointerEvents: "none" }} />
+          <div style={{ position: "absolute", inset: -30, background: `radial-gradient(ellipse at 50% 45%, rgba(${rgb},${isDark ? "0.16" : "0.10"}) 0%, transparent 62%)`, borderRadius: 40, pointerEvents: "none" }} />
           <div style={{ position: "relative", height: "100%", width: "100%" }}>
             {svc.aiDemo
-              ? <AiLiveDemo accent={svc.accent} />
+              ? <AiLiveDemo accent={accentColor} theme={theme} />
               : svc.webAppDemo
-                ? <FinanceAppDemo accent={svc.accent} />
-                : <PhotoGallery accent={svc.accent} photos={svc.photos} />
+                ? <FinanceAppDemo accent={accentColor} />
+                : <PhotoGallery accent={accentColor} photos={svc.photos} theme={theme} />
             }
           </div>
         </motion.div>
@@ -753,15 +998,16 @@ export function ServiceSlide({ svcIndex }: { svcIndex: number }) {
       </div>
 
       {/* Edge lines */}
-      <div style={{ position: "absolute", top: 0, left: "4%", right: "4%", height: 1, background: `linear-gradient(90deg,transparent,rgba(${rgb},0.22),transparent)` }} />
-      <div style={{ position: "absolute", bottom: 0, left: "4%", right: "4%", height: 1, background: "linear-gradient(90deg,transparent,rgba(255,255,255,0.06),transparent)" }} />
+      <div style={{ position: "absolute", top: 0, left: "4%", right: "4%", height: 1, background: `linear-gradient(90deg,transparent,${edgeLineTop},transparent)` }} />
+      <div style={{ position: "absolute", bottom: 0, left: "4%", right: "4%", height: 1, background: `linear-gradient(90deg,transparent,${edgeLineBottom},transparent)` }} />
 
       {/* Nav dots */}
       <div style={{ position: "absolute", bottom: 20, left: "50%", transform: "translateX(-50%)", display: "flex", alignItems: "center", gap: 6, zIndex: 20 }}>
         {SERVICE_DATA.map((s, i) => {
-          const r2 = hexRgb(s.accent);
+          const dotAccent = isDark ? s.accent : s.accentLight;
+          const r2 = hexRgb(dotAccent);
           return (
-            <div key={i} style={{ width: i === svcIndex ? 24 : 7, height: 7, borderRadius: 99, background: i === svcIndex ? s.accent : "rgba(255,255,255,0.12)", transition: "all 0.35s cubic-bezier(0.16,1,0.3,1)", boxShadow: i === svcIndex ? `0 0 12px rgba(${r2},0.75)` : "none" }} />
+            <div key={i} style={{ width: i === svcIndex ? 24 : 7, height: 7, borderRadius: 99, background: i === svcIndex ? dotAccent : (isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.12)"), transition: "all 0.35s cubic-bezier(0.16,1,0.3,1)", boxShadow: i === svcIndex ? `0 0 12px rgba(${r2},0.75)` : "none" }} />
           );
         })}
       </div>
