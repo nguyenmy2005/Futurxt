@@ -56,6 +56,14 @@ export function SnapContainer({ children, showDots = true }: SnapContainerProps)
   const [totalSlides, setTotalSlides] = useState(0);
   const isAnimating = useRef(false);
   const currentIndex = useRef(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 1024);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -119,12 +127,12 @@ export function SnapContainer({ children, showDots = true }: SnapContainerProps)
           }
         });
       },
-      { root: el, threshold: 0.5 }
+      { root: isMobile ? null : el, threshold: 0.5 }
     );
 
     slides.forEach((s) => observer.observe(s));
     return () => observer.disconnect();
-  }, [children]);
+  }, [children, isMobile]);
 
   // Wheel — desktop only
   useEffect(() => {
@@ -172,7 +180,7 @@ export function SnapContainer({ children, showDots = true }: SnapContainerProps)
     return () => el.removeEventListener("wheel", onWheel);
   }, [goTo, totalSlides]);
 
-  // Keyboard
+  // Keyboard — desktop only
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (window.innerWidth < 1024) return;
@@ -190,7 +198,7 @@ export function SnapContainer({ children, showDots = true }: SnapContainerProps)
     return () => window.removeEventListener("keydown", onKey);
   }, [goTo, totalSlides]);
 
-  // Touch
+  // Touch — mobile scroll tự do, desktop snap
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -201,6 +209,7 @@ export function SnapContainer({ children, showDots = true }: SnapContainerProps)
     };
 
     const onTouchEnd = (e: TouchEvent) => {
+      // Mobile: không can thiệp, scroll tự nhiên
       if (window.innerWidth < 1024) return;
       if (isAnimating.current) return;
 
@@ -217,7 +226,6 @@ export function SnapContainer({ children, showDots = true }: SnapContainerProps)
         const scrollTop = el.scrollTop;
         const atBottom = scrollTop + el.clientHeight >= slideTop + slideHeight - 10;
         const atTop = scrollTop <= slideTop + 10;
-
         if (dy > 0 && !atBottom) return;
         if (dy < 0 && !atTop) return;
       }
@@ -235,6 +243,18 @@ export function SnapContainer({ children, showDots = true }: SnapContainerProps)
     };
   }, [goTo, totalSlides]);
 
+  // Mobile: scroll body thay vì fixed div
+  if (isMobile) {
+    return (
+      <SnapContext.Provider value={{ activeIndex, totalSlides, goTo }}>
+        <div ref={containerRef} style={{ width: "100%", height: "auto" }}>
+          {children}
+        </div>
+      </SnapContext.Provider>
+    );
+  }
+
+  // Desktop: fixed container như cũ
   return (
     <SnapContext.Provider value={{ activeIndex, totalSlides, goTo }}>
       <div
@@ -252,7 +272,7 @@ export function SnapContainer({ children, showDots = true }: SnapContainerProps)
         {children}
       </div>
 
-      {/* DotNav chỉ hiện trên desktop */}
+      
     </SnapContext.Provider>
   );
 }
@@ -332,6 +352,20 @@ interface SlideTransitionProps {
 
 export function SlideTransition({ slideIndex, children, direction = "up" }: SlideTransitionProps) {
   const { activeIndex } = useSnapContext();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 1024);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  // Mobile: render thẳng không cần animation theo activeIndex
+  if (isMobile) {
+    return <div style={{ width: "100%", height: "100%" }}>{children}</div>;
+  }
+
   const isActive = activeIndex === slideIndex;
 
   const variants = {

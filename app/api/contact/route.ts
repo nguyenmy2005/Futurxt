@@ -22,8 +22,6 @@ export async function POST(req: NextRequest) {
     }
 
     // ── 1. Lưu vào Supabase ──
-
-    // ── 1. Lưu vào Supabase ──
     const supabase = createSupabaseAdminClient();
     const { error: dbError } = await supabase.from("contacts").insert([
       { name, email, phone, company, service, budget, timeline, referral, message },

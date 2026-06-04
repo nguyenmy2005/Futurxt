@@ -118,3 +118,15 @@
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: oklch(0.3 0.008 260); }
 
+/* Mobile: scroll tự nhiên từ trên xuống */
+@media (max-width: 1023px) {
+  body {
+    overflow-y: auto !important;
+  }
+
+  [data-snap-slide] {
+    height: auto !important;
+    min-height: 100svh;
+    overflow: visible !important;
+  }
+}
