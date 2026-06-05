@@ -3,9 +3,8 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
+import { useTheme } from "next-themes";
 import { MessageSquare, Pencil, Code2, Rocket } from "lucide-react";
-
-type Theme = "dark" | "light";
 
 const steps = [
   {
@@ -42,15 +41,13 @@ const steps = [
   },
 ];
 
-interface HowWeWorkSectionProps {
-  theme?: Theme;
-}
+export function HowWeWorkSection() {
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
 
-export function HowWeWorkSection({ theme = "dark" }: HowWeWorkSectionProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const [isMobile, setIsMobile] = useState(false);
-  const isDark = theme === "dark";
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 1024);

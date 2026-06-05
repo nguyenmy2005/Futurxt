@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
+import { useTheme } from "next-themes";
 
 const chapters = [
   {
@@ -59,8 +60,6 @@ The companies that will define the next decade aren't waiting for the future. Th
   },
 ];
 
-type Theme = "dark" | "light";
-
 interface TagStyle {
   dot: string;
   text: string;
@@ -91,16 +90,14 @@ function parseContent(text: string, isDark: boolean) {
   );
 }
 
-interface VisionSectionProps {
-  theme?: Theme;
-}
+export function VisionSection() {
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
 
-export function VisionSection({ theme = "dark" }: VisionSectionProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
   const [active, setActive] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
-  const isDark = theme === "dark";
 
   const tagStyles = isDark ? darkTagStyles : lightTagStyles;
   const current = chapters[active];
@@ -156,44 +153,37 @@ export function VisionSection({ theme = "dark" }: VisionSectionProps) {
 
   return (
     <section
-  id="vision"
-  className="relative overflow-hidden flex flex-col items-center justify-center py-10"
-  style={{
-    background: sectionBg,
-    transition: "background 0.4s ease",
-    position: "relative",
-    zIndex: 10,
-    isolation: "isolate",
-    minHeight: "100vh",        // ← thêm dòng này
-    paddingBottom: "5rem",     // ← thêm dòng này
-  }}
->
+      id="vision"
+      className="relative overflow-hidden flex flex-col items-center justify-center py-10"
+      style={{
+        background: sectionBg,
+        transition: "background 0.4s ease",
+        position: "relative",
+        zIndex: 10,
+        isolation: "isolate",
+        minHeight: "100vh",
+        paddingBottom: "5rem",
+      }}
+    >
       {/* Background glows */}
       <div className="absolute inset-0 pointer-events-none">
         <div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[700px] rounded-full"
           style={{
-            background: isDark
-              ? "rgba(139,92,246,0.07)"
-              : "rgba(139,92,246,0.04)",
+            background: isDark ? "rgba(139,92,246,0.07)" : "rgba(139,92,246,0.04)",
             filter: "blur(180px)",
           }}
         />
         <div
           className="absolute bottom-0 right-0 w-[500px] h-[400px] rounded-full"
           style={{
-            background: isDark
-              ? "rgba(34,211,238,0.05)"
-              : "rgba(14,165,233,0.04)",
+            background: isDark ? "rgba(34,211,238,0.05)" : "rgba(14,165,233,0.04)",
             filter: "blur(120px)",
           }}
         />
       </div>
 
-      <div
-        ref={ref}
-        className="relative z-10 w-full max-w-5xl mx-auto px-6 flex flex-col items-center gap-6"
-      >
+      <div ref={ref} className="relative z-10 w-full max-w-5xl mx-auto px-6 flex flex-col items-center gap-6">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -283,9 +273,7 @@ export function VisionSection({ theme = "dark" }: VisionSectionProps) {
                       onClick={() => setActive(i)}
                       className="relative flex flex-col items-center gap-1 px-4 py-3 shrink-0 transition-all duration-200"
                       style={{
-                        background: isActive
-                          ? isDark ? "rgba(255,255,255,0.055)" : "#ffffff"
-                          : "transparent",
+                        background: isActive ? (isDark ? "rgba(255,255,255,0.055)" : "#ffffff") : "transparent",
                         borderBottom: `2px solid ${isActive ? s.accent : "transparent"}`,
                         minWidth: 80,
                       }}
@@ -417,16 +405,10 @@ export function VisionSection({ theme = "dark" }: VisionSectionProps) {
                           style={{ background: isActive ? s.accent : inactiveDot }}
                         />
                         <div className="relative flex-1 min-w-0">
-                          <p
-                            className="text-[10px] font-mono mb-0.5"
-                            style={{ color: isActive ? s.accent : sidebarLabel }}
-                          >
+                          <p className="text-[10px] font-mono mb-0.5" style={{ color: isActive ? s.accent : sidebarLabel }}>
                             {ch.id}
                           </p>
-                          <p
-                            className="text-xs font-semibold truncate"
-                            style={{ color: isActive ? headingColor : inactiveTabText }}
-                          >
+                          <p className="text-xs font-semibold truncate" style={{ color: isActive ? headingColor : inactiveTabText }}>
                             {ch.tag}
                           </p>
                         </div>
@@ -484,10 +466,7 @@ export function VisionSection({ theme = "dark" }: VisionSectionProps) {
                         {current.tag}
                       </span>
                     </div>
-                    <h3
-                      className="text-xl md:text-2xl font-bold leading-snug tracking-tight mb-4"
-                      style={{ color: headingColor }}
-                    >
+                    <h3 className="text-xl md:text-2xl font-bold leading-snug tracking-tight mb-4" style={{ color: headingColor }}>
                       {current.title}
                     </h3>
                     <div className="h-[1px] mb-5" style={{ background: inlineDivider }} />

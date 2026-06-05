@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
+import { useTheme } from "next-themes";
 
 const NAV_ITEMS = [
   { name: "About",       href: "#about"        },
@@ -14,9 +15,10 @@ const NAV_ITEMS = [
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("");
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
 
   useEffect(() => {
-    // Lắng nghe scroll từ snap-container thay vì window
     const container = document.querySelector(".snap-container") as HTMLElement;
     if (!container) return;
     const onScroll = () => setScrolled(container.scrollTop > 40);
@@ -46,6 +48,15 @@ export function Navbar() {
     el?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // ── Tokens ──
+  const bgScrolled    = isDark ? "rgba(4,4,10,0.85)"        : "rgba(255,255,255,0.85)";
+  const borderScrolled= isDark ? "rgba(255,255,255,0.06)"   : "rgba(0,0,0,0.08)";
+  const navActive     = isDark ? "rgba(255,255,255,0.95)"   : "rgba(0,0,0,0.90)";
+  const navInactive   = isDark ? "rgba(255,255,255,0.45)"   : "rgba(0,0,0,0.40)";
+  const navActiveBg   = isDark ? "rgba(255,255,255,0.06)"   : "rgba(0,0,0,0.06)";
+  const ctaBg         = isDark ? "rgba(255,255,255,0.92)"   : "rgba(0,0,0,0.90)";
+  const ctaColor      = isDark ? "#000"                     : "#fff";
+
   return (
     <motion.header
       initial={{ opacity: 0, y: -20 }}
@@ -53,9 +64,11 @@ export function Navbar() {
       transition={{ duration: 0.8, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
       className="fixed top-0 left-0 right-0 z-50 transition-all duration-500"
       style={{
-        background: scrolled ? "rgba(4,4,10,0.85)" : "transparent",
+        background: scrolled ? bgScrolled : "transparent",
         backdropFilter: scrolled ? "blur(20px)" : "none",
-        borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "1px solid transparent",
+        borderBottom: scrolled
+          ? `1px solid ${borderScrolled}`
+          : "1px solid transparent",
       }}
     >
       <div className="max-w-7xl mx-auto px-8 h-16 flex items-center justify-between">
@@ -66,7 +79,11 @@ export function Navbar() {
           }}
           className="flex items-center gap-2 group"
         >
-          <img src="/Futurax.X.png" alt="Futurax" className="h-8 w-auto" />
+          <img
+            src={isDark ? "/Futurax.X.png" : "/Futurax.XX.png"}
+            alt="Futurax"
+            className="h-8 w-auto"
+          />
         </button>
 
         <nav className="hidden md:flex items-center gap-1">
@@ -79,14 +96,14 @@ export function Navbar() {
                 onClick={() => scrollTo(item.href)}
                 className="relative px-4 py-2 text-[13px] font-medium transition-colors duration-200"
                 style={{
-                  color: isActive ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.45)",
+                  color: isActive ? navActive : navInactive,
                 }}
               >
                 {isActive && (
                   <motion.span
                     layoutId="navActive"
                     className="absolute inset-0 rounded-lg"
-                    style={{ background: "rgba(255,255,255,0.06)" }}
+                    style={{ background: navActiveBg }}
                     transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
                   />
                 )}
@@ -102,8 +119,8 @@ export function Navbar() {
           whileTap={{ scale: 0.97 }}
           className="hidden md:flex items-center gap-2 px-5 py-2 rounded-lg text-[13px] font-semibold"
           style={{
-            background: "rgba(255,255,255,0.92)",
-            color: "#000",
+            background: ctaBg,
+            color: ctaColor,
           }}
         >
           Start a Project

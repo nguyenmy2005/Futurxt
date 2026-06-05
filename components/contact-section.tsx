@@ -3,9 +3,8 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
+import { useTheme } from "next-themes";
 import { Mail, Phone, MapPin, Send, Clock, CheckCircle2, ArrowUpRight, Linkedin } from "lucide-react";
-
-type Theme = "dark" | "light";
 
 const contactInfo = [
   { icon: Mail,     label: "Email",            value: "hellofuturxt@gmail.com",       href: "mailto:hellofuturxt@gmail.com",       color: { dark: "#A8D4FF", light: "#1D4ED8" } },
@@ -39,14 +38,12 @@ const countryCodes = [
   { code: "+974", name: "Qatar" },{ code: "+977", name: "Nepal" },{ code: "+998", name: "Uzbekistan" },
 ];
 
-interface ContactSectionProps {
-  theme?: Theme;
-}
+export function ContactSection() {
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
 
-export function ContactSection({ theme = "dark" }: ContactSectionProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
-  const isDark = theme === "dark";
 
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);

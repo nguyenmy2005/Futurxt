@@ -2,9 +2,8 @@
 
 import { motion } from "framer-motion";
 import { useRef } from "react";
+import { useTheme } from "next-themes";
 import { Globe, Brain, Server, Pen, MoveUpRight } from "lucide-react";
-
-type Theme = "dark" | "light";
 
 const capabilities = [
   {
@@ -49,13 +48,10 @@ const capabilities = [
   },
 ];
 
-interface TeamSectionProps {
-  theme?: Theme;
-}
-
-export function TeamSection({ theme = "dark" }: TeamSectionProps) {
+export function TeamSection() {
   const sectionRef = useRef<HTMLElement>(null);
-  const isDark = theme === "dark";
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
 
   // ── Theme tokens ──
   const bg              = isDark ? "#000000" : "#ffffff";
@@ -422,7 +418,7 @@ export function TeamSection({ theme = "dark" }: TeamSectionProps) {
           </motion.div>
         </div>
 
-        {/* Keep Scrolling — chỉ text, không có mũi tên */}
+        {/* Keep Scrolling */}
         <div className="flex justify-center mt-4">
           <motion.button
             onClick={() => document.getElementById("service-0")?.scrollIntoView({ behavior: "smooth" })}

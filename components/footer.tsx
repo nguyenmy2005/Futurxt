@@ -1,11 +1,10 @@
 ﻿"use client";
 
 import { useEffect } from "react";
+import { useTheme } from "next-themes";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Github, Twitter, Linkedin, Mail, Phone, MapPin } from "lucide-react";
-
-type Theme = "dark" | "light";
 
 const footerLinks = {
   company: [
@@ -50,12 +49,9 @@ const MOBILE_CSS = `
   }
 `;
 
-interface FooterProps {
-  theme?: Theme;
-}
-
-export function Footer({ theme = "dark" }: FooterProps) {
-  const isDark = theme === "dark";
+export function Footer() {
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
 
   useEffect(() => {
     const styleId = "footer-mobile-css";
@@ -97,7 +93,6 @@ export function Footer({ theme = "dark" }: FooterProps) {
       paddingTop: 96,
       paddingBottom: 48,
       overflow: "hidden",
-      // ── KEY FIX: solid bg che starfield ──
       background: bg,
       zIndex: 10,
       isolation: "isolate",
@@ -131,11 +126,11 @@ export function Footer({ theme = "dark" }: FooterProps) {
           >
             <Link href="/" style={{ display: "inline-flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
               <img
-  className="footer-logo"
-  src={isDark ? "/Futurax.X.png" : "/Futurax.XX.png"}
-  alt="Futurxt Logo"
-  style={{ height: 150, width: "auto" }}
-/>
+                className="footer-logo"
+                src={isDark ? "/Futurax.X.png" : "/Futurax.XX.png"}
+                alt="Futurxt Logo"
+                style={{ height: 150, width: "auto" }}
+              />
             </Link>
             <p className="footer-desc" style={{
               color: descColor, fontSize: 14, lineHeight: 1.7,

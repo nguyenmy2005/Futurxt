@@ -2,18 +2,18 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
+import { useTheme } from "next-themes";
 import { Globe, Pen, Server, Brain, ChevronLeft, ChevronRight, Send, Sparkles, Bot, Sun, Moon } from "lucide-react";
-
-type Theme = "dark" | "light";
 
 function hexRgb(h: string) {
   const r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(h);
   return r ? `${parseInt(r[1], 16)},${parseInt(r[2], 16)},${parseInt(r[3], 16)}` : "168,212,255";
 }
 
-function GlassCTA({ accent, label = "Start a project", theme = "dark" }: { accent: string; label?: string; theme?: Theme }) {
+function GlassCTA({ accent, label = "Start a project" }: { accent: string; label?: string }) {
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
   const rgb = hexRgb(accent);
-  const isDark = theme === "dark";
   const bg = isDark
     ? `linear-gradient(145deg, rgba(${rgb},0.22) 0%, rgba(${rgb},0.10) 40%, rgba(255,255,255,0.05) 100%)`
     : `linear-gradient(145deg, rgba(${rgb},0.18) 0%, rgba(${rgb},0.08) 40%, rgba(255,255,255,0.60) 100%)`;
@@ -45,8 +45,7 @@ function SmartImage({ src, alt = "" }: { src: string; alt?: string }) {
   );
 }
 
-// ─── PhotoGallery — nền luôn đen, swipe mobile ───────────────────────────────
-function PhotoGallery({ accent, photos, theme = "dark" }: { accent: string; photos: { url: string }[]; theme?: Theme }) {
+function PhotoGallery({ accent, photos }: { accent: string; photos: { url: string }[] }) {
   const [current, setCurrent] = useState(0);
   const rgb = hexRgb(accent);
   const touchStartX = useRef<number | null>(null);
@@ -56,9 +55,7 @@ function PhotoGallery({ accent, photos, theme = "dark" }: { accent: string; phot
   const prev = () => setCurrent((c) => (c - 1 + photos.length) % photos.length);
   const next = () => setCurrent((c) => (c + 1) % photos.length);
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-  };
+  const handleTouchStart = (e: React.TouchEvent) => { touchStartX.current = e.touches[0].clientX; };
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (touchStartX.current === null) return;
     const diff = touchStartX.current - e.changedTouches[0].clientX;
@@ -66,7 +63,6 @@ function PhotoGallery({ accent, photos, theme = "dark" }: { accent: string; phot
     touchStartX.current = null;
   };
 
-  // Luôn dùng nền đen để hình nổi bật — bất kể dark/light mode
   const frameBg = "#080812";
   const frameBorder = "rgba(255,255,255,0.09)";
   const frameInset = "rgba(255,255,255,0.11)";
@@ -85,7 +81,6 @@ function PhotoGallery({ accent, photos, theme = "dark" }: { accent: string; phot
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
-        {/* Title bar */}
         <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", flexShrink: 0, background: headerBg, borderBottom: `1px solid ${headerBorder}`, zIndex: 2 }}>
           <div style={{ display: "flex", gap: 6 }}>
             {[["#ff5f56", "#ff3b30"], ["#ffbd2e", "#ff9500"], ["#28c840", "#34c759"]].map(([bg2, glow], i) => (
@@ -98,8 +93,6 @@ function PhotoGallery({ accent, photos, theme = "dark" }: { accent: string; phot
             </span>
           </div>
         </div>
-
-        {/* Slides */}
         <div style={{ flex: 1, position: "relative", overflow: "hidden", minHeight: 0 }}>
           {photos.map((photo, i) => (
             <div key={i} style={{ position: "absolute", inset: 0, opacity: i === current ? 1 : 0, transition: "opacity 0.75s cubic-bezier(0.16,1,0.3,1)", zIndex: i === current ? 1 : 0 }}>
@@ -107,8 +100,6 @@ function PhotoGallery({ accent, photos, theme = "dark" }: { accent: string; phot
               <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, transparent 55%, rgba(8,8,18,0.45) 100%)", pointerEvents: "none" }} />
             </div>
           ))}
-
-          {/* Nav buttons */}
           {photos.length > 1 && (
             <>
               <button onClick={prev} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", zIndex: 10, width: 34, height: 34, borderRadius: "50%", background: navBtnBg, backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", border: `1px solid ${navBtnBorder}`, cursor: "pointer", color: navBtnColor, display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}>
@@ -119,8 +110,6 @@ function PhotoGallery({ accent, photos, theme = "dark" }: { accent: string; phot
               </button>
             </>
           )}
-
-          {/* Dots */}
           {photos.length > 1 && (
             <div style={{ position: "absolute", bottom: 12, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 5, zIndex: 10 }}>
               {photos.map((_, i) => (
@@ -134,7 +123,6 @@ function PhotoGallery({ accent, photos, theme = "dark" }: { accent: string; phot
   );
 }
 
-// ─── FinanceAppDemo ──────────────────────────────────────────────────────────
 function FinanceAppDemo({ accent }: { accent: string }) {
   const rgb = hexRgb(accent);
   const [activeTab, setActiveTab] = useState<"overview" | "budget" | "savings">("overview");
@@ -347,8 +335,8 @@ function useTypewriter(text: string, active: boolean) {
 
 type Message = { role: "user" | "assistant"; content: string; local?: boolean; typing?: boolean };
 
-function AiLiveDemo({ accent, theme = "dark" }: { accent: string; theme?: Theme }) {
-  const [isDark, setIsDark] = useState(theme === "dark");
+function AiLiveDemo({ accent }: { accent: string }) {
+  const [isDark, setIsDark] = useState(true);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -567,8 +555,9 @@ export const SERVICE_DATA = [
   },
 ];
 
-function AnimatedBackground({ accent, rgb, theme = "dark" }: { accent: string; rgb: string; theme?: Theme }) {
-  const isDark = theme === "dark";
+function AnimatedBackground({ accent, rgb }: { accent: string; rgb: string }) {
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
   const orbs = [
     { w: 600, h: 600, x: "72%", y: "-15%", opacity: isDark ? 0.13 : 0.08, dur: 18 },
     { w: 450, h: 450, x: "-8%", y: "55%",  opacity: isDark ? 0.08 : 0.05, dur: 22 },
@@ -590,10 +579,12 @@ function AnimatedBackground({ accent, rgb, theme = "dark" }: { accent: string; r
   );
 }
 
-export function ServiceSlide({ svcIndex, theme = "dark" }: { svcIndex: number; theme?: Theme }) {
+export function ServiceSlide({ svcIndex }: { svcIndex: number }) {
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
+
   const svc = SERVICE_DATA[svcIndex];
   const Icon = svc.icon;
-  const isDark = theme === "dark";
   const accentColor = isDark ? svc.accent : svc.accentLight;
   const rgb = hexRgb(accentColor);
   const [isMobile, setIsMobile] = useState(false);
@@ -625,11 +616,11 @@ export function ServiceSlide({ svcIndex, theme = "dark" }: { svcIndex: number; t
 
   return (
     <div style={{ position: "relative", width: "100%", minHeight: "100vh", display: "flex", alignItems: isMobile ? "flex-start" : "center", background: sectionBg, overflow: "hidden", transition: "background 0.4s ease" }}>
-      <AnimatedBackground accent={accentColor} rgb={rgb} theme={theme} />
+      <AnimatedBackground accent={accentColor} rgb={rgb} />
       <div style={{ position: "relative", zIndex: 10, maxWidth: 1400, margin: "0 auto", width: "100%", padding: isMobile ? "5rem 1.25rem 4rem" : "0 3.5rem", display: isMobile ? "flex" : "grid", flexDirection: isMobile ? "column" : undefined, gridTemplateColumns: isMobile ? undefined : "0.85fr 1.15fr", gap: isMobile ? "2rem" : "5rem", alignItems: "center" }}>
 
         {/* LEFT */}
-        <motion.div key={`l-${svcIndex}-${theme}`} initial={{ opacity: 0, x: isMobile ? 0 : -28, y: isMobile ? 20 : 0 }} animate={{ opacity: 1, x: 0, y: 0 }} transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}>
+        <motion.div key={`l-${svcIndex}`} initial={{ opacity: 0, x: isMobile ? 0 : -28, y: isMobile ? 20 : 0 }} animate={{ opacity: 1, x: 0, y: 0 }} transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
             <div style={{ width: 36, height: 36, borderRadius: 12, background: iconBg, border: `1px solid ${iconBorder}`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 20px ${iconGlow}, inset 0 1px 0 ${iconInset}` }}>
               <Icon size={17} color={accentColor} strokeWidth={1.7} />
@@ -642,7 +633,7 @@ export function ServiceSlide({ svcIndex, theme = "dark" }: { svcIndex: number; t
           <h2 style={{ fontFamily: "'Georgia','Times New Roman',serif", fontSize: isMobile ? "clamp(2rem,8vw,2.8rem)" : "clamp(2.6rem,3.7vw,4.4rem)", fontWeight: 900, lineHeight: 0.96, letterSpacing: "-0.040em", color: headingColor, margin: "0 0 20px", whiteSpace: "pre-line", textShadow: headingShadow, transition: "color 0.4s ease, text-shadow 0.4s ease" }}>
             {svc.title}
           </h2>
-          <motion.div key={`rule-${svcIndex}-${theme}`} initial={{ width: 0 }} animate={{ width: 52 }} transition={{ duration: 0.5, delay: 0.2 }} style={{ height: 2.5, borderRadius: 99, background: ruleGradient, marginBottom: 20, boxShadow: ruleShadow }} />
+          <motion.div key={`rule-${svcIndex}`} initial={{ width: 0 }} animate={{ width: 52 }} transition={{ duration: 0.5, delay: 0.2 }} style={{ height: 2.5, borderRadius: 99, background: ruleGradient, marginBottom: 20, boxShadow: ruleShadow }} />
           <p style={{ fontSize: isMobile ? 14 : 15, lineHeight: 1.88, color: descColor, margin: "0 0 24px", maxWidth: isMobile ? "100%" : 400, fontWeight: 400, letterSpacing: "0.005em", transition: "color 0.4s ease" }}>
             {svc.desc}
           </p>
@@ -654,18 +645,18 @@ export function ServiceSlide({ svcIndex, theme = "dark" }: { svcIndex: number; t
               </motion.div>
             ))}
           </div>
-          <GlassCTA accent={accentColor} label="Start a project" theme={theme} />
+          <GlassCTA accent={accentColor} label="Start a project" />
         </motion.div>
 
         {/* RIGHT */}
-        <motion.div key={`r-${svcIndex}-${theme}`} initial={{ opacity: 0, x: isMobile ? 0 : 32, y: isMobile ? 20 : 0, scale: 0.97 }} animate={{ opacity: 1, x: 0, y: 0, scale: 1 }} transition={{ duration: 0.65, delay: 0.08, ease: [0.22, 1, 0.36, 1] }} style={{ height: isMobile ? mobileDemoHeight : 520, width: "100%", position: "relative" }}>
+        <motion.div key={`r-${svcIndex}`} initial={{ opacity: 0, x: isMobile ? 0 : 32, y: isMobile ? 20 : 0, scale: 0.97 }} animate={{ opacity: 1, x: 0, y: 0, scale: 1 }} transition={{ duration: 0.65, delay: 0.08, ease: [0.22, 1, 0.36, 1] }} style={{ height: isMobile ? mobileDemoHeight : 520, width: "100%", position: "relative" }}>
           <div style={{ position: "absolute", inset: -30, background: `radial-gradient(ellipse at 50% 45%, rgba(${rgb},${isDark ? "0.16" : "0.10"}) 0%, transparent 62%)`, borderRadius: 40, pointerEvents: "none" }} />
           <div style={{ position: "relative", height: "100%", width: "100%" }}>
             {svc.aiDemo
-              ? <AiLiveDemo accent={accentColor} theme={theme} />
+              ? <AiLiveDemo accent={accentColor} />
               : svc.webAppDemo
                 ? <FinanceAppDemo accent={accentColor} />
-                : <PhotoGallery accent={accentColor} photos={svc.photos} theme={theme} />
+                : <PhotoGallery accent={accentColor} photos={svc.photos} />
             }
           </div>
         </motion.div>
