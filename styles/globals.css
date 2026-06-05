@@ -4,7 +4,6 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Futurax — Vercel Dark + Cyan/Purple */
   --background: oklch(0.05 0.005 260);
   --foreground: oklch(0.98 0 0);
   --card: oklch(0.08 0.008 260);
@@ -25,8 +24,6 @@
   --input: oklch(0.12 0.008 260);
   --ring: oklch(0.75 0.18 200);
   --radius: 0.75rem;
-
-  /* Futurax Accent Colors */
   --cyan: oklch(0.75 0.18 200);
   --cyan-glow: oklch(0.75 0.18 200 / 0.15);
   --purple: oklch(0.65 0.2 300);
@@ -74,7 +71,6 @@
   body { @apply bg-background text-foreground; }
 }
 
-/* Animations */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-16px); }
@@ -92,7 +88,6 @@
 .animate-glow-pulse { animation: glow-pulse 3s ease-in-out infinite; }
 .animate-gradient { background-size: 200% 200%; animation: gradient-shift 8s ease infinite; }
 
-/* Glass */
 .glass {
   background: var(--glass);
   backdrop-filter: blur(16px);
@@ -104,7 +99,6 @@
   border: 0.5px solid oklch(0.22 0.008 260 / 0.6);
 }
 
-/* Gradient text */
 .gradient-text {
   background: linear-gradient(135deg, var(--cyan) 0%, var(--purple) 100%);
   -webkit-background-clip: text;
@@ -112,29 +106,25 @@
   background-clip: text;
 }
 
-/* Scrollbar */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--background); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: oklch(0.3 0.008 260); }
 
-/* Mobile: scroll tự nhiên từ trên xuống */
 @media (max-width: 1023px) {
-  body {
-    overflow-y: auto !important;
-  }
-
+  body { overflow-y: auto !important; }
   [data-snap-slide] {
     height: auto !important;
     min-height: 100svh;
     overflow: visible !important;
   }
 }
+
+/* ✅ Chỉ giữ 1 lần duy nhất — JS trong idea-section.tsx sẽ override khi toggle theme */
 html {
   background: #000000;
 }
-
 body {
-  background: #000000;
+  background: inherit;
   overscroll-behavior: none;
 }
