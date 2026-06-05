@@ -281,7 +281,6 @@ export function AboutSection() {
     : ["0 20px 60px rgba(0,0,0,0.08)","inset 0 1.5px 0 rgba(255,255,255,0.90)","inset 0 -1px 0 rgba(0,0,0,0.04)"].join(",");
   const rowBorder    = isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.07)";
   const accentBars   = isDark ? ["rgba(255,255,255,0.35)","rgba(255,255,255,0.18)","rgba(255,255,255,0.10)"] : ["rgba(0,0,0,0.30)","rgba(0,0,0,0.15)","rgba(0,0,0,0.08)"];
-  const scrollColor  = isDark ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.38)";
 
   const paragraphs = [
     { text: "Futurxt is a product engineering studio helping startups and businesses build modern web applications, AI systems, and automation platforms.", opacity: isDark ? 1.0 : 0.88, weight: 500 },
@@ -290,12 +289,22 @@ export function AboutSection() {
   ];
 
   return (
-    <section id="about" className="relative w-full min-h-screen flex flex-col items-center overflow-hidden" style={{ background: bg, transition: "background 0.5s ease" }}>
+    <section
+      id="about"
+      className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden"
+      style={{ background: bg, transition: "background 0.5s ease" }}
+    >
       <div style={{ position: "absolute", top: 0, left: "8%", right: "8%", height: 1, background: topRule }} />
       <div style={{ position: "absolute", top: "30%", left: "50%", transform: "translate(-50%,-50%)", width: 900, height: 500, borderRadius: "50%", background: glow, pointerEvents: "none" }} />
-      <div className="relative z-10 w-full max-w-[1280px] mx-auto px-5 sm:px-8 lg:px-12 pt-20 sm:pt-24 pb-2">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start mb-8 sm:mb-10">
-          <motion.div initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }} className="flex flex-col">
+
+      <div className="relative z-10 w-full max-w-[1280px] mx-auto px-5 sm:px-8 lg:px-12 py-20 sm:py-24">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+          <motion.div
+            initial={{ opacity: 0, y: 28 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+            className="flex flex-col"
+          >
             <div className="flex items-center gap-3 mb-6 sm:mb-7">
               <div style={{ width: 32, height: 1, background: labelLine, transition: "background 0.5s ease" }} />
               <span style={{ fontSize: 11, fontFamily: "monospace", letterSpacing: "0.28em", color: labelColor, textTransform: "uppercase", transition: "color 0.5s ease" }}>About Futurxt</span>
@@ -312,16 +321,17 @@ export function AboutSection() {
               ))}
             </div>
           </motion.div>
-          <motion.div initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.75, delay: 0.12, ease: [0.16, 1, 0.3, 1] }} className="flex flex-col">
+
+          <motion.div
+            initial={{ opacity: 0, y: 28 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.75, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
+            className="flex flex-col"
+          >
             <CodeEditor />
           </motion.div>
         </div>
       </div>
-      <motion.button onClick={() => document.getElementById("team")?.scrollIntoView({ behavior: "smooth" })} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.2, delay: 1.0 }} className="relative mb-4 flex flex-col items-center gap-2 bg-transparent border-none cursor-pointer p-0 z-20">
-        <motion.span animate={{ opacity: [0.45, 0.75, 0.45] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }} style={{ fontSize: "0.68rem", letterSpacing: "0.38em", textTransform: "uppercase", color: scrollColor, fontWeight: 400, whiteSpace: "nowrap", fontFamily: "'Georgia', serif", transition: "color 0.5s ease" }}>
-          Keep Scrolling
-        </motion.span>
-      </motion.button>
     </section>
   );
 }

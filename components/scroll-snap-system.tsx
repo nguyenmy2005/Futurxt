@@ -47,10 +47,9 @@ export function SnapSlide({ id, tall = false, children, className = "" }: SnapSl
 
 interface SnapContainerProps {
   children: ReactNode;
-  showDots?: boolean;
 }
 
-export function SnapContainer({ children, showDots = true }: SnapContainerProps) {
+export function SnapContainer({ children }: SnapContainerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [totalSlides, setTotalSlides] = useState(0);
@@ -246,14 +245,7 @@ export function SnapContainer({ children, showDots = true }: SnapContainerProps)
   if (isMobile) {
     return (
       <SnapContext.Provider value={{ activeIndex, totalSlides, goTo }}>
-        <div
-          ref={containerRef}
-          style={{
-            width: "100%",
-            height: "auto",
-            // ← backgroundColor hardcode đã xóa, CSS tự xử lý
-          }}
-        >
+        <div ref={containerRef} style={{ width: "100%", height: "auto" }}>
           {children}
         </div>
       </SnapContext.Provider>
@@ -277,75 +269,7 @@ export function SnapContainer({ children, showDots = true }: SnapContainerProps)
       >
         {children}
       </div>
-      {showDots && <DotNav />}
     </SnapContext.Provider>
-  );
-}
-
-const SLIDE_LABELS = [
-  "Intro", "Hero", "About", "Team", "Services",
-  "Vision", "How We Work", "Idea", "Contact", "Footer",
-];
-
-function DotNav() {
-  const { activeIndex, totalSlides, goTo } = useSnapContext();
-  const [hovered, setHovered] = useState<number | null>(null);
-
-  return (
-    <div
-      className="hidden lg:flex flex-col items-center"
-      style={{
-        position: "fixed",
-        right: 28,
-        top: "50%",
-        transform: "translateY(-50%)",
-        zIndex: 200,
-        gap: 10,
-      }}
-    >
-      {Array.from({ length: totalSlides }).map((_, i) => {
-        const isActive = i === activeIndex;
-        const label = SLIDE_LABELS[i] ?? `${i + 1}`;
-        return (
-          <div
-            key={i}
-            style={{ position: "relative", display: "flex", alignItems: "center" }}
-            onMouseEnter={() => setHovered(i)}
-            onMouseLeave={() => setHovered(null)}
-          >
-            <AnimatePresence>
-              {hovered === i && (
-                <motion.span
-                  initial={{ opacity: 0, x: 6 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 6 }}
-                  transition={{ duration: 0.18 }}
-                  style={{
-                    position: "absolute", right: 18, whiteSpace: "nowrap",
-                    fontSize: 10, fontFamily: "monospace", letterSpacing: "0.12em",
-                    color: "rgba(255,255,255,0.55)", textTransform: "uppercase",
-                    pointerEvents: "none", userSelect: "none",
-                  }}
-                >
-                  {label}
-                </motion.span>
-              )}
-            </AnimatePresence>
-            <motion.button
-              onClick={() => goTo(i)}
-              animate={{ width: isActive ? 20 : 5, height: 5, opacity: isActive ? 1 : 0.3 }}
-              whileHover={{ opacity: 0.75, scale: 1.3 }}
-              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              style={{
-                borderRadius: 99, border: "none", background: "#ffffff",
-                cursor: "pointer", padding: 0, display: "block",
-              }}
-              aria-label={`Go to ${label}`}
-            />
-          </div>
-        );
-      })}
-    </div>
   );
 }
 
