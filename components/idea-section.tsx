@@ -90,6 +90,11 @@ function useTypewriter(text: string, started: boolean, speed = 13) {
 
 function ThemeToggle({ theme, onToggle }: { theme: Theme; onToggle: () => void }) {
   const isDark = theme === "dark";
+  useEffect(() => {
+  document.documentElement.style.background = isDark ? "#000000" : "#ffffff";
+  document.body.style.background = isDark ? "#000000" : "#ffffff";
+  document.body.style.overscrollBehavior = "none";
+}, [isDark]);
   return (
     <motion.button
       onClick={onToggle}

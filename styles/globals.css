@@ -130,3 +130,11 @@
     overflow: visible !important;
   }
 }
+html {
+  background: #000000;
+}
+
+body {
+  background: #000000;
+  overscroll-behavior: none;
+}
