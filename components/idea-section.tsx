@@ -74,81 +74,6 @@ function HyperspaceCanvas({ onDone }: { onDone: () => void }) {
   );
 }
 
-function StarField({ theme }: { theme: Theme }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    let animId: number;
-
-    const setSize = () => {
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-    };
-    setSize();
-    window.addEventListener("resize", setSize);
-
-    const stars = Array.from({ length: 280 }, () => ({
-      x: Math.random() * window.innerWidth,
-      y: Math.random() * window.innerHeight,
-      r: Math.random() * 1.5 + 0.3,
-      alpha: Math.random() * 0.5 + 0.2,
-      speed: Math.random() * 0.022 + 0.005,
-      phase: Math.random() * Math.PI * 2,
-      vx: (Math.random() - 0.5) * 0.2,
-      vy: (Math.random() - 0.5) * 0.2,
-    }));
-
-    let t = 0;
-    const draw = () => {
-      const W = canvas.width;
-      const H = canvas.height;
-      ctx.clearRect(0, 0, W, H);
-      t++;
-
-      for (const s of stars) {
-        const tw = s.alpha * (0.4 + 0.6 * (0.5 + 0.5 * Math.sin(t * s.speed + s.phase)));
-
-        if (theme === "dark") {
-          const g = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 4);
-          g.addColorStop(0, `rgba(210,225,255,${(tw * 0.5).toFixed(3)})`);
-          g.addColorStop(1, "rgba(0,0,0,0)");
-          ctx.beginPath(); ctx.arc(s.x, s.y, s.r * 4, 0, Math.PI * 2);
-          ctx.fillStyle = g; ctx.fill();
-          ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(235,242,255,${tw.toFixed(3)})`; ctx.fill();
-        } else {
-          // light mode: ngôi sao màu trắng tinh, glow trắng nhẹ
-          const g = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 5);
-          g.addColorStop(0, `rgba(180,190,210,${(tw * 0.28).toFixed(3)})`);
-          g.addColorStop(1, "rgba(255,255,255,0)");
-          ctx.beginPath(); ctx.arc(s.x, s.y, s.r * 5, 0, Math.PI * 2);
-          ctx.fillStyle = g; ctx.fill();
-          ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(160,170,195,${(tw * 0.7).toFixed(3)})`; ctx.fill();
-        }
-
-        s.x += s.vx; s.y += s.vy;
-        if (s.x < -10) s.x = W + 10;
-        if (s.x > W + 10) s.x = -10;
-        if (s.y < -10) s.y = H + 10;
-        if (s.y > H + 10) s.y = -10;
-      }
-      animId = requestAnimationFrame(draw);
-    };
-    draw();
-
-    return () => { cancelAnimationFrame(animId); window.removeEventListener("resize", setSize); };
-  }, [theme]);
-
-  return (
-    <canvas ref={canvasRef} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }} />
-  );
-}
-
 function useTypewriter(text: string, started: boolean, speed = 13) {
   const [displayed, setDisplayed] = useState("");
   const [done, setDone] = useState(false);
@@ -172,10 +97,9 @@ function ThemeToggle({ theme, onToggle }: { theme: Theme; onToggle: () => void }
       style={{
         position: "fixed", top: "1rem", left: "1rem", zIndex: 100,
         width: 44, height: 44, borderRadius: "50%",
-        border: isDark ? "1px solid rgba(255,255,255,0.2)" : "1px solid rgba(0,0,0,0.15)",
-        background: isDark ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.92)",
+        border: isDark ? "1px solid rgba(255,255,255,0.18)" : "1px solid rgba(0,0,0,0.12)",
+        background: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)",
         backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
-        boxShadow: isDark ? "0 2px 20px rgba(0,0,0,0.5)" : "0 2px 16px rgba(0,0,0,0.1)",
         cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
         padding: 0, outline: "none", transition: "all 0.4s ease",
       }}
@@ -258,23 +182,18 @@ export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
   const isDark = theme === "dark";
   const serif = "'Georgia','Times New Roman',serif";
   const bgColor = isDark ? "#000000" : "#ffffff";
-  const textPrimary = isDark ? "#ffffff" : "#0a0a0a";
-  const textSecondary = isDark ? "rgba(255,255,255,0.82)" : "rgba(10,10,10,0.72)";
-  const textMuted = isDark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.35)";
+  const textPrimary = isDark ? "#ffffff" : "#000000";
+  const textSecondary = isDark ? "rgba(255,255,255,0.78)" : "rgba(0,0,0,0.65)";
+  const textMuted = isDark ? "rgba(255,255,255,0.32)" : "rgba(0,0,0,0.32)";
 
   return (
     <>
-      {/*
-        ✅ FIX DẢI ĐEN: inject global style trực tiếp vào html/body
-        - html, body background match với section để khi iOS overscroll
-          không lộ màu nền khác phía sau
-        - overscroll-behavior: none ngăn rubber-band scroll
-      */}
+      {/* ✅ Fix dải đen hoàn toàn: html/body luôn match bgColor theo theme */}
       <style>{`
-        html, body {
+        html { background: ${bgColor} !important; }
+        body {
           background: ${bgColor} !important;
           overscroll-behavior: none;
-          overscroll-behavior-y: none;
         }
       `}</style>
 
@@ -285,12 +204,16 @@ export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
           width: "100%",
           height: "100dvh",
           minHeight: "100dvh",
+          // ✅ không dùng overflow:hidden để tránh clip safe-area
+          overflow: "clip",
           background: bgColor,
           transition: "background 0.45s ease",
-          overflow: "hidden",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          // ✅ đảm bảo section liền kề section dưới, không gap
+          marginBottom: 0,
+          paddingBottom: 0,
         }}
       >
         <ThemeToggle theme={theme} onToggle={onToggleTheme} />
@@ -309,26 +232,9 @@ export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
           )}
         </AnimatePresence>
 
-        {/* ✅ Background solid layer — luôn ở dưới cùng, không bao giờ transparent */}
-        <div style={{ position: "absolute", inset: 0, zIndex: 0, background: bgColor, transition: "background 0.45s ease" }} />
-
-        {/* StarField */}
-        <div style={{ position: "absolute", inset: 0, zIndex: 1 }}>
-          <StarField theme={theme} />
-        </div>
-
-        {/* Radial tint */}
-        <div style={{
-          position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none",
-          background: isDark
-            ? "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(90,110,220,0.06) 0%, transparent 70%)"
-            : "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(100,120,200,0.03) 0%, transparent 70%)",
-          transition: "background 0.45s ease",
-        }} />
-
         {/* Main content */}
         <div style={{
-          position: "relative", zIndex: 20,
+          position: "relative", zIndex: 10,
           display: "flex", flexDirection: "column",
           alignItems: "center", justifyContent: "center",
           textAlign: "center", width: "100%", maxWidth: 960,
@@ -349,10 +255,12 @@ export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
               <h2 key={line} style={{
                 fontFamily: serif,
                 fontSize: isMobile ? "clamp(3rem,17vw,5.2rem)" : "clamp(3.5rem,8.5vw,8rem)",
-                fontWeight: 900, color: textPrimary,
+                fontWeight: 900,
+                color: textPrimary,
                 margin: i === 0 ? 0 : "0.02em 0 0",
-                lineHeight: 1.0, letterSpacing: "-0.03em", textTransform: "uppercase",
-                textShadow: isDark ? "0 0 60px rgba(255,255,255,0.35)" : "0 1px 4px rgba(0,0,0,0.06)",
+                lineHeight: 1.0,
+                letterSpacing: "-0.03em",
+                textTransform: "uppercase",
                 transition: "color 0.45s ease",
               }}>{line}</h2>
             ))}
@@ -364,10 +272,11 @@ export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
               style={{
                 width: 68, height: 1,
                 background: isDark
-                  ? "linear-gradient(to right, transparent, rgba(170,190,255,0.55), transparent)"
+                  ? "linear-gradient(to right, transparent, rgba(255,255,255,0.4), transparent)"
                   : "linear-gradient(to right, transparent, rgba(0,0,0,0.25), transparent)",
                 margin: isMobile ? "1.3rem auto 1.1rem" : "1.9rem auto 1.5rem",
-                transformOrigin: "center", transition: "background 0.45s ease",
+                transformOrigin: "center",
+                transition: "background 0.45s ease",
               }}
             />
           </motion.div>
@@ -406,7 +315,7 @@ export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
             </motion.p>
           </div>
 
-          {/* CTA */}
+          {/* CTA Button */}
           <motion.button
             initial={{ opacity: 0, scale: 0.93, y: 10 }}
             animate={stage >= 3 ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.93, y: 10 }}
@@ -417,12 +326,8 @@ export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
             style={{
               marginTop: isMobile ? "1.5rem" : "2rem",
               borderRadius: 9999,
-              background: isDark ? "rgba(255,255,255,0.12)" : "rgba(8,8,8,0.88)",
-              backdropFilter: "blur(32px)", WebkitBackdropFilter: "blur(32px)",
-              border: isDark ? "1px solid rgba(255,255,255,0.3)" : "1px solid rgba(0,0,0,0.8)",
-              boxShadow: isDark
-                ? "0 1px 0 rgba(255,255,255,0.3) inset, 0 6px 28px rgba(0,0,0,0.5)"
-                : "0 1px 0 rgba(255,255,255,0.12) inset, 0 6px 24px rgba(0,0,0,0.18)",
+              background: isDark ? "rgba(255,255,255,0.1)" : "#000000",
+              border: isDark ? "1px solid rgba(255,255,255,0.28)" : "1px solid #000000",
               padding: isMobile ? "13px 34px" : "15px 44px",
               cursor: "pointer", outline: "none", appearance: "none" as any,
               transition: "background 0.45s ease, border 0.45s ease",
@@ -431,9 +336,9 @@ export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
             <span style={{
               fontFamily: serif,
               fontSize: isMobile ? "clamp(0.92rem,3.8vw,1.1rem)" : "clamp(1rem,1.75vw,1.28rem)",
-              fontWeight: 600, color: isDark ? "rgba(255,255,255,0.97)" : "#ffffff",
+              fontWeight: 600,
+              color: isDark ? "#ffffff" : "#ffffff",
               letterSpacing: "0.045em", whiteSpace: "nowrap",
-              textShadow: isDark ? "0 1px 10px rgba(255,255,255,0.25)" : "0 1px 3px rgba(0,0,0,0.35)",
               transition: "color 0.45s ease",
             }}>Start a Project</span>
           </motion.button>
@@ -461,7 +366,7 @@ export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
               transition={{ repeat: Infinity, duration: 1.7, ease: "easeInOut" }}
               style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2px" }}
             >
-              {[0.4, 0.18].map((opacity, i) => (
+              {[0.38, 0.16].map((opacity, i) => (
                 <svg key={i} width="18" height="10" viewBox="0 0 18 10" fill="none">
                   <path d="M1 1L9 9L17 1"
                     stroke={isDark ? `rgba(255,255,255,${opacity})` : `rgba(0,0,0,${opacity})`}
