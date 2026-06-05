@@ -2,8 +2,7 @@
 
 import { useRef, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-
-type Theme = "dark" | "light";
+import { useTheme } from "next-themes";
 
 function HyperspaceCanvas({ onDone }: { onDone: () => void }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -133,17 +132,13 @@ function useTypewriter(text: string, started: boolean, speed = 14) {
   return { displayed, done };
 }
 
-function ThemeToggle({
-  theme,
-  onToggle,
-}: {
-  theme: Theme;
-  onToggle: () => void;
-}) {
-  const isDark = theme === "dark";
+function ThemeToggle() {
+  const { resolvedTheme, setTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
+
   return (
     <motion.button
-      onClick={onToggle}
+      onClick={() => setTheme(isDark ? "light" : "dark")}
       whileTap={{ scale: 0.9 }}
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       style={{
@@ -219,43 +214,20 @@ function ThemeToggle({
   );
 }
 
-interface IdeaSectionProps {
-  theme: Theme;
-  onToggleTheme: () => void;
-}
+export function IdeaSection() {
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
 
-export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const [hyperspaceOver, setHyperspaceOver] = useState(false);
   const [stage, setStage] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
 
-  const isDark = theme === "dark";
   const bgColor = isDark ? "#000000" : "#ffffff";
   const serif = "'Georgia','Times New Roman',serif";
   const textPrimary = isDark ? "#ffffff" : "#000000";
-  const textSecondary = isDark
-    ? "rgba(255,255,255,0.75)"
-    : "rgba(0,0,0,0.62)";
-  const textMuted = isDark
-    ? "rgba(255,255,255,0.3)"
-    : "rgba(0,0,0,0.3)";
-
-  // ✅ Fix overscroll đen/trắng: sync thẳng lên html + body
-  // iOS Safari đọc màu từ document.documentElement khi render bounce area
-  useEffect(() => {
-    const html = document.documentElement;
-    const body = document.body;
-    html.style.background = bgColor;
-    body.style.background = bgColor;
-    body.style.overscrollBehavior = "none";
-    // cleanup khi unmount
-    return () => {
-      html.style.background = "";
-      body.style.background = "";
-      body.style.overscrollBehavior = "";
-    };
-  }, [bgColor]);
+  const textSecondary = isDark ? "rgba(255,255,255,0.75)" : "rgba(0,0,0,0.62)";
+  const textMuted = isDark ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.3)";
 
   useEffect(() => {
     const update = () => setIsMobile(window.innerWidth < 768);
@@ -304,9 +276,7 @@ export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
   };
 
   const handleStartProject = () => {
-    document
-      .getElementById("contact")
-      ?.scrollIntoView({ behavior: "smooth" });
+    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
@@ -325,7 +295,7 @@ export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
         justifyContent: "center",
       }}
     >
-      <ThemeToggle theme={theme} onToggle={onToggleTheme} />
+      <ThemeToggle />
 
       {/* Hyperspace intro */}
       <AnimatePresence>
@@ -367,11 +337,7 @@ export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
         {/* Heading */}
         <motion.div
           initial={{ opacity: 0, y: 36, filter: "blur(12px)" }}
-          animate={
-            stage >= 1
-              ? { opacity: 1, y: 0, filter: "blur(0px)" }
-              : {}
-          }
+          animate={stage >= 1 ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
           transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
           style={{ willChange: "opacity, transform, filter" }}
         >
@@ -407,9 +373,7 @@ export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
               background: isDark
                 ? "linear-gradient(to right, transparent, rgba(255,255,255,0.38), transparent)"
                 : "linear-gradient(to right, transparent, rgba(0,0,0,0.22), transparent)",
-              margin: isMobile
-                ? "1.4rem auto 1.3rem"
-                : "2rem auto 1.7rem",
+              margin: isMobile ? "1.4rem auto 1.3rem" : "2rem auto 1.7rem",
               transformOrigin: "center",
               transition: "background 0.45s ease",
             }}
@@ -547,11 +511,7 @@ export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
           </span>
           <motion.div
             animate={{ y: [0, 7, 0] }}
-            transition={{
-              repeat: Infinity,
-              duration: 1.7,
-              ease: "easeInOut",
-            }}
+            transition={{ repeat: Infinity, duration: 1.7, ease: "easeInOut" }}
             style={{
               display: "flex",
               flexDirection: "column",
@@ -560,20 +520,10 @@ export function IdeaSection({ theme, onToggleTheme }: IdeaSectionProps) {
             }}
           >
             {[0.38, 0.16].map((op, i) => (
-              <svg
-                key={i}
-                width="18"
-                height="10"
-                viewBox="0 0 18 10"
-                fill="none"
-              >
+              <svg key={i} width="18" height="10" viewBox="0 0 18 10" fill="none">
                 <path
                   d="M1 1L9 9L17 1"
-                  stroke={
-                    isDark
-                      ? `rgba(255,255,255,${op})`
-                      : `rgba(0,0,0,${op})`
-                  }
+                  stroke={isDark ? `rgba(255,255,255,${op})` : `rgba(0,0,0,${op})`}
                   strokeWidth="1.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"

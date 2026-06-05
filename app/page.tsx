@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 import { SnapContainer, SnapSlide } from "@/components/scroll-snap-system";
 import { ServiceSlide, SERVICE_DATA } from "@/components/services-section";
 import { HeroSection } from "@/components/hero-section";
@@ -12,38 +11,35 @@ import { HowWeWorkSection } from "@/components/how-we-work-section";
 import { Footer } from "@/components/footer";
 
 export default function Page() {
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
-  const toggleTheme = () => setTheme(t => t === "dark" ? "light" : "dark");
-
   return (
     <SnapContainer showDots={true}>
       <SnapSlide id="idea" tall>
-        <IdeaSection theme={theme} onToggleTheme={toggleTheme} />
+        <IdeaSection />
       </SnapSlide>
       <SnapSlide id="hero">
-        <HeroSection theme={theme} />
+        <HeroSection />
       </SnapSlide>
       <SnapSlide id="about">
-        <AboutSection theme={theme} />
+        <AboutSection />
       </SnapSlide>
       <SnapSlide id="team">
-        <TeamSection theme={theme} />
+        <TeamSection />
       </SnapSlide>
       {Array.isArray(SERVICE_DATA) && SERVICE_DATA.map((_, i) => (
         <SnapSlide key={i} id={`service-${i}`}>
-          <ServiceSlide svcIndex={i} theme={theme} />
+          <ServiceSlide svcIndex={i} />
         </SnapSlide>
       ))}
       <SnapSlide id="vision">
-        <VisionSection theme={theme} />
+        <VisionSection />
       </SnapSlide>
       <SnapSlide id="how-we-work">
-  <HowWeWorkSection theme={theme} />
-</SnapSlide>
-<SnapSlide id="contact" tall>
-  <ContactSection theme={theme} />
-  <Footer theme={theme} />
-</SnapSlide>
+        <HowWeWorkSection />
+      </SnapSlide>
+      <SnapSlide id="contact" tall>
+        <ContactSection />
+        <Footer />
+      </SnapSlide>
     </SnapContainer>
   );
 }

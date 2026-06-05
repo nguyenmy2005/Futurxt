@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { ThemeProvider } from '@/components/theme-provider'
 import './globals.css'
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -19,14 +20,7 @@ export const metadata: Metadata = {
     description: 'We build fast, scalable web apps and SaaS platforms for clients worldwide.',
     url: 'https://futurxt.dev',
     siteName: 'Futurxt',
-    images: [
-      {
-        url: '/og-image.png',
-        width: 1200,
-        height: 630,
-        alt: 'Futurxt - Building the Future',
-      },
-    ],
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Futurxt - Building the Future' }],
     type: 'website',
   },
   twitter: {
@@ -41,18 +35,16 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="en"
-      className="bg-background"
-      suppressHydrationWarning
-      style={{ backgroundColor: "#000000" }}
-    >
-      <body
-        className="font-sans antialiased bg-background text-foreground"
-        suppressHydrationWarning
-        style={{ backgroundColor: "#000000" }}
-      >
-        {children}
+    <html lang="en" suppressHydrationWarning>
+      <body className="font-sans antialiased bg-background text-foreground" suppressHydrationWarning>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem={true}
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

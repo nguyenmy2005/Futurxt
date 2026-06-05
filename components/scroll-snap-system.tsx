@@ -198,7 +198,7 @@ export function SnapContainer({ children, showDots = true }: SnapContainerProps)
     return () => window.removeEventListener("keydown", onKey);
   }, [goTo, totalSlides]);
 
-  // Touch — mobile scroll tự do, desktop snap
+  // Touch
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -242,7 +242,7 @@ export function SnapContainer({ children, showDots = true }: SnapContainerProps)
     };
   }, [goTo, totalSlides]);
 
-  // Mobile: scroll body thay vì fixed div
+  // Mobile
   if (isMobile) {
     return (
       <SnapContext.Provider value={{ activeIndex, totalSlides, goTo }}>
@@ -251,7 +251,7 @@ export function SnapContainer({ children, showDots = true }: SnapContainerProps)
           style={{
             width: "100%",
             height: "auto",
-            backgroundColor: "#000000",
+            // ← backgroundColor hardcode đã xóa, CSS tự xử lý
           }}
         >
           {children}
@@ -260,7 +260,7 @@ export function SnapContainer({ children, showDots = true }: SnapContainerProps)
     );
   }
 
-  // Desktop: fixed container như cũ
+  // Desktop
   return (
     <SnapContext.Provider value={{ activeIndex, totalSlides, goTo }}>
       <div
@@ -277,6 +277,7 @@ export function SnapContainer({ children, showDots = true }: SnapContainerProps)
       >
         {children}
       </div>
+      {showDots && <DotNav />}
     </SnapContext.Provider>
   );
 }
