@@ -63,18 +63,31 @@ export function HowWeWorkSection() {
     : "linear-gradient(90deg, transparent, rgba(0,0,0,0.10), transparent)";
   const glow1         = isDark ? "rgba(139,92,246,0.05)" : "rgba(139,92,246,0.04)";
   const glow2         = isDark ? "rgba(34,211,238,0.04)"  : "rgba(14,165,233,0.03)";
-  const labelColor    = isDark ? "rgba(255,255,255,0.50)" : "rgba(0,0,0,0.42)";
-  const dividerColor  = isDark ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.20)";
-  const headingColor  = isDark ? "#ffffff" : "#0a0a0a";
-  const headingShadow = isDark ? "0 0 40px rgba(255,255,255,0.35), 0 0 80px rgba(255,255,255,0.15)" : "none";
-  const subColor      = isDark ? "rgba(255,255,255,0.88)" : "rgba(0,0,0,0.60)";
+
+  // ── Chữ label rõ hơn ──
+  const labelColor    = isDark ? "rgba(255,255,255,0.70)" : "rgba(0,0,0,0.58)";
+  const dividerColor  = isDark ? "rgba(255,255,255,0.30)" : "rgba(0,0,0,0.25)";
+
+  // ── Heading rõ hơn ──
+  const headingColor  = isDark ? "#ffffff" : "#050505";
+  const headingShadow = isDark ? "0 0 40px rgba(255,255,255,0.45), 0 0 80px rgba(255,255,255,0.18)" : "none";
+
+  // ── Sub-text rõ hơn ──
+  const subColor      = isDark ? "rgba(255,255,255,0.80)" : "rgba(0,0,0,0.68)";
   const subShadow     = isDark ? "0 0 20px rgba(255,255,255,0.20)" : "none";
+
   const cardBg        = isDark ? "rgba(8,8,18,0.65)"      : "rgba(248,249,252,0.90)";
   const cardBorder    = isDark ? "rgba(255,255,255,0.07)"  : "rgba(0,0,0,0.09)";
   const cardShadow    = isDark ? "0 8px 32px rgba(0,0,0,0.30)" : "0 4px 20px rgba(0,0,0,0.06)";
-  const titleColor    = isDark ? "rgba(255,255,255,0.95)"  : "#0a0a0a";
-  const bodyColor     = isDark ? "rgba(255,255,255,0.48)"  : "rgba(0,0,0,0.52)";
-  const stepNumColor  = isDark ? "rgba(255,255,255,0.15)"  : "rgba(0,0,0,0.20)";
+
+  // ── Card title rõ hơn ──
+  const titleColor    = isDark ? "#ffffff"                 : "#0a0a0a";
+
+  // ── Body text rõ hơn ──
+  const bodyColor     = isDark ? "rgba(255,255,255,0.72)"  : "rgba(0,0,0,0.68)";
+
+  // ── Step number rõ hơn ──
+  const stepNumColor  = isDark ? "rgba(255,255,255,0.30)"  : "rgba(0,0,0,0.32)";
 
   const getAccents = (color: string) => {
     if (color === "cyan") {
@@ -153,6 +166,7 @@ export function HowWeWorkSection() {
               fontSize: 10, fontFamily: "monospace",
               letterSpacing: "0.28em", textTransform: "uppercase",
               color: labelColor,
+              fontWeight: 600,
             }}>
               Our Process
             </span>
@@ -173,7 +187,8 @@ export function HowWeWorkSection() {
           </h2>
 
           <p style={{
-            fontSize: isMobile ? 14 : 15,
+            fontSize: isMobile ? 15 : 16,
+            fontWeight: 450,
             maxWidth: 400, margin: "0 auto",
             lineHeight: 1.75,
             color: subColor,
@@ -223,19 +238,22 @@ export function HowWeWorkSection() {
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       <span style={{
                         fontSize: 10, fontFamily: "monospace", letterSpacing: "0.18em",
+                        fontWeight: 700,
                         padding: "4px 10px", borderRadius: 999,
                         border: `1px solid ${accentBorder}`,
                         color: accentColor, background: accentBg,
                       }}>
                         {step.tag}
                       </span>
-                      <span style={{ fontSize: 11, fontFamily: "monospace", color: stepNumColor }}>
+                      <span style={{ fontSize: 11, fontFamily: "monospace", color: stepNumColor, fontWeight: 600 }}>
                         {step.step}
                       </span>
                     </div>
                   </div>
                   <h3 style={{
-                    fontSize: 17, fontWeight: 600, letterSpacing: "-0.01em",
+                    fontSize: 18,
+                    fontWeight: 700,
+                    letterSpacing: "-0.01em",
                     color: titleColor, marginBottom: 12,
                     transition: "color 0.4s ease",
                   }}>
@@ -246,7 +264,9 @@ export function HowWeWorkSection() {
                     background: `linear-gradient(90deg, ${accentBorder}, transparent)`,
                   }} />
                   <p style={{
-                    fontSize: 13.5, lineHeight: 1.80,
+                    fontSize: 14,
+                    fontWeight: 400,
+                    lineHeight: 1.80,
                     color: bodyColor, margin: 0,
                     transition: "color 0.4s ease",
                   }}>
@@ -317,18 +337,21 @@ export function HowWeWorkSection() {
                     }}>
                       <span style={{
                         fontSize: 9, fontFamily: "monospace", letterSpacing: "0.18em",
+                        fontWeight: 700,
                         padding: "3px 9px", borderRadius: 999,
                         border: `1px solid ${accentBorder}`,
                         color: accentColor, background: accentBg,
                       }}>
                         {step.tag}
                       </span>
-                      <span style={{ fontSize: 10, fontFamily: "monospace", color: stepNumColor }}>
+                      <span style={{ fontSize: 10, fontFamily: "monospace", color: stepNumColor, fontWeight: 600 }}>
                         {step.step}
                       </span>
                     </div>
                     <h3 style={{
-                      fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em",
+                      fontSize: 16,
+                      fontWeight: 700,
+                      letterSpacing: "-0.01em",
                       color: titleColor, marginBottom: 8, transition: "color 0.4s ease",
                     }}>
                       {step.title}
@@ -338,7 +361,9 @@ export function HowWeWorkSection() {
                       background: `linear-gradient(90deg, ${accentBorder}, transparent)`,
                     }} />
                     <p style={{
-                      fontSize: 13, lineHeight: 1.78,
+                      fontSize: 13.5,
+                      fontWeight: 400,
+                      lineHeight: 1.78,
                       color: bodyColor, margin: 0, transition: "color 0.4s ease",
                     }}>
                       {step.description}

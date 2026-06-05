@@ -53,105 +53,43 @@ export function TeamSection() {
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
 
-  // ── Theme tokens ──
-  const bg              = isDark ? "#000000" : "#ffffff";
-  const borderTop       = isDark
+  const bg           = isDark ? "#000000" : "#ffffff";
+  const borderTop    = isDark
     ? "linear-gradient(90deg,transparent,rgba(255,255,255,0.10),transparent)"
     : "linear-gradient(90deg,transparent,rgba(0,0,0,0.10),transparent)";
-  const labelColor      = isDark ? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.45)";
-  const labelDivider    = isDark ? "rgba(255,255,255,0.40)" : "rgba(0,0,0,0.30)";
-  const headingColor    = isDark ? "#ffffff" : "#0a0a0a";
-  const headingShadow   = isDark
-    ? "0 0 40px rgba(255,255,255,0.25)"
-    : "0 2px 8px rgba(0,0,0,0.06)";
-  const subColor        = isDark ? "rgba(255,255,255,0.72)" : "rgba(10,10,10,0.62)";
-  const dividerBg       = isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)";
+  const labelColor   = isDark ? "rgba(255,255,255,0.60)" : "rgba(0,0,0,0.50)";
+  const labelDivider = isDark ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.35)";
+  const headingColor = isDark ? "#ffffff" : "#0a0a0a";
+  const subColor     = isDark ? "rgba(255,255,255,0.78)" : "rgba(10,10,10,0.68)";
+  const dividerBg    = isDark ? "rgba(255,255,255,0.09)" : "rgba(0,0,0,0.09)";
 
-  // Card tokens
-  const cardBg          = isDark ? "rgba(22,22,28,0.65)" : "rgba(248,249,252,0.90)";
-  const cardBorder      = isDark ? "rgba(255,255,255,0.13)" : "rgba(0,0,0,0.10)";
-  const cardInsetTop    = isDark ? "rgba(255,255,255,0.16)" : "rgba(255,255,255,0.85)";
-  const cardInsetSide   = isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.04)";
-  const cardTitleColor  = isDark ? "#ffffff" : "#0a0a0a";
-  const cardDescColor   = isDark ? "rgba(255,255,255,0.62)" : "rgba(10,10,10,0.58)";
-  const cardBoxShadow   = isDark
-    ? [
-        "0 10px 40px rgba(0,0,0,0.50)",
-        `inset 0 1.5px 0 ${cardInsetTop}`,
-        "inset 0 -1px 0 rgba(255,255,255,0.05)",
-        `inset 1px 0 0 ${cardInsetSide}`,
-        `inset -1px 0 0 ${cardInsetSide}`,
-      ].join(",")
-    : [
-        "0 4px 24px rgba(0,0,0,0.07)",
-        "0 1px 4px rgba(0,0,0,0.04)",
-        `inset 0 1.5px 0 ${cardInsetTop}`,
-        "inset 0 -1px 0 rgba(0,0,0,0.04)",
-        `inset 1px 0 0 ${cardInsetSide}`,
-        `inset -1px 0 0 ${cardInsetSide}`,
-      ].join(",");
+  // Card
+  const cardBg       = isDark ? "rgba(20,20,26,0.80)" : "#f9fafb";
+  const cardBorder   = isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.10)";
+  const cardBoxShadow = isDark
+    ? "0 8px 32px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.10)"
+    : "0 2px 16px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.90)";
+  const cardTitleColor = isDark ? "#ffffff" : "#0a0a0a";
+  const cardDescColor  = isDark ? "rgba(255,255,255,0.70)" : "rgba(10,10,10,0.64)";
 
-  // CTA bar tokens
-  const ctaBg           = isDark ? "rgba(24,24,30,0.80)" : "rgba(248,249,252,0.95)";
-  const ctaBorder       = isDark ? "rgba(255,255,255,0.20)" : "rgba(0,0,0,0.12)";
-  const ctaTopLine      = isDark ? "rgba(255,255,255,0.32)" : "rgba(255,255,255,0.90)";
-  const ctaBoxShadow    = isDark
-    ? [
-        "0 40px 100px rgba(0,0,0,0.65)",
-        "0 8px 32px rgba(0,0,0,0.45)",
-        "inset 0 2px 0 rgba(255,255,255,0.24)",
-        "inset 0 -1px 0 rgba(255,255,255,0.07)",
-        "inset 1px 0 0 rgba(255,255,255,0.09)",
-        "inset -1px 0 0 rgba(255,255,255,0.09)",
-      ].join(",")
-    : [
-        "0 8px 40px rgba(0,0,0,0.08)",
-        "0 2px 12px rgba(0,0,0,0.05)",
-        "inset 0 2px 0 rgba(255,255,255,0.90)",
-        "inset 0 -1px 0 rgba(0,0,0,0.05)",
-        "inset 1px 0 0 rgba(255,255,255,0.60)",
-        "inset -1px 0 0 rgba(255,255,255,0.60)",
-      ].join(",");
+  // CTA
+  const ctaBg        = isDark ? "rgba(18,18,24,0.90)" : "#f8f9fc";
+  const ctaBorder    = isDark ? "rgba(255,255,255,0.16)" : "rgba(0,0,0,0.11)";
+  const ctaBoxShadow = isDark
+    ? "0 24px 80px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.14)"
+    : "0 4px 32px rgba(0,0,0,0.07), inset 0 1px 0 rgba(255,255,255,0.95)";
   const ctaLabelColor   = isDark ? "#7DD3C8" : "#0F766E";
   const ctaHeadingColor = isDark ? "#ffffff" : "#0a0a0a";
-  const ctaHeadingShadow= isDark ? "0 2px 16px rgba(255,255,255,0.15)" : "0 1px 6px rgba(0,0,0,0.06)";
-  const ctaGlow1        = isDark
-    ? "radial-gradient(ellipse 65% 80% at 20% 50%, rgba(168,212,255,0.09) 0%, transparent 65%)"
-    : "radial-gradient(ellipse 65% 80% at 20% 50%, rgba(37,99,235,0.05) 0%, transparent 65%)";
-  const ctaGlow2        = isDark
-    ? "radial-gradient(ellipse 55% 70% at 85% 50%, rgba(125,211,200,0.07) 0%, transparent 65%)"
-    : "radial-gradient(ellipse 55% 70% at 85% 50%, rgba(15,118,110,0.04) 0%, transparent 65%)";
 
-  // CTA button tokens
-  const btnAccent       = isDark ? "rgba(168,212,255,0.16)" : "rgba(37,99,235,0.10)";
-  const btnBorder       = isDark ? "rgba(168,212,255,0.45)" : "rgba(37,99,235,0.35)";
-  const btnShadow       = isDark
-    ? [
-        "0 6px 24px rgba(168,212,255,0.20)",
-        "inset 0 1.5px 0 rgba(255,255,255,0.30)",
-        "inset 0 -1px 0 rgba(168,212,255,0.14)",
-      ].join(",")
-    : [
-        "0 4px 16px rgba(37,99,235,0.14)",
-        "inset 0 1.5px 0 rgba(255,255,255,0.80)",
-        "inset 0 -1px 0 rgba(37,99,235,0.10)",
-      ].join(",");
-  const btnColor        = isDark ? "#A8D4FF" : "#1D4ED8";
-  const btnHoverShadow  = isDark
-    ? [
-        "0 0 40px rgba(168,212,255,0.40)",
-        "0 8px 24px rgba(168,212,255,0.25)",
-        "inset 0 1.5px 0 rgba(255,255,255,0.36)",
-        "inset 0 -1px 0 rgba(168,212,255,0.18)",
-      ].join(",")
-    : [
-        "0 0 32px rgba(37,99,235,0.28)",
-        "0 8px 24px rgba(37,99,235,0.18)",
-        "inset 0 1.5px 0 rgba(255,255,255,0.85)",
-        "inset 0 -1px 0 rgba(37,99,235,0.12)",
-      ].join(",");
-
-  const scrollColor     = isDark ? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.40)";
+  const btnAccent      = isDark ? "rgba(168,212,255,0.14)" : "rgba(37,99,235,0.09)";
+  const btnBorder      = isDark ? "rgba(168,212,255,0.42)" : "rgba(37,99,235,0.32)";
+  const btnColor       = isDark ? "#A8D4FF" : "#1D4ED8";
+  const btnShadow      = isDark
+    ? "0 4px 20px rgba(168,212,255,0.18), inset 0 1px 0 rgba(255,255,255,0.24)"
+    : "0 4px 14px rgba(37,99,235,0.12), inset 0 1px 0 rgba(255,255,255,0.80)";
+  const btnHoverShadow = isDark
+    ? "0 0 36px rgba(168,212,255,0.36), 0 8px 24px rgba(168,212,255,0.22), inset 0 1px 0 rgba(255,255,255,0.30)"
+    : "0 0 28px rgba(37,99,235,0.24), 0 8px 20px rgba(37,99,235,0.16), inset 0 1px 0 rgba(255,255,255,0.90)";
 
   return (
     <section
@@ -168,7 +106,7 @@ export function TeamSection() {
 
       <div className="relative z-10 w-full max-w-[1280px] mx-auto px-5 sm:px-8 lg:px-8 py-16 sm:py-20 lg:py-20">
 
-        {/* Header */}
+        {/* ── Header ── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -178,7 +116,7 @@ export function TeamSection() {
           <div className="flex items-center gap-3 mb-5">
             <div className="w-9 h-px" style={{ background: labelDivider }} />
             <span
-              className="text-[11px] font-mono tracking-[0.25em] uppercase"
+              className="text-[12px] font-mono tracking-[0.25em] uppercase font-semibold"
               style={{ color: labelColor }}
             >
               Services
@@ -190,10 +128,9 @@ export function TeamSection() {
               className="font-black leading-[1.08] tracking-[-0.03em] m-0"
               style={{
                 fontFamily: "'Georgia','Times New Roman',serif",
-                fontSize: "clamp(1.7rem,3.2vw,2.8rem)",
+                fontSize: "clamp(1.9rem,3.4vw,3.0rem)",
                 color: headingColor,
-                textShadow: headingShadow,
-                transition: "color 0.4s ease, text-shadow 0.4s ease",
+                transition: "color 0.4s ease",
               }}
             >
               Building digital products
@@ -201,8 +138,13 @@ export function TeamSection() {
               that move businesses forward
             </h2>
             <p
-              className="text-sm lg:text-right lg:max-w-[340px] leading-[1.7] m-0 font-medium tracking-[-0.005em] lg:flex-shrink-0"
-              style={{ color: subColor, transition: "color 0.4s ease" }}
+              className="lg:text-right lg:max-w-[360px] leading-[1.75] m-0 tracking-[-0.005em] lg:flex-shrink-0"
+              style={{
+                color: subColor,
+                fontSize: "clamp(14px,1.2vw,16px)",
+                fontWeight: 450,
+                transition: "color 0.4s ease",
+              }}
             >
               From strategy and design to development and AI integration, we
               help businesses build modern digital experiences.
@@ -215,21 +157,21 @@ export function TeamSection() {
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          className="h-px mb-6"
+          className="h-px mb-7"
           style={{ background: dividerBg, transformOrigin: "left" }}
         />
 
-        {/* Grid */}
+        {/* ── Cards grid ── */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="mb-6"
+          className="mb-7"
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {capabilities.map((cap, i) => {
               const Icon = cap.icon;
-              const accent = isDark ? cap.darkAccent : cap.accentLight;
+              const accent      = isDark ? cap.darkAccent : cap.accentLight;
               const accentSolid = isDark ? cap.darkAccent : cap.accent;
 
               return (
@@ -240,20 +182,18 @@ export function TeamSection() {
                   transition={{ delay: i * 0.06, duration: 0.45 }}
                   whileHover={{
                     y: -4,
-                    borderColor: `${accent}55`,
-                    background: isDark ? "rgba(255,255,255,0.055)" : "rgba(255,255,255,0.98)",
                     boxShadow: isDark
-                      ? `0 16px 48px rgba(0,0,0,0.55), 0 0 0 1px ${accent}30, inset 0 1px 0 rgba(255,255,255,0.18)`
-                      : `0 16px 48px rgba(0,0,0,0.10), 0 0 0 1px ${accent}40, inset 0 1px 0 rgba(255,255,255,0.95)`,
+                      ? `0 20px 52px rgba(0,0,0,0.55), 0 0 0 1px ${accent}35, inset 0 1px 0 rgba(255,255,255,0.14)`
+                      : `0 16px 48px rgba(0,0,0,0.10), 0 0 0 1px ${accent}40, inset 0 1px 0 rgba(255,255,255,0.98)`,
                   }}
                   style={{
                     position: "relative",
-                    padding: "1.4rem 1.5rem 1.3rem",
+                    padding: "1.5rem 1.6rem 1.4rem",
                     borderRadius: 20,
                     border: `1px solid ${cardBorder}`,
                     background: cardBg,
-                    backdropFilter: "blur(48px) saturate(200%) brightness(1.10)",
-                    WebkitBackdropFilter: "blur(48px) saturate(200%) brightness(1.10)",
+                    backdropFilter: "blur(40px) saturate(180%)",
+                    WebkitBackdropFilter: "blur(40px) saturate(180%)",
                     cursor: "default",
                     transition: "all 0.3s cubic-bezier(0.16,1,0.3,1)",
                     overflow: "hidden",
@@ -263,61 +203,65 @@ export function TeamSection() {
                   {/* Top accent line */}
                   <div style={{
                     position: "absolute", top: 0, left: "1.2rem", right: "1.2rem", height: 1,
-                    background: `linear-gradient(90deg,transparent,${accent}60,transparent)`,
+                    background: `linear-gradient(90deg,transparent,${accent}55,transparent)`,
                   }} />
-                  {/* Glow */}
-                  <div style={{
-                    position: "absolute", top: "-30%", right: "-20%",
-                    width: "70%", height: "70%", borderRadius: "50%",
-                    background: `radial-gradient(circle, ${accent}${isDark ? "12" : "18"} 0%, transparent 70%)`,
-                    pointerEvents: "none",
-                  }} />
+
                   {/* Index */}
                   <span style={{
-                    position: "absolute", top: 14, right: 16,
-                    fontSize: 10, fontFamily: "monospace",
-                    color: `${accentSolid}${isDark ? "70" : "90"}`,
+                    position: "absolute", top: 15, right: 17,
+                    fontSize: 11, fontFamily: "monospace", fontWeight: 600,
+                    color: `${accentSolid}${isDark ? "80" : "99"}`,
                     letterSpacing: "0.15em",
                   }}>
                     {cap.index}
                   </span>
+
                   {/* Icon */}
                   <div style={{
-                    width: 42, height: 42, borderRadius: 13,
+                    width: 44, height: 44, borderRadius: 13,
                     display: "flex", alignItems: "center", justifyContent: "center",
-                    border: `1px solid ${accent}${isDark ? "35" : "45"}`,
-                    background: `${accent}${isDark ? "14" : "18"}`,
-                    marginBottom: 14,
-                    boxShadow: `0 0 20px ${accent}${isDark ? "22" : "30"}, inset 0 1px 0 rgba(255,255,255,${isDark ? "0.15" : "0.80"})`,
+                    border: `1px solid ${accent}${isDark ? "38" : "48"}`,
+                    background: `${accent}${isDark ? "16" : "1A"}`,
+                    marginBottom: 15,
+                    boxShadow: `inset 0 1px 0 rgba(255,255,255,${isDark ? "0.14" : "0.85"})`,
                   }}>
-                    <Icon size={18} color={accentSolid} />
+                    <Icon size={19} color={accentSolid} strokeWidth={1.8} />
                   </div>
+
+                  {/* Title */}
                   <div style={{
-                    fontSize: 13.5, fontWeight: 700,
+                    fontSize: 14.5, fontWeight: 750,
                     color: cardTitleColor,
-                    marginBottom: 7, letterSpacing: "-0.015em", lineHeight: 1.3,
+                    marginBottom: 8,
+                    letterSpacing: "-0.02em", lineHeight: 1.28,
                     transition: "color 0.4s ease",
                   }}>
                     {cap.title}
                   </div>
+
+                  {/* Description */}
                   <p style={{
-                    fontSize: 12,
+                    fontSize: 13,
                     color: cardDescColor,
-                    lineHeight: 1.65, margin: "0 0 14px",
+                    lineHeight: 1.70,
+                    margin: "0 0 15px",
+                    fontWeight: 400,
                     transition: "color 0.4s ease",
                   }}>
                     {cap.description}
                   </p>
+
+                  {/* Tech tags */}
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
                     {cap.tech.map((t) => (
                       <span key={t} style={{
-                        fontSize: 10, fontFamily: "monospace",
-                        padding: "3px 9px", borderRadius: 999,
-                        border: `1px solid ${accent}${isDark ? "28" : "38"}`,
-                        color: `${accentSolid}${isDark ? "CC" : ""}`,
-                        background: `${accent}${isDark ? "0F" : "14"}`,
+                        fontSize: 11, fontFamily: "monospace",
+                        padding: "4px 10px", borderRadius: 999,
+                        border: `1px solid ${accent}${isDark ? "30" : "40"}`,
+                        color: `${accentSolid}${isDark ? "DD" : ""}`,
+                        background: `${accent}${isDark ? "10" : "15"}`,
                         letterSpacing: "0.02em",
-                        fontWeight: isDark ? 400 : 600,
+                        fontWeight: isDark ? 500 : 650,
                       }}>
                         {t}
                       </span>
@@ -330,9 +274,9 @@ export function TeamSection() {
         </motion.div>
 
         {/* Divider */}
-        <div className="h-px mb-6" style={{ background: dividerBg }} />
+        <div className="h-px mb-7" style={{ background: dividerBg }} />
 
-        {/* CTA */}
+        {/* ── CTA ── */}
         <div className="flex justify-center">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -340,43 +284,40 @@ export function TeamSection() {
             transition={{ delay: 0.45, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             className="relative w-full lg:w-auto"
             style={{
-              padding: "1.6rem 1.6rem",
+              padding: "1.7rem 1.8rem",
               borderRadius: 28,
               background: ctaBg,
-              backdropFilter: "blur(72px) saturate(220%) brightness(1.12)",
-              WebkitBackdropFilter: "blur(72px) saturate(220%) brightness(1.12)",
+              backdropFilter: "blur(60px) saturate(200%)",
+              WebkitBackdropFilter: "blur(60px) saturate(200%)",
               border: `1px solid ${ctaBorder}`,
               boxShadow: ctaBoxShadow,
               overflow: "hidden",
               transition: "background 0.4s ease, border 0.4s ease, box-shadow 0.4s ease",
             }}
           >
-            {/* Glow overlays */}
-            <div style={{
-              position: "absolute", inset: 0, pointerEvents: "none",
-              background: [ctaGlow1, ctaGlow2].join(","),
-            }} />
+            {/* Top shimmer line */}
             <div style={{
               position: "absolute", top: 0, left: "2rem", right: "2rem", height: 1,
-              background: `linear-gradient(90deg,transparent,${ctaTopLine},transparent)`,
+              background: isDark
+                ? "linear-gradient(90deg,transparent,rgba(255,255,255,0.28),transparent)"
+                : "linear-gradient(90deg,transparent,rgba(255,255,255,0.95),transparent)",
             }} />
 
             <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:gap-14 gap-5">
               <div>
                 <div style={{
-                  fontSize: 10, fontFamily: "monospace",
-                  color: ctaLabelColor,
-                  letterSpacing: "0.28em", textTransform: "uppercase", marginBottom: 10,
+                  fontSize: 11, fontFamily: "monospace",
+                  color: ctaLabelColor, fontWeight: 600,
+                  letterSpacing: "0.28em", textTransform: "uppercase", marginBottom: 11,
                   transition: "color 0.4s ease",
                 }}>
                   Ready to Shape the Future?
                 </div>
                 <div
-                  className="font-extrabold leading-[1.12] tracking-[-0.03em]"
+                  className="font-extrabold leading-[1.16] tracking-[-0.03em]"
                   style={{
-                    fontSize: "clamp(1.1rem,2vw,1.45rem)",
+                    fontSize: "clamp(1.15rem,2.1vw,1.55rem)",
                     color: ctaHeadingColor,
-                    textShadow: ctaHeadingShadow,
                     transition: "color 0.4s ease",
                   }}
                 >
@@ -392,58 +333,27 @@ export function TeamSection() {
                   e.preventDefault();
                   document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
                 }}
-                whileHover={{
-                  scale: 1.06,
-                  boxShadow: btnHoverShadow,
-                }}
+                whileHover={{ scale: 1.05, boxShadow: btnHoverShadow }}
                 whileTap={{ scale: 0.97 }}
                 className="flex items-center justify-center gap-2 w-full lg:w-auto lg:flex-shrink-0"
                 style={{
-                  padding: "15px 28px", borderRadius: 16,
+                  padding: "15px 30px", borderRadius: 16,
                   background: btnAccent,
                   backdropFilter: "blur(24px) saturate(180%)",
                   WebkitBackdropFilter: "blur(24px) saturate(180%)",
                   border: `1px solid ${btnBorder}`,
                   boxShadow: btnShadow,
                   color: btnColor,
-                  fontSize: 14, fontWeight: 700,
+                  fontSize: 15, fontWeight: 700,
                   textDecoration: "none", cursor: "pointer",
                   whiteSpace: "nowrap", letterSpacing: "-0.005em",
                   transition: "all 0.28s cubic-bezier(0.16,1,0.3,1)",
                 }}
               >
-                Get in Touch <MoveUpRight size={14} />
+                Get in Touch <MoveUpRight size={15} />
               </motion.a>
             </div>
           </motion.div>
-        </div>
-
-        {/* Keep Scrolling */}
-        <div className="flex justify-center mt-4">
-          <motion.button
-            onClick={() => document.getElementById("service-0")?.scrollIntoView({ behavior: "smooth" })}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1.2, delay: 0.8 }}
-            style={{
-              display: "flex", flexDirection: "column", alignItems: "center",
-              gap: 0, background: "none", border: "none", cursor: "pointer", padding: 0,
-            }}
-          >
-            <motion.span
-              animate={{ opacity: [0.45, 0.75, 0.45] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              style={{
-                fontSize: 11, fontWeight: 500, letterSpacing: "0.38em",
-                color: scrollColor,
-                textTransform: "uppercase",
-                fontFamily: "'Georgia', serif", whiteSpace: "nowrap",
-                transition: "color 0.4s ease",
-              }}
-            >
-              Keep Scrolling
-            </motion.span>
-          </motion.button>
         </div>
 
       </div>

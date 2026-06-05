@@ -38,7 +38,8 @@ function MorphOrb({ isMobile }: { isMobile: boolean }) {
       const group = new THREE.Group();
       scene.add(group);
 
-      const COUNT = isMobile ? 600 : 1200;
+      // Tăng số lượng particle để dày hơn, rõ hơn
+      const COUNT = isMobile ? 800 : 1600;
       const SPHERE_R = 6.5;
       const CUBE_HALF = 5.2;
       const TRI_SCALE = 1.45;
@@ -110,11 +111,19 @@ function MorphOrb({ isMobile }: { isMobile: boolean }) {
       const step = triPool.length / COUNT;
       for (let i = 0; i < COUNT; i++) triPos.push(triPool[Math.floor(i * step)].clone());
 
-      const sharedGeo = new THREE.SphereGeometry(0.10, 7, 7);
+      // Tăng kích thước particle: 0.10 → 0.135 (desktop), nhỏ hơn chút cho mobile
+      const particleRadius = isMobile ? 0.115 : 0.135;
+      const sharedGeo = new THREE.SphereGeometry(particleRadius, 7, 7);
+
+      // Màu particle rõ hơn: trắng sáng trên nền tối, đen đậm trên nền sáng
+      // Thêm một chút tint nhẹ để không bị phẳng
+      const particleColor = isDark
+        ? new THREE.Color(0.95, 0.95, 1.0)   // trắng hơi cool, nổi trên đen
+        : new THREE.Color(0.08, 0.08, 0.12); // đen đậm hơi cool, nổi trên trắng
+
       const meshData: any[] = [];
       for (let i = 0; i < COUNT; i++) {
-        const color = new THREE.Color(isDark ? 1 : 0, isDark ? 1 : 0, isDark ? 1 : 0);
-        const mat = new THREE.MeshBasicMaterial({ color });
+        const mat = new THREE.MeshBasicMaterial({ color: particleColor });
         const mesh = new THREE.Mesh(sharedGeo, mat);
         mesh.position.copy(spherePos[i]);
         group.add(mesh);
@@ -248,7 +257,7 @@ export function HeroSection() {
   const dividerBg = isDark
     ? "linear-gradient(90deg, rgba(255,255,255,0.3), transparent)"
     : "linear-gradient(90deg, rgba(0,0,0,0.3), transparent)";
-  const bodyColor = isDark ? "rgba(255,255,255,0.75)" : "rgba(10,10,10,0.65)";
+  const bodyColor = isDark ? "rgba(255,255,255,0.82)" : "rgba(10,10,10,0.72)";
   const radialGlow = isDark
     ? "radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%)"
     : "radial-gradient(circle, rgba(100,120,200,0.05) 0%, transparent 70%)";
@@ -263,7 +272,7 @@ export function HeroSection() {
   const secondaryBorder = isDark
     ? "1px solid rgba(255,255,255,0.18)"
     : "1px solid rgba(0,0,0,0.16)";
-  const secondaryColor = isDark ? "rgba(255,255,255,0.9)" : "rgba(10,10,10,0.82)";
+  const secondaryColor = isDark ? "rgba(255,255,255,0.92)" : "rgba(10,10,10,0.85)";
   const secondaryHover = isDark
     ? { scale: 1.04, backgroundColor: "rgba(255,255,255,0.14)" }
     : { scale: 1.04, backgroundColor: "rgba(0,0,0,0.10)" };

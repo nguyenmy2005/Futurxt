@@ -83,10 +83,10 @@ const lightTagStyles: Record<string, TagStyle> = {
 };
 
 function parseContent(text: string, isDark: boolean) {
-  const color = isDark ? "rgba(255,255,255,0.95)" : "#0a0a0a";
+  const strongColor = isDark ? "#ffffff" : "#0a0a0a";
   return text.replace(
     /\*\*(.*?)\*\*/g,
-    `<strong style="color: ${color}; font-weight: 650;">$1</strong>`
+    `<strong style="color: ${strongColor}; font-weight: 700;">\$1</strong>`
   );
 }
 
@@ -110,160 +110,163 @@ export function VisionSection() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // ── Token helpers ──
-  const sectionBg       = isDark ? "#000000" : "#ffffff";
-  const labelColor      = isDark ? "rgba(255,255,255,0.40)" : "rgba(0,0,0,0.40)";
-  const dividerColor    = isDark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.15)";
-  const headingColor    = isDark ? "#ffffff" : "#0a0a0a";
-  const subColor        = isDark ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.48)";
-  const panelBg         = isDark ? "rgba(8,8,18,0.75)" : "#ffffff";
-  const panelBorder     = isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.10)";
-  const panelShadow     = isDark
-    ? "0 40px 100px rgba(0,0,0,0.60), 0 0 0 0.5px rgba(255,255,255,0.06) inset"
-    : "0 20px 60px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04)";
-  const titleBarBg      = isDark ? "rgba(4,4,12,0.60)" : "#f5f5f7";
-  const titleBarBorder  = isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.08)";
-  const titleBarText    = isDark ? "rgba(255,255,255,0.16)" : "rgba(0,0,0,0.28)";
-  const sidebarBg       = isDark ? "rgba(4,4,12,0.40)" : "#fafafa";
-  const sidebarBorder   = isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.07)";
-  const sidebarLabel    = isDark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.28)";
-  const sidebarFooter   = isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.18)";
-  const breadcrumbBg    = isDark ? "rgba(6,6,16,0.25)" : "#f9f9fb";
-  const breadcrumbBorder= isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.07)";
-  const breadcrumbMuted = isDark ? "rgba(255,255,255,0.18)" : "rgba(0,0,0,0.30)";
-  const breadcrumbSlash = isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.18)";
-  const contentBg       = isDark ? "transparent" : "#ffffff";
-  const idColor         = isDark ? "rgba(255,255,255,0.20)" : "rgba(0,0,0,0.28)";
-  const inlineDivider   = isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.07)";
-  const bodyColor       = isDark ? "rgba(255,255,255,0.42)" : "rgba(0,0,0,0.55)";
-  const bottomNavBg     = isDark ? "rgba(4,4,12,0.35)" : "#f5f5f7";
-  const bottomNavBorder = isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.07)";
-  const navBtnColor     = isDark ? "rgba(255,255,255,0.30)" : "rgba(0,0,0,0.35)";
-  const navBtnHover     = isDark ? "rgba(255,255,255,0.80)" : "rgba(0,0,0,0.75)";
-  const dotInactive     = isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.15)";
-  const activeCardBg    = isDark ? "rgba(255,255,255,0.055)" : "#ffffff";
-  const activeCardBorder= isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.09)";
-  const activeCardShadow= isDark ? "none" : "0 2px 8px rgba(0,0,0,0.06)";
-  const inactiveTabText = isDark ? "rgba(255,255,255,0.28)" : "rgba(0,0,0,0.35)";
-  const inactiveDot     = isDark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.18)";
-  const tabsBg          = isDark ? "rgba(4,4,12,0.40)" : "#fafafa";
-  const mobileBtnBg     = isDark ? "rgba(255,255,255,0.05)" : "#ffffff";
-  const mobileBtnBorder = isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.10)";
-  const mobileBtnColor  = isDark ? "rgba(255,255,255,0.40)" : "rgba(0,0,0,0.45)";
+  // ── Tokens ──
+  const sectionBg        = isDark ? "#000000" : "#ffffff";
+  const labelColor       = isDark ? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.48)";
+  const dividerColor     = isDark ? "rgba(255,255,255,0.20)" : "rgba(0,0,0,0.18)";
+  const headingColor     = isDark ? "#ffffff" : "#0a0a0a";
+  const subColor         = isDark ? "rgba(255,255,255,0.68)" : "rgba(0,0,0,0.58)";
+
+  const panelBg          = isDark ? "rgba(10,10,18,0.90)" : "#ffffff";
+  const panelBorder      = isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.10)";
+  const panelShadow      = isDark
+    ? "0 32px 80px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08)"
+    : "0 8px 40px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04)";
+
+  const titleBarBg       = isDark ? "rgba(6,6,14,0.70)" : "#f4f4f6";
+  const titleBarBorder   = isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.08)";
+  const titleBarText     = isDark ? "rgba(255,255,255,0.22)" : "rgba(0,0,0,0.32)";
+
+  const sidebarBg        = isDark ? "rgba(6,6,14,0.50)" : "#fafafa";
+  const sidebarBorder    = isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.08)";
+  const sidebarLabel     = isDark ? "rgba(255,255,255,0.22)" : "rgba(0,0,0,0.32)";
+  const sidebarFooter    = isDark ? "rgba(255,255,255,0.18)" : "rgba(0,0,0,0.28)";
+
+  const breadcrumbBg     = isDark ? "rgba(6,6,14,0.35)" : "#f9f9fb";
+  const breadcrumbBorder = isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)";
+  const breadcrumbMuted  = isDark ? "rgba(255,255,255,0.28)" : "rgba(0,0,0,0.38)";
+  const breadcrumbSlash  = isDark ? "rgba(255,255,255,0.14)" : "rgba(0,0,0,0.20)";
+
+  const contentBg        = isDark ? "transparent" : "#ffffff";
+  const idColor          = isDark ? "rgba(255,255,255,0.28)" : "rgba(0,0,0,0.32)";
+  const inlineDivider    = isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.08)";
+  const bodyColor        = isDark ? "rgba(255,255,255,0.65)" : "rgba(0,0,0,0.60)";
+
+  const bottomNavBg      = isDark ? "rgba(6,6,14,0.45)" : "#f4f4f6";
+  const bottomNavBorder  = isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.08)";
+  const navBtnColor      = isDark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.40)";
+  const navBtnHover      = isDark ? "rgba(255,255,255,0.85)" : "rgba(0,0,0,0.80)";
+  const dotInactive      = isDark ? "rgba(255,255,255,0.14)" : "rgba(0,0,0,0.16)";
+
+  const activeCardBg     = isDark ? "rgba(255,255,255,0.06)" : "#ffffff";
+  const activeCardBorder = isDark ? "rgba(255,255,255,0.11)" : "rgba(0,0,0,0.09)";
+  const activeCardShadow = isDark ? "none" : "0 2px 8px rgba(0,0,0,0.06)";
+  const inactiveTabText  = isDark ? "rgba(255,255,255,0.32)" : "rgba(0,0,0,0.38)";
+  const inactiveDot      = isDark ? "rgba(255,255,255,0.18)" : "rgba(0,0,0,0.20)";
+  const tabsBg           = isDark ? "rgba(6,6,14,0.50)" : "#fafafa";
+  const mobileBtnBg      = isDark ? "rgba(255,255,255,0.06)" : "#ffffff";
+  const mobileBtnBorder  = isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.10)";
+  const mobileBtnColor   = isDark ? "rgba(255,255,255,0.48)" : "rgba(0,0,0,0.50)";
 
   return (
     <section
       id="vision"
-      className="relative overflow-hidden flex flex-col items-center justify-center py-10"
       style={{
-        background: sectionBg,
-        transition: "background 0.4s ease",
         position: "relative",
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        overflow: "hidden",
+        background: sectionBg,
+        padding: "2.5rem 0 5rem",
+        transition: "background 0.4s ease",
         zIndex: 10,
         isolation: "isolate",
-        minHeight: "100vh",
-        paddingBottom: "5rem",
       }}
     >
-      {/* Background glows */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[700px] rounded-full"
-          style={{
-            background: isDark ? "rgba(139,92,246,0.07)" : "rgba(139,92,246,0.04)",
-            filter: "blur(180px)",
-          }}
-        />
-        <div
-          className="absolute bottom-0 right-0 w-[500px] h-[400px] rounded-full"
-          style={{
-            background: isDark ? "rgba(34,211,238,0.05)" : "rgba(14,165,233,0.04)",
-            filter: "blur(120px)",
-          }}
-        />
-      </div>
+      <div ref={ref} className="relative z-10 w-full max-w-5xl mx-auto px-5 sm:px-6 flex flex-col items-center gap-7">
 
-      <div ref={ref} className="relative z-10 w-full max-w-5xl mx-auto px-6 flex flex-col items-center gap-6">
-        {/* Header */}
+        {/* ── Header ── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="text-center w-full"
+          style={{ textAlign: "center", width: "100%" }}
         >
-          <div className="flex items-center justify-center gap-3 mb-3">
-            <div className="w-8 h-[1px]" style={{ background: dividerColor }} />
-            <span className="text-[10px] font-mono tracking-[0.28em] uppercase" style={{ color: labelColor }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 14, marginBottom: 18 }}>
+            <div style={{ width: 32, height: 1, background: dividerColor }} />
+            <span style={{
+              fontSize: 11, fontFamily: "monospace",
+              letterSpacing: "0.28em", textTransform: "uppercase",
+              color: labelColor, fontWeight: 600,
+            }}>
               Our Vision
             </span>
-            <div className="w-8 h-[1px]" style={{ background: dividerColor }} />
+            <div style={{ width: 32, height: 1, background: dividerColor }} />
           </div>
-          <h2
-            className="text-3xl md:text-5xl font-bold leading-tight tracking-tight mb-2"
-            style={{
-              color: headingColor,
-              textShadow: isDark
-                ? "0 0 40px rgba(255,255,255,0.35), 0 0 80px rgba(255,255,255,0.15)"
-                : "none",
-              transition: "color 0.4s ease",
-            }}
-          >
+
+          <h2 style={{
+            fontFamily: "'Georgia','Times New Roman',serif",
+            fontSize: isMobile ? "clamp(2.0rem,7vw,2.8rem)" : "clamp(2.6rem,4.5vw,3.8rem)",
+            fontWeight: 900, lineHeight: 1.06,
+            letterSpacing: "-0.035em",
+            color: headingColor,
+            margin: "0 0 14px",
+            transition: "color 0.4s ease",
+          }}>
             We are building the next generation.
           </h2>
-          <p className="text-sm max-w-md mx-auto leading-relaxed" style={{ color: subColor }}>
+
+          <p style={{
+            fontSize: isMobile ? 15 : 16,
+            maxWidth: 420, margin: "0 auto",
+            lineHeight: 1.78, color: subColor,
+            fontWeight: 400,
+            transition: "color 0.4s ease",
+          }}>
             Four principles. One system. A way of thinking about modern software.
           </p>
         </motion.div>
 
-        {/* Panel */}
+        {/* ── Panel ── */}
         <motion.div
           initial={{ opacity: 0, y: 32 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="rounded-2xl overflow-hidden w-full"
           style={{
+            borderRadius: 20, overflow: "hidden", width: "100%",
             background: panelBg,
             border: `1px solid ${panelBorder}`,
             boxShadow: panelShadow,
             backdropFilter: isDark ? "blur(48px) saturate(180%)" : "none",
             WebkitBackdropFilter: isDark ? "blur(48px) saturate(180%)" : "none",
-            transition: "background 0.4s ease, border 0.4s ease, box-shadow 0.4s ease",
+            transition: "background 0.4s ease, border 0.4s ease",
           }}
         >
           {/* Title bar */}
-          <div
-            className="flex items-center gap-3 px-5 py-3"
-            style={{
-              background: titleBarBg,
-              borderBottom: `1px solid ${titleBarBorder}`,
-              transition: "background 0.4s ease",
-            }}
-          >
-            <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full" style={{ background: "rgba(255,95,86,0.80)" }} />
-              <div className="w-3 h-3 rounded-full" style={{ background: "rgba(255,189,46,0.80)" }} />
-              <div className="w-3 h-3 rounded-full" style={{ background: "rgba(39,201,63,0.80)" }} />
+          <div style={{
+            display: "flex", alignItems: "center", gap: 10,
+            padding: "12px 18px",
+            background: titleBarBg,
+            borderBottom: `1px solid ${titleBarBorder}`,
+            transition: "background 0.4s ease",
+          }}>
+            <div style={{ display: "flex", gap: 6 }}>
+              {["rgba(255,95,86,0.80)", "rgba(255,189,46,0.80)", "rgba(39,201,63,0.80)"].map((c, i) => (
+                <div key={i} style={{ width: 12, height: 12, borderRadius: "50%", background: c }} />
+              ))}
             </div>
-            <div className="flex-1 flex justify-center">
-              <span className="text-xs font-mono tracking-wider" style={{ color: titleBarText }}>
+            <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
+              <span style={{ fontSize: 12, fontFamily: "monospace", color: titleBarText, letterSpacing: "0.06em" }}>
                 xinchao@futurxt / vision
               </span>
             </div>
-            <div className="w-16" />
+            <div style={{ width: 60 }} />
           </div>
 
           {/* ── MOBILE ── */}
           {isMobile ? (
-            <div className="flex flex-col">
-              <div
-                className="flex border-b overflow-x-auto"
-                style={{
-                  background: tabsBg,
-                  borderColor: sidebarBorder,
-                  scrollbarWidth: "none",
-                  WebkitOverflowScrolling: "touch",
-                } as React.CSSProperties}
-              >
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              {/* Tabs */}
+              <div style={{
+                display: "flex",
+                background: tabsBg,
+                borderBottom: `1px solid ${sidebarBorder}`,
+                overflowX: "auto",
+                scrollbarWidth: "none",
+              }}>
                 {chapters.map((ch, i) => {
                   const isActive = i === active;
                   const s = tagStyles[ch.tagColor];
@@ -271,28 +274,32 @@ export function VisionSection() {
                     <button
                       key={ch.id}
                       onClick={() => setActive(i)}
-                      className="relative flex flex-col items-center gap-1 px-4 py-3 shrink-0 transition-all duration-200"
                       style={{
-                        background: isActive ? (isDark ? "rgba(255,255,255,0.055)" : "#ffffff") : "transparent",
+                        display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+                        padding: "12px 16px", flexShrink: 0, minWidth: 80,
+                        background: isActive ? (isDark ? "rgba(255,255,255,0.06)" : "#ffffff") : "transparent",
                         borderBottom: `2px solid ${isActive ? s.accent : "transparent"}`,
-                        minWidth: 80,
+                        border: "none", cursor: "pointer",
+                        transition: "all 0.2s",
                       }}
                     >
-                      <div
-                        className="w-1.5 h-1.5 rounded-full transition-all duration-300"
-                        style={{ background: isActive ? s.accent : inactiveDot }}
-                      />
-                      <p className="text-[9px] font-mono" style={{ color: isActive ? (isDark ? "rgba(255,255,255,0.50)" : "rgba(0,0,0,0.50)") : (isDark ? "rgba(255,255,255,0.18)" : "rgba(0,0,0,0.28)") }}>
+                      <div style={{
+                        width: 7, height: 7, borderRadius: "50%",
+                        background: isActive ? s.accent : inactiveDot,
+                        transition: "all 0.3s",
+                      }} />
+                      <span style={{ fontSize: 9, fontFamily: "monospace", color: isActive ? (isDark ? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.50)") : (isDark ? "rgba(255,255,255,0.22)" : "rgba(0,0,0,0.30)") }}>
                         {ch.id}
-                      </p>
-                      <p className="text-[10px] font-semibold whitespace-nowrap" style={{ color: isActive ? headingColor : inactiveTabText }}>
+                      </span>
+                      <span style={{ fontSize: 11, fontWeight: 650, color: isActive ? headingColor : inactiveTabText, whiteSpace: "nowrap" }}>
                         {ch.tag}
-                      </p>
+                      </span>
                     </button>
                   );
                 })}
               </div>
 
+              {/* Content */}
               <AnimatePresence mode="wait">
                 <motion.div
                   key={active}
@@ -300,26 +307,31 @@ export function VisionSection() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.28, ease: [0.4, 0, 0.2, 1] }}
-                  className="px-5 py-5"
-                  style={{ background: contentBg }}
+                  style={{ padding: "20px 20px 16px", background: contentBg, transition: "background 0.4s ease" }}
                 >
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="text-xs font-mono" style={{ color: idColor }}>{current.id}</span>
-                    <div className="h-[1px] w-5" style={{ background: inlineDivider }} />
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 13 }}>
+                    <span style={{ fontSize: 12, fontFamily: "monospace", color: idColor, fontWeight: 600 }}>{current.id}</span>
+                    <div style={{ height: 1, width: 20, background: inlineDivider }} />
                     <span className={`text-[11px] font-mono px-2.5 py-0.5 rounded-full border ${ts.text} ${ts.bg} ${ts.border}`}>
                       {current.tag}
                     </span>
                   </div>
-                  <h3 className="text-lg font-bold leading-snug tracking-tight mb-3" style={{ color: headingColor }}>
+
+                  <h3 style={{
+                    fontSize: 19, fontWeight: 750, letterSpacing: "-0.02em",
+                    lineHeight: 1.28, color: headingColor, marginBottom: 13,
+                    transition: "color 0.4s ease",
+                  }}>
                     {current.title}
                   </h3>
-                  <div className="h-[1px] mb-4" style={{ background: inlineDivider }} />
-                  <div className="space-y-3">
+
+                  <div style={{ height: 1, marginBottom: 16, background: inlineDivider }} />
+
+                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                     {current.content.split("\n\n").map((para, i) => (
                       <p
                         key={i}
-                        className="text-sm leading-[1.85]"
-                        style={{ color: bodyColor }}
+                        style={{ fontSize: 14, lineHeight: 1.85, color: bodyColor, margin: 0, fontWeight: 400 }}
                         dangerouslySetInnerHTML={{ __html: parseContent(para, isDark) }}
                       />
                     ))}
@@ -327,58 +339,68 @@ export function VisionSection() {
                 </motion.div>
               </AnimatePresence>
 
-              <div
-                className="px-5 py-3 flex items-center justify-between"
-                style={{ background: bottomNavBg, borderTop: `1px solid ${bottomNavBorder}` }}
-              >
+              {/* Bottom nav */}
+              <div style={{
+                padding: "12px 18px", display: "flex", alignItems: "center", justifyContent: "space-between",
+                background: bottomNavBg, borderTop: `1px solid ${bottomNavBorder}`,
+              }}>
                 <button
                   onClick={() => setActive((active - 1 + chapters.length) % chapters.length)}
-                  className="text-xs font-mono px-3 py-1.5 rounded-lg transition-all duration-200"
-                  style={{ color: mobileBtnColor, background: mobileBtnBg, border: `1px solid ${mobileBtnBorder}` }}
+                  style={{
+                    fontSize: 12, fontFamily: "monospace", fontWeight: 600,
+                    padding: "7px 14px", borderRadius: 10,
+                    color: mobileBtnColor, background: mobileBtnBg, border: `1px solid ${mobileBtnBorder}`,
+                    cursor: "pointer",
+                  }}
                 >
                   ← Prev
                 </button>
-                <div className="flex items-center gap-2">
+                <div style={{ display: "flex", gap: 7, alignItems: "center" }}>
                   {chapters.map((ch, i) => (
                     <button
                       key={i}
                       onClick={() => setActive(i)}
-                      className="rounded-full transition-all duration-300"
                       style={{
-                        width: i === active ? 20 : 6,
-                        height: 6,
+                        width: i === active ? 22 : 7, height: 7, borderRadius: 99,
                         background: i === active ? tagStyles[chapters[i].tagColor].accent : dotInactive,
+                        border: "none", cursor: "pointer", padding: 0,
+                        transition: "all 0.3s",
                       }}
                     />
                   ))}
                 </div>
                 <button
                   onClick={() => setActive((active + 1) % chapters.length)}
-                  className="text-xs font-mono px-3 py-1.5 rounded-lg transition-all duration-200"
-                  style={{ color: mobileBtnColor, background: mobileBtnBg, border: `1px solid ${mobileBtnBorder}` }}
+                  style={{
+                    fontSize: 12, fontFamily: "monospace", fontWeight: 600,
+                    padding: "7px 14px", borderRadius: 10,
+                    color: mobileBtnColor, background: mobileBtnBg, border: `1px solid ${mobileBtnBorder}`,
+                    cursor: "pointer",
+                  }}
                 >
                   Next →
                 </button>
               </div>
             </div>
+
           ) : (
             /* ── DESKTOP ── */
-            <div className="flex" style={{ minHeight: 380 }}>
+            <div style={{ display: "flex", minHeight: 400 }}>
               {/* Sidebar */}
-              <div
-                className="w-52 shrink-0 flex flex-col py-4"
-                style={{
-                  background: sidebarBg,
-                  borderRight: `1px solid ${sidebarBorder}`,
-                  transition: "background 0.4s ease",
-                }}
-              >
-                <div className="px-4 mb-4">
-                  <p className="text-[10px] font-mono tracking-[0.2em] uppercase" style={{ color: sidebarLabel }}>
+              <div style={{
+                width: 210, flexShrink: 0, display: "flex", flexDirection: "column",
+                padding: "16px 0",
+                background: sidebarBg,
+                borderRight: `1px solid ${sidebarBorder}`,
+                transition: "background 0.4s ease",
+              }}>
+                <div style={{ padding: "0 16px", marginBottom: 14 }}>
+                  <p style={{ fontSize: 10, fontFamily: "monospace", letterSpacing: "0.20em", textTransform: "uppercase", color: sidebarLabel, fontWeight: 600, margin: 0 }}>
                     FOS · Principles
                   </p>
                 </div>
-                <nav className="flex-1 space-y-0.5 px-2">
+
+                <nav style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2, padding: "0 8px" }}>
                   {chapters.map((ch, i) => {
                     const isActive = i === active;
                     const s = tagStyles[ch.tagColor];
@@ -386,13 +408,19 @@ export function VisionSection() {
                       <button
                         key={ch.id}
                         onClick={() => setActive(i)}
-                        className="w-full text-left px-3 py-2.5 rounded-xl transition-all duration-200 relative flex items-center gap-3"
+                        style={{
+                          width: "100%", textAlign: "left",
+                          padding: "10px 12px", borderRadius: 12,
+                          background: "none", border: "none", cursor: "pointer",
+                          position: "relative", display: "flex", alignItems: "center", gap: 10,
+                          transition: "all 0.2s",
+                        }}
                       >
                         {isActive && (
                           <motion.div
                             layoutId="activeChapterVision"
-                            className="absolute inset-0 rounded-xl"
                             style={{
+                              position: "absolute", inset: 0, borderRadius: 12,
                               background: activeCardBg,
                               border: `1px solid ${activeCardBorder}`,
                               boxShadow: activeCardShadow,
@@ -400,15 +428,16 @@ export function VisionSection() {
                             transition={{ type: "spring", bounce: 0.18, duration: 0.38 }}
                           />
                         )}
-                        <div
-                          className="relative w-1.5 h-1.5 rounded-full shrink-0 transition-all duration-300"
-                          style={{ background: isActive ? s.accent : inactiveDot }}
-                        />
-                        <div className="relative flex-1 min-w-0">
-                          <p className="text-[10px] font-mono mb-0.5" style={{ color: isActive ? s.accent : sidebarLabel }}>
+                        <div style={{
+                          position: "relative", width: 7, height: 7, borderRadius: "50%", flexShrink: 0,
+                          background: isActive ? s.accent : inactiveDot,
+                          transition: "all 0.3s",
+                        }} />
+                        <div style={{ position: "relative", flex: 1, minWidth: 0 }}>
+                          <p style={{ fontSize: 10, fontFamily: "monospace", marginBottom: 2, color: isActive ? s.accent : sidebarLabel, fontWeight: 600 }}>
                             {ch.id}
                           </p>
-                          <p className="text-xs font-semibold truncate" style={{ color: isActive ? headingColor : inactiveTabText }}>
+                          <p style={{ fontSize: 13, fontWeight: 650, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: isActive ? headingColor : inactiveTabText, margin: 0 }}>
                             {ch.tag}
                           </p>
                         </div>
@@ -416,25 +445,26 @@ export function VisionSection() {
                     );
                   })}
                 </nav>
-                <div className="px-4 pt-4 mt-4" style={{ borderTop: `1px solid ${sidebarBorder}` }}>
-                  <p className="text-[10px] font-mono tracking-wide leading-relaxed" style={{ color: sidebarFooter }}>
+
+                <div style={{ padding: "14px 16px 0", borderTop: `1px solid ${sidebarBorder}`, marginTop: 8 }}>
+                  <p style={{ fontSize: 10, fontFamily: "monospace", letterSpacing: "0.05em", lineHeight: 1.7, color: sidebarFooter, margin: 0 }}>
                     FUTURXT OPERATING SYSTEM<br />v2026 ·
                   </p>
                 </div>
               </div>
 
-              {/* Content */}
-              <div className="flex-1 flex flex-col min-w-0">
-                <div
-                  className="flex items-center gap-2 px-7 py-3"
-                  style={{
-                    background: breadcrumbBg,
-                    borderBottom: `1px solid ${breadcrumbBorder}`,
-                    transition: "background 0.4s ease",
-                  }}
-                >
-                  <span className="text-xs font-mono" style={{ color: breadcrumbMuted }}>Vision</span>
-                  <span className="text-xs" style={{ color: breadcrumbSlash }}>/</span>
+              {/* Content area */}
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
+                {/* Breadcrumb */}
+                <div style={{
+                  display: "flex", alignItems: "center", gap: 8,
+                  padding: "11px 28px",
+                  background: breadcrumbBg,
+                  borderBottom: `1px solid ${breadcrumbBorder}`,
+                  transition: "background 0.4s ease",
+                }}>
+                  <span style={{ fontSize: 12, fontFamily: "monospace", color: breadcrumbMuted, fontWeight: 500 }}>Vision</span>
+                  <span style={{ fontSize: 12, color: breadcrumbSlash }}>/</span>
                   <AnimatePresence mode="wait">
                     <motion.span
                       key={current.tag}
@@ -442,13 +472,14 @@ export function VisionSection() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -4 }}
                       transition={{ duration: 0.18 }}
-                      className={`text-xs font-mono font-semibold ${ts.text}`}
+                      className={`text-[12px] font-mono font-semibold ${ts.text}`}
                     >
                       {current.tag}
                     </motion.span>
                   </AnimatePresence>
                 </div>
 
+                {/* Body */}
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={active}
@@ -456,26 +487,37 @@ export function VisionSection() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.28, ease: [0.4, 0, 0.2, 1] }}
-                    className="flex-1 overflow-y-auto px-7 py-6"
-                    style={{ background: contentBg, transition: "background 0.4s ease" }}
+                    style={{
+                      flex: 1, overflowY: "auto",
+                      padding: "26px 30px",
+                      background: contentBg,
+                      transition: "background 0.4s ease",
+                    }}
                   >
-                    <div className="flex items-center gap-3 mb-4">
-                      <span className="text-xs font-mono" style={{ color: idColor }}>{current.id}</span>
-                      <div className="h-[1px] w-5" style={{ background: inlineDivider }} />
-                      <span className={`text-[11px] font-mono px-2.5 py-0.5 rounded-full border ${ts.text} ${ts.bg} ${ts.border}`}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+                      <span style={{ fontSize: 12, fontFamily: "monospace", color: idColor, fontWeight: 600 }}>{current.id}</span>
+                      <div style={{ height: 1, width: 20, background: inlineDivider }} />
+                      <span className={`text-[12px] font-mono px-3 py-1 rounded-full border font-semibold ${ts.text} ${ts.bg} ${ts.border}`}>
                         {current.tag}
                       </span>
                     </div>
-                    <h3 className="text-xl md:text-2xl font-bold leading-snug tracking-tight mb-4" style={{ color: headingColor }}>
+
+                    <h3 style={{
+                      fontSize: 22, fontWeight: 750, letterSpacing: "-0.025em",
+                      lineHeight: 1.26, color: headingColor,
+                      marginBottom: 16,
+                      transition: "color 0.4s ease",
+                    }}>
                       {current.title}
                     </h3>
-                    <div className="h-[1px] mb-5" style={{ background: inlineDivider }} />
-                    <div className="space-y-3 max-w-xl">
+
+                    <div style={{ height: 1, marginBottom: 20, background: inlineDivider }} />
+
+                    <div style={{ display: "flex", flexDirection: "column", gap: 14, maxWidth: 560 }}>
                       {current.content.split("\n\n").map((para, i) => (
                         <p
                           key={i}
-                          className="text-sm leading-[1.85]"
-                          style={{ color: bodyColor }}
+                          style={{ fontSize: 14.5, lineHeight: 1.88, color: bodyColor, margin: 0, fontWeight: 400 }}
                           dangerouslySetInnerHTML={{ __html: parseContent(para, isDark) }}
                         />
                       ))}
@@ -483,37 +525,37 @@ export function VisionSection() {
                   </motion.div>
                 </AnimatePresence>
 
-                <div
-                  className="px-7 py-3 flex items-center justify-between"
-                  style={{ background: bottomNavBg, borderTop: `1px solid ${bottomNavBorder}`, transition: "background 0.4s ease" }}
-                >
+                {/* Bottom nav */}
+                <div style={{
+                  padding: "11px 28px", display: "flex", alignItems: "center", justifyContent: "space-between",
+                  background: bottomNavBg, borderTop: `1px solid ${bottomNavBorder}`,
+                  transition: "background 0.4s ease",
+                }}>
                   <button
                     onClick={() => setActive((active - 1 + chapters.length) % chapters.length)}
-                    className="text-xs font-mono transition-all duration-200"
-                    style={{ color: navBtnColor }}
+                    style={{ fontSize: 12, fontFamily: "monospace", fontWeight: 600, color: navBtnColor, background: "none", border: "none", cursor: "pointer", transition: "color 0.2s" }}
                     onMouseEnter={(e) => (e.currentTarget.style.color = navBtnHover)}
                     onMouseLeave={(e) => (e.currentTarget.style.color = navBtnColor)}
                   >
                     ← Prev
                   </button>
-                  <div className="flex items-center gap-2">
+                  <div style={{ display: "flex", gap: 7, alignItems: "center" }}>
                     {chapters.map((ch, i) => (
                       <button
                         key={i}
                         onClick={() => setActive(i)}
-                        className="rounded-full transition-all duration-300"
                         style={{
-                          width: i === active ? 20 : 6,
-                          height: 6,
+                          width: i === active ? 22 : 7, height: 7, borderRadius: 99,
                           background: i === active ? tagStyles[chapters[i].tagColor].accent : dotInactive,
+                          border: "none", cursor: "pointer", padding: 0,
+                          transition: "all 0.3s",
                         }}
                       />
                     ))}
                   </div>
                   <button
                     onClick={() => setActive((active + 1) % chapters.length)}
-                    className="text-xs font-mono transition-all duration-200"
-                    style={{ color: navBtnColor }}
+                    style={{ fontSize: 12, fontFamily: "monospace", fontWeight: 600, color: navBtnColor, background: "none", border: "none", cursor: "pointer", transition: "color 0.2s" }}
                     onMouseEnter={(e) => (e.currentTarget.style.color = navBtnHover)}
                     onMouseLeave={(e) => (e.currentTarget.style.color = navBtnColor)}
                   >
