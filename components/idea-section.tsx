@@ -116,84 +116,6 @@ function useTypewriter(text: string, started: boolean, speed = 14) {
   return { displayed, done };
 }
 
-function ThemeToggle() {
-  const { resolvedTheme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => { setMounted(true); }, []);
-
-  if (!mounted) {
-    return (
-      <div style={{
-        position: "fixed", top: "1rem", left: "1rem", zIndex: 200,
-        width: 44, height: 44, borderRadius: "50%",
-        background: "rgba(255,255,255,0.08)",
-        border: "1px solid rgba(255,255,255,0.18)",
-      }} />
-    );
-  }
-
-  const isDark = resolvedTheme === "dark";
-
-  return (
-    <motion.button
-      onClick={() => setTheme(isDark ? "light" : "dark")}
-      whileTap={{ scale: 0.9 }}
-      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-      style={{
-        position: "fixed",
-        top: "1rem",
-        left: "1rem",
-        zIndex: 200,
-        width: 44,
-        height: 44,
-        borderRadius: "50%",
-        border: isDark ? "1px solid rgba(255,255,255,0.18)" : "1px solid rgba(0,0,0,0.12)",
-        background: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        cursor: "pointer",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 0,
-        outline: "none",
-        transition: "all 0.4s ease",
-      }}
-    >
-      <AnimatePresence mode="wait">
-        {isDark ? (
-          <motion.svg key="moon" width="20" height="20" viewBox="0 0 24 24" fill="none"
-            initial={{ opacity: 0, rotate: -30, scale: 0.7 }}
-            animate={{ opacity: 1, rotate: 0, scale: 1 }}
-            exit={{ opacity: 0, rotate: 30, scale: 0.7 }}
-            transition={{ duration: 0.28 }}>
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="rgba(215,228,255,0.95)" />
-          </motion.svg>
-        ) : (
-          <motion.svg key="sun" width="22" height="22" viewBox="0 0 24 24" fill="none"
-            initial={{ opacity: 0, rotate: 30, scale: 0.7 }}
-            animate={{ opacity: 1, rotate: 0, scale: 1 }}
-            exit={{ opacity: 0, rotate: -30, scale: 0.7 }}
-            transition={{ duration: 0.28 }}>
-            <circle cx="12" cy="12" r="5" fill="#f59e0b" />
-            <g stroke="#f59e0b" strokeWidth="2" strokeLinecap="round">
-              <line x1="12" y1="2" x2="12" y2="5" />
-              <line x1="12" y1="19" x2="12" y2="22" />
-              <line x1="4.22" y1="4.22" x2="6.34" y2="6.34" />
-              <line x1="17.66" y1="17.66" x2="19.78" y2="19.78" />
-              <line x1="2" y1="12" x2="5" y2="12" />
-              <line x1="19" y1="12" x2="22" y2="12" />
-              <line x1="4.22" y1="19.78" x2="6.34" y2="17.66" />
-              <line x1="17.66" y1="6.34" x2="19.78" y2="4.22" />
-            </g>
-          </motion.svg>
-        )}
-      </AnimatePresence>
-    </motion.button>
-  );
-}
-
 export function IdeaSection() {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -275,8 +197,6 @@ export function IdeaSection() {
         justifyContent: "center",
       }}
     >
-      <ThemeToggle />
-
       <AnimatePresence>
         {!hyperspaceOver && (
           <motion.div
@@ -307,7 +227,6 @@ export function IdeaSection() {
           boxSizing: "border-box" as const,
         }}
       >
-        {/* Heading */}
         <motion.div
           initial={{ opacity: 0, y: 36, filter: "blur(12px)" }}
           animate={stage >= 1 ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
@@ -351,7 +270,6 @@ export function IdeaSection() {
           />
         </motion.div>
 
-        {/* Subtitle */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={stage >= 2 ? { opacity: 1 } : { opacity: 0 }}
@@ -400,7 +318,6 @@ export function IdeaSection() {
           </p>
         </motion.div>
 
-        {/* Introduce button */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={stage >= 3 ? { opacity: 1, y: 0 } : {}}

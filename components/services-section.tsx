@@ -12,7 +12,9 @@ function hexRgb(h: string) {
 
 function GlassCTA({ accent, label = "Start a project" }: { accent: string; label?: string }) {
   const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+  const isDark = mounted ? resolvedTheme === "dark" : true;
   const rgb = hexRgb(accent);
   const bg = isDark
     ? `linear-gradient(145deg, rgba(${rgb},0.22) 0%, rgba(${rgb},0.10) 40%, rgba(255,255,255,0.05) 100%)`
@@ -55,7 +57,9 @@ function SmartImage({ src, alt = "" }: { src: string; alt?: string }) {
 
 function PhotoGallery({ accent, photos, isMobile }: { accent: string; photos: { url: string }[]; isMobile: boolean }) {
   const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+  const isDark = mounted ? resolvedTheme === "dark" : true;
   const [current, setCurrent] = useState(0);
   const rgb = hexRgb(accent);
   const touchStartX = useRef<number | null>(null);
@@ -64,7 +68,6 @@ function PhotoGallery({ accent, photos, isMobile }: { accent: string; photos: { 
 
   useEffect(() => { setCurrent(0); }, [photos]);
 
-  // Auto-play only on desktop
   useEffect(() => {
     if (isMobile || photos.length <= 1) return;
     autoPlayRef.current = setInterval(() => {
@@ -127,7 +130,6 @@ function PhotoGallery({ accent, photos, isMobile }: { accent: string; photos: { 
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
       >
-        {/* Title bar */}
         <div style={{
           display: "flex", alignItems: "center", gap: 10,
           padding: "11px 16px", flexShrink: 0,
@@ -145,7 +147,6 @@ function PhotoGallery({ accent, photos, isMobile }: { accent: string; photos: { 
           </div>
         </div>
 
-        {/* Image area */}
         <div style={{ flex: 1, position: "relative", overflow: "hidden", minHeight: 0 }}>
           {photos.map((photo, i) => (
             <div
@@ -219,10 +220,10 @@ function FinanceAppDemo({ accent }: { accent: string }) {
   const saveSalary = () => { const val = parseInt(salaryInput); if (!isNaN(val) && val > 0) { setSalary(val); notify("Salary updated"); } setEditingSalary(false); };
   const savingsPercent = Math.min((currentSavings / savingsGoal) * 100, 100);
 
-  const phoneBg = isDark ? "#ffffff" : "#ffffff";
-  const phoneBodyBg = isDark ? "#f5f7fa" : "#f5f7fa";
-  const cardBg = isDark ? "#fff" : "#fff";
-  const cardBorder = isDark ? "#f0f0f0" : "#f0f0f0";
+  const phoneBg = "#ffffff";
+  const phoneBodyBg = "#f5f7fa";
+  const cardBg = "#fff";
+  const cardBorder = "#f0f0f0";
 
   return (
     <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
@@ -479,13 +480,10 @@ function AiLiveDemo({ accent, isDarkGlobal }: { accent: string; isDarkGlobal: bo
 
   const allMessages: Message[] = streamText ? [...messages, { role: "assistant", content: streamText }] : messages;
   const hasMessages = allMessages.length > 0;
-
   const suggestedQuestions = ["What can you build?", "What's your tech stack?", "How long does it take?"];
 
   return (
     <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", borderRadius: 22, overflow: "hidden", background: bg, border: `1px solid ${border}`, boxShadow: isDark ? "0 40px 120px rgba(0,0,0,0.90), inset 0 1px 0 rgba(255,255,255,0.07)" : "0 8px 40px rgba(0,0,0,0.12), 0 1px 0 rgba(0,0,0,0.06)", transition: "background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease", position: "relative" }}>
-      
-      {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 18px", flexShrink: 0, borderBottom: `1px solid ${headerBorder}`, background: headerBg, transition: "background 0.35s, border-color 0.35s" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{ width: 38, height: 38, borderRadius: 12, background: isDark ? "rgba(255,255,255,0.10)" : "#111", border: `1px solid ${isDark ? "rgba(255,255,255,0.14)" : "transparent"}`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: isDark ? "inset 0 1px 0 rgba(255,255,255,0.15)" : "0 2px 8px rgba(0,0,0,0.25)" }}>
@@ -507,7 +505,6 @@ function AiLiveDemo({ accent, isDarkGlobal }: { accent: string; isDarkGlobal: bo
         </div>
       </div>
 
-      {/* Messages */}
       <div ref={scrollRef} style={{ flex: 1, overflowY: "auto", padding: "16px", display: "flex", flexDirection: "column", gap: 14, minHeight: 0, scrollbarWidth: "thin", scrollbarColor: `${isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.08)"} transparent` }}>
         {!hasMessages && (
           <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 14, paddingTop: 16 }}>
@@ -567,7 +564,6 @@ function AiLiveDemo({ accent, isDarkGlobal }: { accent: string; isDarkGlobal: bo
         )}
       </div>
 
-      {/* Input */}
       <div style={{ padding: "12px 14px", flexShrink: 0, borderTop: `1px solid ${headerBorder}`, background: headerBg, transition: "background 0.35s, border-color 0.35s" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, background: inputBg, border: `1px solid ${isFocused ? (isDark ? "rgba(255,255,255,0.28)" : "rgba(0,0,0,0.28)") : inputBorder}`, borderRadius: 14, padding: "10px 10px 10px 15px", transition: "border-color 0.2s, background 0.35s" }}>
           <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } }} onFocus={() => setIsFocused(true)} onBlur={() => setIsFocused(false)} placeholder="Ask me anything…" disabled={loading} style={{ flex: 1, background: "none", border: "none", outline: "none", fontSize: 13, color: textPrimary, fontFamily: "inherit", caretColor: isDark ? "rgba(255,255,255,0.7)" : "#111", transition: "color 0.35s" }} />
@@ -634,15 +630,10 @@ export const SERVICE_DATA = [
 ];
 
 function AnimatedBackground({ accent, rgb, isMobile, isDark }: { accent: string; rgb: string; isMobile: boolean; isDark: boolean }) {
-  if (isMobile) {
-    // Mobile: pure black (dark) or pure white (light), no grid, no orbs
-    return null;
-  }
+  if (isMobile) return null;
 
-  // Desktop: keep grid + orbs, remove ombre/gradient vignette
   return (
     <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
-      {/* Subtle radial color blobs — much lower opacity, no ombre vignette */}
       <div style={{
         position: "absolute", inset: 0,
         background: isDark
@@ -650,8 +641,6 @@ function AnimatedBackground({ accent, rgb, isMobile, isDark }: { accent: string;
           : `radial-gradient(ellipse 60% 50% at 78% 38%, rgba(${rgb},0.06) 0%, transparent 60%), radial-gradient(ellipse 45% 40% at 15% 72%, rgba(${rgb},0.04) 0%, transparent 55%)`,
         transition: "background 0.6s ease"
       }} />
-
-      {/* Grid lines */}
       <div style={{
         position: "absolute", inset: 0,
         backgroundImage: `linear-gradient(rgba(${rgb},${isDark ? "0.05" : "0.04"}) 1px, transparent 1px), linear-gradient(90deg, rgba(${rgb},${isDark ? "0.05" : "0.04"}) 1px, transparent 1px)`,
@@ -659,21 +648,15 @@ function AnimatedBackground({ accent, rgb, isMobile, isDark }: { accent: string;
         maskImage: "radial-gradient(ellipse 90% 90% at 50% 50%, black 40%, transparent 100%)",
         WebkitMaskImage: "radial-gradient(ellipse 90% 90% at 50% 50%, black 40%, transparent 100%)",
       }} />
-
-      {/* Single accent line */}
       <div style={{
         position: "absolute", top: "-30%", right: "26%",
         width: 1.5, height: "160%",
         background: `linear-gradient(180deg, transparent, rgba(${rgb},${isDark ? "0.18" : "0.10"}) 35%, rgba(${rgb},${isDark ? "0.10" : "0.06"}) 65%, transparent)`,
         transform: "rotate(16deg)"
       }} />
-
-      {/* Scanlines (dark only) */}
       {isDark && (
         <div style={{ position: "absolute", inset: 0, backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,255,255,0.007) 3px, rgba(255,255,255,0.007) 4px)" }} />
       )}
-
-      {/* Bottom accent line */}
       <div style={{ position: "absolute", bottom: 0, left: "4%", right: "4%", height: 1, background: `linear-gradient(90deg,transparent,rgba(${rgb},0.28),transparent)`, boxShadow: `0 0 24px rgba(${rgb},0.16)` }} />
     </div>
   );
@@ -681,7 +664,9 @@ function AnimatedBackground({ accent, rgb, isMobile, isDark }: { accent: string;
 
 export function ServiceSlide({ svcIndex }: { svcIndex: number }) {
   const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+  const isDark = mounted ? resolvedTheme === "dark" : true;
 
   const svc = SERVICE_DATA[svcIndex];
   const Icon = svc.icon;
@@ -697,26 +682,17 @@ export function ServiceSlide({ svcIndex }: { svcIndex: number }) {
   }, []);
 
   const mobileDemoHeight = svc.webAppDemo ? 580 : 520;
-
-  // Background colors
-  const sectionBg = isMobile
-    ? (isDark ? "#000000" : "#ffffff")
-    : (isDark ? "#000000" : "#ffffff");
-
+  const sectionBg = isDark ? "#000000" : "#ffffff";
   const headingColor = isDark ? "#ffffff" : "#0a0a0a";
   const headingShadow = isDark ? `0 2px 30px rgba(${rgb},0.15)` : "none";
-  const labelColor = isDark ? accentColor : accentColor;
+  const labelColor = accentColor;
   const descColor = isDark ? "rgba(255,255,255,0.70)" : "rgba(10,10,10,0.65)";
-
-  // Feature pills — clean, no gradients
   const featureBg = isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)";
   const featureBorder = isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.09)";
   const featureText = isDark ? "rgba(255,255,255,0.82)" : "rgba(10,10,10,0.72)";
-
   const edgeLineTop = isDark ? `rgba(${rgb},0.20)` : `rgba(${rgb},0.15)`;
   const edgeLineBottom = isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)";
-
-  const iconBg = isDark ? `rgba(${rgb},0.10)` : `rgba(${rgb},0.10)`;
+  const iconBg = `rgba(${rgb},0.10)`;
   const iconBorder = isDark ? `rgba(${rgb},0.30)` : `rgba(${rgb},0.35)`;
   const ruleGradient = `linear-gradient(90deg,${accentColor},${accentColor}40)`;
   const ruleShadow = `0 0 10px ${accentColor}44`;
@@ -736,15 +712,12 @@ export function ServiceSlide({ svcIndex }: { svcIndex: number }) {
         gap: isMobile ? "2rem" : "5rem",
         alignItems: "center"
       }}>
-
-        {/* LEFT COLUMN */}
         <motion.div
           key={`l-${svcIndex}`}
           initial={{ opacity: 0, x: isMobile ? 0 : -28, y: isMobile ? 20 : 0 }}
           animate={{ opacity: 1, x: 0, y: 0 }}
           transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
         >
-          {/* Label row */}
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
             <div style={{ width: 38, height: 38, borderRadius: 12, background: iconBg, border: `1px solid ${iconBorder}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
               <Icon size={18} color={accentColor} strokeWidth={1.7} />
@@ -755,7 +728,6 @@ export function ServiceSlide({ svcIndex }: { svcIndex: number }) {
             </div>
           </div>
 
-          {/* Heading */}
           <h2 style={{
             fontFamily: "'Georgia','Times New Roman',serif",
             fontSize: isMobile ? "clamp(2rem,8vw,2.8rem)" : "clamp(2.6rem,3.7vw,4.4rem)",
@@ -766,7 +738,6 @@ export function ServiceSlide({ svcIndex }: { svcIndex: number }) {
             {svc.title}
           </h2>
 
-          {/* Rule */}
           <motion.div
             key={`rule-${svcIndex}`}
             initial={{ width: 0 }}
@@ -775,7 +746,6 @@ export function ServiceSlide({ svcIndex }: { svcIndex: number }) {
             style={{ height: 2.5, borderRadius: 99, background: ruleGradient, marginBottom: 22, boxShadow: ruleShadow }}
           />
 
-          {/* Description */}
           <p style={{
             fontSize: isMobile ? 15 : 16, lineHeight: 1.85, color: descColor,
             margin: "0 0 26px", maxWidth: isMobile ? "100%" : 420,
@@ -784,7 +754,6 @@ export function ServiceSlide({ svcIndex }: { svcIndex: number }) {
             {svc.desc}
           </p>
 
-          {/* Features — no icons, clean text labels */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: isMobile ? 7 : 8, marginBottom: isMobile ? 26 : 38, maxWidth: isMobile ? "100%" : 420 }}>
             {svc.features.map((f, idx) => (
               <motion.div
@@ -799,7 +768,6 @@ export function ServiceSlide({ svcIndex }: { svcIndex: number }) {
                   background: featureBg, backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)"
                 }}
               >
-                {/* Dot indicator instead of emoji icon */}
                 <div style={{ width: 6, height: 6, borderRadius: "50%", background: accentColor, flexShrink: 0, opacity: 0.85 }} />
                 <span style={{
                   fontSize: isMobile ? 12 : 13, fontWeight: 600, color: featureText,
@@ -812,7 +780,6 @@ export function ServiceSlide({ svcIndex }: { svcIndex: number }) {
           <GlassCTA accent={accentColor} label="Start a project" />
         </motion.div>
 
-        {/* RIGHT COLUMN */}
         <motion.div
           key={`r-${svcIndex}`}
           initial={{ opacity: 0, x: isMobile ? 0 : 32, y: isMobile ? 20 : 0, scale: 0.97 }}
@@ -831,11 +798,9 @@ export function ServiceSlide({ svcIndex }: { svcIndex: number }) {
         </motion.div>
       </div>
 
-      {/* Edge lines */}
       <div style={{ position: "absolute", top: 0, left: "4%", right: "4%", height: 1, background: `linear-gradient(90deg,transparent,${edgeLineTop},transparent)` }} />
       <div style={{ position: "absolute", bottom: 0, left: "4%", right: "4%", height: 1, background: `linear-gradient(90deg,transparent,${edgeLineBottom},transparent)` }} />
 
-      {/* Nav dots */}
       <div style={{ position: "absolute", bottom: 20, left: "50%", transform: "translateX(-50%)", display: "flex", alignItems: "center", gap: 6, zIndex: 20 }}>
         {SERVICE_DATA.map((s, i) => {
           const dotAccent = isDark ? s.accent : s.accentLight;
