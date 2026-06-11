@@ -12,7 +12,11 @@ import { Footer } from "@/components/footer";
 
 export default function Page() {
   return (
-    <SnapContainer showDots={true}>
+    // snapCount={3} → idea, hero, about là snap
+    // team trở đi → normal scroll
+    <SnapContainer snapCount={3}>
+
+      {/* ── SNAP ZONE ── */}
       <SnapSlide id="idea" tall>
         <IdeaSection />
       </SnapSlide>
@@ -22,11 +26,13 @@ export default function Page() {
       <SnapSlide id="about">
         <AboutSection />
       </SnapSlide>
+
+      {/* ── NORMAL SCROLL ZONE (từ đây trở đi) ── */}
       <SnapSlide id="team">
         <TeamSection />
       </SnapSlide>
       {Array.isArray(SERVICE_DATA) && SERVICE_DATA.map((_, i) => (
-        <SnapSlide key={i} id={`service-${i}`}>
+        <SnapSlide key={i} id={i === 0 ? "services" : `service-${i}`}>
           <ServiceSlide svcIndex={i} />
         </SnapSlide>
       ))}
@@ -40,6 +46,7 @@ export default function Page() {
         <ContactSection />
         <Footer />
       </SnapSlide>
+
     </SnapContainer>
   );
 }

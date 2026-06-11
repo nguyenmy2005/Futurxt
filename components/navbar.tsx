@@ -12,30 +12,38 @@ const NAV_ITEMS = [
   { name: "How We Work", href: "#how-we-work"   },
 ];
 
+// Helper: get the single page scroller (fixed container)
+function getScroller(): HTMLElement | null {
+  return document.querySelector(".snap-container") as HTMLElement | null;
+}
+
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("");
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
 
+  // ── Scrolled state ──
   useEffect(() => {
-    const container = document.querySelector(".snap-container") as HTMLElement;
+    const container = getScroller();
     if (!container) return;
     const onScroll = () => setScrolled(container.scrollTop > 40);
     container.addEventListener("scroll", onScroll, { passive: true });
     return () => container.removeEventListener("scroll", onScroll);
   }, []);
 
+  // ── Active section highlight ──
   useEffect(() => {
-    const container = document.querySelector(".snap-container") as HTMLElement;
-    if (!container) return;
+    const container = getScroller();
     const ids = ["about", "team", "services", "vision", "how-we-work", "contact"];
+
     const observers = ids.map((id) => {
       const el = document.getElementById(id);
       if (!el) return null;
       const obs = new IntersectionObserver(
         ([e]) => { if (e.isIntersecting) setActiveSection(id); },
-        { root: container, threshold: 0.3 }
+        // root: container for snap zone, null for normal zone — use null to cover both
+        { root: null, threshold: 0.3 }
       );
       obs.observe(el);
       return obs;
@@ -43,19 +51,46 @@ export function Navbar() {
     return () => observers.forEach((o) => o?.disconnect());
   }, []);
 
+  // ── scrollTo: works for both snap zone and normal zone ──
   const scrollTo = (href: string) => {
-    const el = document.getElementById(href.replace("#", ""));
-    el?.scrollIntoView({ behavior: "smooth" });
+    const id = href.replace("#", "");
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    const container = getScroller();
+    if (container) {
+      // Scroll the fixed container to the element's offsetTop
+      const target = el as HTMLElement;
+      const startY = container.scrollTop;
+      const endY = target.offsetTop;
+      const distance = endY - startY;
+      const duration = 750;
+      let startTime: number | null = null;
+
+      const ease = (t: number) =>
+        t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+      const step = (timestamp: number) => {
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        container.scrollTop = startY + distance * ease(progress);
+        if (progress < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    } else {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   // ── Tokens ──
-  const bgScrolled    = isDark ? "rgba(4,4,10,0.85)"        : "rgba(255,255,255,0.85)";
-  const borderScrolled= isDark ? "rgba(255,255,255,0.06)"   : "rgba(0,0,0,0.08)";
-  const navActive     = isDark ? "rgba(255,255,255,0.95)"   : "rgba(0,0,0,0.90)";
-  const navInactive   = isDark ? "rgba(255,255,255,0.45)"   : "rgba(0,0,0,0.40)";
-  const navActiveBg   = isDark ? "rgba(255,255,255,0.06)"   : "rgba(0,0,0,0.06)";
-  const ctaBg         = isDark ? "rgba(255,255,255,0.92)"   : "rgba(0,0,0,0.90)";
-  const ctaColor      = isDark ? "#000"                     : "#fff";
+  const bgScrolled     = isDark ? "rgba(4,4,10,0.85)"      : "rgba(255,255,255,0.85)";
+  const borderScrolled = isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.08)";
+  const navActive      = isDark ? "rgba(255,255,255,0.95)" : "rgba(0,0,0,0.90)";
+  const navInactive    = isDark ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.40)";
+  const navActiveBg    = isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)";
+  const ctaBg          = isDark ? "rgba(255,255,255,0.92)" : "rgba(0,0,0,0.90)";
+  const ctaColor       = isDark ? "#000"                   : "#fff";
 
   return (
     <motion.header
@@ -72,9 +107,10 @@ export function Navbar() {
       }}
     >
       <div className="max-w-7xl mx-auto px-8 h-16 flex items-center justify-between">
+        {/* Logo → scroll to top */}
         <button
           onClick={() => {
-            const container = document.querySelector(".snap-container") as HTMLElement;
+            const container = getScroller();
             container?.scrollTo({ top: 0, behavior: "smooth" });
           }}
           className="flex items-center gap-2 group"
@@ -86,6 +122,7 @@ export function Navbar() {
           />
         </button>
 
+        {/* Nav items */}
         <nav className="hidden md:flex items-center gap-1">
           {NAV_ITEMS.map((item) => {
             const id = item.href.replace("#", "");
@@ -95,9 +132,7 @@ export function Navbar() {
                 key={item.name}
                 onClick={() => scrollTo(item.href)}
                 className="relative px-4 py-2 text-[13px] font-medium transition-colors duration-200"
-                style={{
-                  color: isActive ? navActive : navInactive,
-                }}
+                style={{ color: isActive ? navActive : navInactive }}
               >
                 {isActive && (
                   <motion.span
@@ -113,15 +148,13 @@ export function Navbar() {
           })}
         </nav>
 
+        {/* CTA */}
         <motion.button
           onClick={() => scrollTo("#contact")}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.97 }}
           className="hidden md:flex items-center gap-2 px-5 py-2 rounded-lg text-[13px] font-semibold"
-          style={{
-            background: ctaBg,
-            color: ctaColor,
-          }}
+          style={{ background: ctaBg, color: ctaColor }}
         >
           Start a Project
         </motion.button>
