@@ -1,6 +1,6 @@
 'use client'
 
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { useState, useEffect, Suspense } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import { ArrowRight, CheckCircle2 } from 'lucide-react'
@@ -34,11 +34,13 @@ function useSystemTheme() {
 }
 
 async function generateReport(company: string, website: string, review: string, score: string): Promise<Report> {
+  const groqKey = process.env.NEXT_PUBLIC_GROQ_API_KEY
+
   const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${process.env.NEXT_PUBLIC_GROQ_API_KEY}`
+      'Authorization': `Bearer ${groqKey}`
     },
     body: JSON.stringify({
       model: 'llama-3.3-70b-versatile',
@@ -98,6 +100,7 @@ Generate 3-5 items based on the assessment.`
 
 function ReportContent() {
   const params = useSearchParams()
+  const router = useRouter()
   const isDark = useSystemTheme()
 
   const company = params?.get('company') ?? 'Your Business'
@@ -143,9 +146,7 @@ function ReportContent() {
   }
 
   const handleContact = async () => {
-  setSubmitting(true)
-
-  try {
+    setSubmitting(true)
     await supabase.from('leads').insert({
       company_name: company,
       email,
@@ -154,25 +155,9 @@ function ReportContent() {
       score,
       status: 'contacted'
     })
-  } catch (e) {
-    console.log('Supabase error (ignored):', e)
+    setSubmitting(false)
+    setDone(true)
   }
-
-  try {
-    const res = await fetch('/api/notify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ company, email, website, score, review })
-    })
-    const data = await res.json()
-    console.log('Notify result:', data)
-  } catch (e) {
-    console.log('Notify error:', e)
-  }
-
-  setSubmitting(false)
-  setDone(true)
-}
 
   if (done) {
     return (
