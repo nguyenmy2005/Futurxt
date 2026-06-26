@@ -15,14 +15,16 @@ function MorphOrb({ isMobile }: { isMobile: boolean }) {
     const container = mountRef.current;
     while (container.firstChild) container.removeChild(container.firstChild);
 
-    const isTablet = window.innerWidth < 1024;
-    const orbSize = isMobile ? 300 : isTablet ? 420 : Math.min(620, window.innerHeight - 140);
-    const W = orbSize, H = orbSize;
+    let active = true;
+    let cleanupFn: (() => void) | null = null;
 
-    const script = document.createElement("script");
-    script.src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js";
-    script.onload = () => {
-      const THREE = (window as any).THREE;
+    const initThree = (THREE: any) => {
+      if (!active) return;
+
+      const isTablet = window.innerWidth < 1024;
+      const orbSize = isMobile ? 300 : isTablet ? 420 : Math.min(620, window.innerHeight - 140);
+      const W = orbSize, H = orbSize;
+
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(52, W / H, 0.1, 200);
       camera.position.set(0, 0, 32);
@@ -152,11 +154,14 @@ function MorphOrb({ isMobile }: { isMobile: boolean }) {
         prevMouse = { x: e.clientX, y: e.clientY };
       };
       const onMouseUp = () => { isDragging = false; };
+      
+      let listenersAdded = false;
       if (!isMobile) {
         renderer.domElement.addEventListener("mousedown", onMouseDown);
         window.addEventListener("mousemove", onMouseMove);
         window.addEventListener("mouseup", onMouseUp);
         renderer.domElement.style.cursor = "grab";
+        listenersAdded = true;
       }
 
       const HOLD = 5000, TRANS = 2200, CYCLE = HOLD * 3 + TRANS * 3;
@@ -173,6 +178,7 @@ function MorphOrb({ isMobile }: { isMobile: boolean }) {
       let animId: number;
       const startTime = performance.now();
       const animate = () => {
+        if (!active) return;
         animId = requestAnimationFrame(animate);
         const el = (performance.now() - startTime) % CYCLE;
         const p1 = HOLD, p2 = HOLD + TRANS, p3 = 2 * HOLD + TRANS;
@@ -194,9 +200,9 @@ function MorphOrb({ isMobile }: { isMobile: boolean }) {
       };
       animate();
 
-      return () => {
+      cleanupFn = () => {
         cancelAnimationFrame(animId);
-        if (!isMobile) {
+        if (listenersAdded) {
           renderer.domElement.removeEventListener("mousedown", onMouseDown);
           window.removeEventListener("mousemove", onMouseMove);
           window.removeEventListener("mouseup", onMouseUp);
@@ -205,8 +211,45 @@ function MorphOrb({ isMobile }: { isMobile: boolean }) {
         if (container.contains(renderer.domElement)) container.removeChild(renderer.domElement);
       };
     };
-    document.head.appendChild(script);
-    return () => { if (document.head.contains(script)) document.head.removeChild(script); };
+
+    const THREE = (window as any).THREE;
+    let scriptElement: HTMLScriptElement | null = null;
+
+    if (THREE) {
+      initThree(THREE);
+    } else {
+      let existingScript = document.querySelector('script[src*="three.min.js"]') as HTMLScriptElement;
+      if (existingScript) {
+        const handleLoad = () => {
+          if (active && (window as any).THREE) {
+            initThree((window as any).THREE);
+          }
+        };
+        existingScript.addEventListener("load", handleLoad);
+        cleanupFn = () => {
+          existingScript.removeEventListener("load", handleLoad);
+        };
+      } else {
+        scriptElement = document.createElement("script");
+        scriptElement.src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js";
+        scriptElement.onload = () => {
+          if (active && (window as any).THREE) {
+            initThree((window as any).THREE);
+          }
+        };
+        document.head.appendChild(scriptElement);
+      }
+    }
+
+    return () => {
+      active = false;
+      if (cleanupFn) {
+        cleanupFn();
+      }
+      if (scriptElement && document.head.contains(scriptElement)) {
+        document.head.removeChild(scriptElement);
+      }
+    };
   }, [isDark, isMobile]);
 
   return (
