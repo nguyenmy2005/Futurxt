@@ -1,12 +1,12 @@
-'use client'
+﻿'use client'
 
 import React, { useState, useEffect, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 
-// ═══════════════════════════════════════════════════════════════════════════
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
 // CORE TYPES
-// ═══════════════════════════════════════════════════════════════════════════
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
 interface Service { name: string; desc: string; price: string }
 interface Stat { value: string; label: string }
 interface Review { name: string; rating: number; text: string; date: string }
@@ -16,11 +16,11 @@ interface IndustryConfig {
   address: string; phone: string; email: string; hours: string
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// IMAGE SYSTEM (Picsum — never breaks, never duplicates)
-// Mỗi ngành được cấp 1 khối 10 ID riêng biệt -> KHÔNG THỂ trùng ảnh với ngành khác.
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+// IMAGE SYSTEM (Picsum ÔÇö never breaks, never duplicates)
+// Mß╗ùi ng├ánh ─æã░ß╗úc cß║Ñp 1 khß╗æi 10 ID ri├¬ng biß╗çt -> KH├öNG THß╗é tr├╣ng ß║únh vß╗øi ng├ánh kh├íc.
 // hero = base+0, gallery = base+1..4, services = base+5..8
-// ═══════════════════════════════════════════════════════════════════════════
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
 function getIndustryImages(slug: string) {
   const imgs = INDUSTRY_IMAGES[slug] ?? INDUSTRY_IMAGES['nail-salon']
   return {
@@ -46,9 +46,9 @@ const INDUSTRY_IMAGES: Record<string, string[]> = {
     'https://i.redd.it/hjm17wficmi31.jpg',
     'https://i.pinimg.com/736x/11/e4/a9/11e4a935fc8d82b61a33c02164c44cc5.jpg',
     'https://img.magnific.com/free-photo/spa-treatment-product-female-feet-hand-spa-orchid-flowers-ceramic-bowl_1150-37718.jpg',
-    // [9] about section (khác gallery[0])
+    // [9] about section (kh├íc gallery[0])
     'https://nailedboutique.com/media/acfgallery/content/4/1/DSC00535_original.jpg',
-    // [10] gallery hero (khác hero chính)
+    // [10] gallery hero (kh├íc hero ch├¡nh)
   'https://www.cdc.gov/niosh/media/images/2024/07/GettyImages-188077796.jpg',
   ],
   'beauty-salon': [
@@ -637,9 +637,9 @@ const INDUSTRY_IMAGES: Record<string, string[]> = {
     'https://images.pexels.com/photos/2510428/pexels-photo-2510428.jpeg',
   ],
 }
-// ═══════════════════════════════════════════════════════════════════════════
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
 // GOOGLE MAPS EMBED
-// ═══════════════════════════════════════════════════════════════════════════
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
 function GoogleMapEmbed({ address }: { address: string }) {
   return (
     <div className="w-full aspect-[16/9] overflow-hidden border" style={{ borderColor: 'var(--border)', borderRadius: 'var(--radius)' }}>
@@ -652,9 +652,9 @@ function GoogleMapEmbed({ address }: { address: string }) {
   )
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
 // THEMES
-// ═══════════════════════════════════════════════════════════════════════════
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
 interface Theme { bg: string; bgAlt: string; bgDeep: string; text: string; textMuted: string; textDim: string; accent: string; accentText: string; accentSoft: string; border: string; borderStrong: string; headingFont: string; bodyFont: string; radius: string }
 
 const THEMES: Record<string, Theme> = {
@@ -667,9 +667,9 @@ const THEMES: Record<string, Theme> = {
   retail: { bg:'#0a0c0a',bgAlt:'#141815',bgDeep:'#060807',text:'#f5f8f4',textMuted:'rgba(245,248,244,0.62)',textDim:'rgba(245,248,244,0.32)',accent:'#7a9b6e',accentText:'#0a0c0a',accentSoft:'rgba(122,155,110,0.12)',border:'rgba(122,155,110,0.15)',borderStrong:'rgba(122,155,110,0.35)',headingFont:'"Fraunces",serif',bodyFont:'"Inter",sans-serif',radius:'10px' },
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// CATEGORY MAP — NGUỒN DUY NHẤT cho cả Theme và Layout
-// ═══════════════════════════════════════════════════════════════════════════
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+// CATEGORY MAP ÔÇö NGUß╗ÆN DUY NHß║ñT cho cß║ú Theme v├á Layout
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
 type Category = 'beauty' | 'food' | 'medical' | 'legal' | 'fitness' | 'creative' | 'retail'
 
 const CATEGORY_MAP: Record<string, Category> = {
@@ -724,9 +724,9 @@ function getCategory(slug: string): Category {
   return CATEGORY_MAP[slug] ?? 'creative'
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// INDUSTRIES DATA — BEAUTY (7)
-// ═══════════════════════════════════════════════════════════════════════════
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+// INDUSTRIES DATA ÔÇö BEAUTY (7)
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
 const INDUSTRIES_DATA: Record<string, IndustryConfig> = {
   'nail-salon': {
     name: 'Luxe Nail Studio', tagline: 'Precision. Polish. Perfection.',
@@ -739,13 +739,13 @@ const INDUSTRIES_DATA: Record<string, IndustryConfig> = {
       { name: 'Custom Nail Art', desc: 'Hand-painted abstract, chrome, or minimal line art matching your style.', price: '$25' },
       { name: 'Spa Pedicure', desc: 'Foot soak, exfoliation, cuticle work, and polish in a relaxing spa chair.', price: '$55' },
     ],
-    stats: [{ value: '4.9★', label: 'Google Rating' }, { value: '200+', label: 'Gel Shades' }, { value: '3k+', label: 'Happy Clients' }],
+    stats: [{ value: '4.9Ôÿà', label: 'Google Rating' }, { value: '200+', label: 'Gel Shades' }, { value: '3k+', label: 'Happy Clients' }],
     reviews: [
       { name: 'Sophie L.', rating: 5, text: 'Absolutely obsessed with my nails every single time. The attention to detail is unmatched!', date: 'Dec 2025' },
       { name: 'Rachel M.', rating: 5, text: 'Best nail studio in the city. Sterile, stylish, and the gel lasts over a month!', date: 'Nov 2025' },
       { name: 'Aisha T.', rating: 5, text: 'The nail art they did for my wedding was beyond my expectations. Pure perfection.', date: 'Oct 2025' },
     ],
-    address: '12 Blossom Lane, Suite 3, Sydney NSW', phone: '+61 2 9001 1234', email: 'hello@luxenail.com', hours: 'Mon–Sat 9am–7pm, Sun 10am–5pm'
+    address: '12 Blossom Lane, Suite 3, Sydney NSW', phone: '+61 2 9001 1234', email: 'hello@luxenail.com', hours: 'MonÔÇôSat 9amÔÇô7pm, Sun 10amÔÇô5pm'
   },
   'beauty-salon': {
     name: 'Glow Hair & Beauty', tagline: 'Luminous Hair, Crafted for You.',
@@ -758,13 +758,13 @@ const INDUSTRIES_DATA: Record<string, IndustryConfig> = {
       { name: 'Keratin Smoothing', desc: 'Deep conditioning treatment that eliminates frizz for up to 5 months.', price: '$250' },
       { name: 'Color Correction', desc: 'Expert multi-step color correction to achieve your perfect shade safely.', price: '$220' },
     ],
-    stats: [{ value: '4.8★', label: 'Average Review' }, { value: '12yr', label: 'Experience' }, { value: '500+', label: 'Color Clients' }],
+    stats: [{ value: '4.8Ôÿà', label: 'Average Review' }, { value: '12yr', label: 'Experience' }, { value: '500+', label: 'Color Clients' }],
     reviews: [
       { name: 'Emma W.', rating: 5, text: 'My balayage looks like I stepped off a Paris runway. The team here are true artists.', date: 'Dec 2025' },
-      { name: 'Chloe B.', rating: 5, text: 'First time getting a keratin treatment here — absolutely zero frizz for 4 months!', date: 'Nov 2025' },
+      { name: 'Chloe B.', rating: 5, text: 'First time getting a keratin treatment here ÔÇö absolutely zero frizz for 4 months!', date: 'Nov 2025' },
       { name: 'Priya S.', rating: 4, text: 'Great atmosphere and very knowledgeable stylists. Will definitely be back.', date: 'Oct 2025' },
     ],
-    address: '88 Crown Street, Surry Hills NSW', phone: '+61 2 9002 5678', email: 'bookings@glowhair.com', hours: 'Tue–Sat 9am–6pm'
+    address: '88 Crown Street, Surry Hills NSW', phone: '+61 2 9002 5678', email: 'bookings@glowhair.com', hours: 'TueÔÇôSat 9amÔÇô6pm'
   },
   'spa': {
     name: 'Aetheria Wellness Spa', tagline: 'Restore Balance. Cultivate Calm.',
@@ -777,13 +777,13 @@ const INDUSTRIES_DATA: Record<string, IndustryConfig> = {
       { name: 'Himalayan Hot Stone Massage', desc: 'Volcanic basalt stones glide over muscles to melt away stress and tension.', price: '$150' },
       { name: 'Couples Retreat Package', desc: 'Side-by-side massages, champagne, and private hot tub access for two.', price: '$290' },
     ],
-    stats: [{ value: '10+', label: 'Treatment Rooms' }, { value: '100%', label: 'Organic Products' }, { value: '5★', label: 'Rating' }],
+    stats: [{ value: '10+', label: 'Treatment Rooms' }, { value: '100%', label: 'Organic Products' }, { value: '5Ôÿà', label: 'Rating' }],
     reviews: [
       { name: 'Laura K.', rating: 5, text: 'The hot stone massage was transcendent. I floated out of there. Absolutely divine.', date: 'Dec 2025' },
-      { name: 'James R.', rating: 5, text: 'Brought my partner for the couples package — she cried happy tears. Worth every cent.', date: 'Nov 2025' },
+      { name: 'James R.', rating: 5, text: 'Brought my partner for the couples package ÔÇö she cried happy tears. Worth every cent.', date: 'Nov 2025' },
       { name: 'Nina P.', rating: 5, text: 'Best facial I have ever had. My skin was literally glowing for two weeks after.', date: 'Oct 2025' },
     ],
-    address: '22 Serenity Boulevard, Mosman NSW', phone: '+61 2 9003 9012', email: 'relax@aetheriaspa.com', hours: 'Daily 9am–8pm'
+    address: '22 Serenity Boulevard, Mosman NSW', phone: '+61 2 9003 9012', email: 'relax@aetheriaspa.com', hours: 'Daily 9amÔÇô8pm'
   },
   'barbershop': {
     name: 'The Vintage Razor', tagline: 'Classic Cuts. Modern Gentleman.',
@@ -802,7 +802,7 @@ const INDUSTRIES_DATA: Record<string, IndustryConfig> = {
       { name: 'Marcus T.', rating: 5, text: 'The hot shave is incredible. Walked out feeling like a new man.', date: 'Nov 2025' },
       { name: 'Luca B.', rating: 5, text: 'Great atmosphere, great conversation, great cut. My go-to spot.', date: 'Oct 2025' },
     ],
-    address: '22 Blade Street, Surry Hills NSW', phone: '+61 2 9011 3333', email: 'book@vintagerazor.com', hours: 'Tue–Sat 9am–7pm, Sun 10am–4pm'
+    address: '22 Blade Street, Surry Hills NSW', phone: '+61 2 9011 3333', email: 'book@vintagerazor.com', hours: 'TueÔÇôSat 9amÔÇô7pm, Sun 10amÔÇô4pm'
   },
   'tattoo-studio': {
     name: 'Obsidian Ink Studio', tagline: 'Permanent Art. Personal Story.',
@@ -815,13 +815,13 @@ const INDUSTRIES_DATA: Record<string, IndustryConfig> = {
       { name: 'Cover-Up Consultation', desc: 'Free assessment and custom design plan to rework old or unwanted tattoos.', price: 'Free consult' },
       { name: 'Touch-Up & Aftercare', desc: 'Complimentary touch-up within 6 weeks, plus aftercare kit.', price: 'Included' },
     ],
-    stats: [{ value: '4.9★', label: 'Google Rating' }, { value: '12yr', label: 'Studio Experience' }, { value: '3', label: 'Resident Artists' }],
+    stats: [{ value: '4.9Ôÿà', label: 'Google Rating' }, { value: '12yr', label: 'Studio Experience' }, { value: '3', label: 'Resident Artists' }],
     reviews: [
       { name: 'Derek M.', rating: 5, text: 'My artist nailed the design on the first sketch. Healed perfectly, zero issues.', date: 'Dec 2025' },
       { name: 'Sarah K.', rating: 5, text: 'Covered up an old tattoo I hated for 10 years. Genuinely life-changing result.', date: 'Nov 2025' },
       { name: 'Tom R.', rating: 5, text: 'Spotless studio, professional from booking to aftercare. Worth the wait list.', date: 'Oct 2025' },
     ],
-    address: '15 Ink Alley, Newtown NSW', phone: '+61 2 9015 7777', email: 'book@obsidianink.com', hours: 'Tue–Sun 11am–8pm (by appointment)'
+    address: '15 Ink Alley, Newtown NSW', phone: '+61 2 9015 7777', email: 'book@obsidianink.com', hours: 'TueÔÇôSun 11amÔÇô8pm (by appointment)'
   },
   'lash-studio': {
     name: 'Iris Lash & Brow Studio', tagline: 'Wake Up Already Beautiful.',
@@ -834,26 +834,26 @@ const INDUSTRIES_DATA: Record<string, IndustryConfig> = {
       { name: 'Brow Lamination & Tint', desc: 'Brows reshaped, lifted, and tinted for a fluffy, fuller appearance.', price: '$65' },
       { name: '2-Week Lash Refill', desc: 'Fill gaps and replace shed lashes to keep your set looking fresh.', price: '$55' },
     ],
-    stats: [{ value: '4.9★', label: 'Google Rating' }, { value: '4hr', label: 'Avg. Retention' }, { value: '5k+', label: 'Sets Applied' }],
+    stats: [{ value: '4.9Ôÿà', label: 'Google Rating' }, { value: '4hr', label: 'Avg. Retention' }, { value: '5k+', label: 'Sets Applied' }],
     reviews: [
       { name: 'Megan H.', rating: 5, text: 'My volume set lasted nearly 4 weeks and never irritated my eyes. Incredible work.', date: 'Dec 2025' },
       { name: 'Tina V.', rating: 5, text: 'Brow lamination changed my whole face. So precise and gentle.', date: 'Nov 2025' },
       { name: 'Hana W.', rating: 5, text: 'Cleanest, most relaxing lash studio I have been to. Booking again already.', date: 'Oct 2025' },
     ],
-    address: '9 Velvet Lane, Bondi Junction NSW', phone: '+61 2 9016 8888', email: 'hello@irislash.com', hours: 'Mon–Sat 9am–6pm'
+    address: '9 Velvet Lane, Bondi Junction NSW', phone: '+61 2 9016 8888', email: 'hello@irislash.com', hours: 'MonÔÇôSat 9amÔÇô6pm'
   },
   'makeup-artist': {
     name: 'Velvet Brush Makeup Studio', tagline: 'Your Face, Elevated.',
     headline: 'Makeup Artistry for Real Moments',
     subheadline: 'Bridal trials, editorial looks, and event makeup that photographs as good as it feels.',
-    about: 'Velvet Brush works with skin first, makeup second — building long-wear, photo-ready looks tailored to your features, your event, and the cameras that will be there.',
+    about: 'Velvet Brush works with skin first, makeup second ÔÇö building long-wear, photo-ready looks tailored to your features, your event, and the cameras that will be there.',
     services: [
       { name: 'Bridal Trial + Day-Of', desc: 'Full trial session plus wedding-day application with touch-up kit.', price: '$450' },
       { name: 'Event Glam Application', desc: 'Full face application for parties, galas, or photoshoots.', price: '$140' },
       { name: 'Editorial / Photoshoot Makeup', desc: 'High-definition camera-ready looks for shoots and campaigns.', price: '$200' },
       { name: 'Makeup Lesson (1-on-1)', desc: 'Personalized 90-minute lesson using your own products and face shape.', price: '$160' },
     ],
-    stats: [{ value: '4.9★', label: 'Google Rating' }, { value: '300+', label: 'Weddings Done' }, { value: '8yr', label: 'Experience' }],
+    stats: [{ value: '4.9Ôÿà', label: 'Google Rating' }, { value: '300+', label: 'Weddings Done' }, { value: '8yr', label: 'Experience' }],
     reviews: [
       { name: 'Olivia F.', rating: 5, text: 'My wedding makeup lasted through tears, dancing, and the heat. Flawless all night.', date: 'Dec 2025' },
       { name: 'Grace M.', rating: 5, text: 'The photoshoot look she did for me got reposted everywhere. True artistry.', date: 'Nov 2025' },
@@ -862,7 +862,7 @@ const INDUSTRIES_DATA: Record<string, IndustryConfig> = {
     address: '31 Palette Street, Paddington NSW', phone: '+61 2 9017 9999', email: 'studio@velvetbrush.com', hours: 'By appointment, 7 days'
   },
 
-  // ── MEDICAL & HEALTH (7) ────────────────────────────────────────────────────
+  // ÔöÇÔöÇ MEDICAL & HEALTH (7) ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
   'dental': {
     name: 'Radiant Smile Dental', tagline: 'Gentle Care. Radiant Smiles.',
     headline: 'Exceptional Family & Cosmetic Dentistry',
@@ -874,70 +874,70 @@ const INDUSTRIES_DATA: Record<string, IndustryConfig> = {
       { name: 'Invisalign Consultation', desc: '3D digital scan of your mouth and personalized teeth alignment plan.', price: 'Free' },
       { name: 'Porcelain Veneers', desc: 'Custom ultra-thin veneers for a perfect, natural-looking smile transformation.', price: '$1200' },
     ],
-    stats: [{ value: '99%', label: 'Anxiety Free' }, { value: '3D', label: 'Tech Equipped' }, { value: '4.9★', label: 'Google Rating' }],
+    stats: [{ value: '99%', label: 'Anxiety Free' }, { value: '3D', label: 'Tech Equipped' }, { value: '4.9Ôÿà', label: 'Google Rating' }],
     reviews: [
       { name: 'Anna K.', rating: 5, text: 'As someone who dreaded the dentist, I cannot believe how comfortable every visit is here.', date: 'Dec 2025' },
       { name: 'Paul R.', rating: 5, text: 'My Invisalign results are phenomenal. The team guided me perfectly throughout.', date: 'Nov 2025' },
       { name: 'Grace T.', rating: 5, text: 'The whitening treatment gave me 7 shades lighter in one visit. Absolutely worth it.', date: 'Oct 2025' },
     ],
-    address: '33 Smile Street, Chatswood NSW', phone: '+61 2 9007 2345', email: 'care@radiantsmile.com', hours: 'Mon–Fri 8am–6pm, Sat 9am–2pm'
+    address: '33 Smile Street, Chatswood NSW', phone: '+61 2 9007 2345', email: 'care@radiantsmile.com', hours: 'MonÔÇôFri 8amÔÇô6pm, Sat 9amÔÇô2pm'
   },
   'medical': {
     name: 'Harborview Medical Clinic', tagline: 'Whole-Person Care, Close to Home.',
     headline: 'Trusted GP Care for Your Whole Family',
     subheadline: 'Same-day appointments, chronic disease management, and telehealth consultations.',
-    about: 'Harborview is a bulk-billing general practice staffed by experienced GPs who actually have time to listen. We focus on continuity of care — the same doctor, visit after visit.',
+    about: 'Harborview is a bulk-billing general practice staffed by experienced GPs who actually have time to listen. We focus on continuity of care ÔÇö the same doctor, visit after visit.',
     services: [
       { name: 'Standard GP Consultation', desc: 'General check-ups, prescriptions, referrals, and same-day sick visits.', price: 'Bulk billed' },
-      { name: 'Chronic Disease Care Plan', desc: 'Ongoing management for diabetes, hypertension, and asthma with care coordination.', price: '$0–$45' },
+      { name: 'Chronic Disease Care Plan', desc: 'Ongoing management for diabetes, hypertension, and asthma with care coordination.', price: '$0ÔÇô$45' },
       { name: 'Telehealth Consultation', desc: 'Phone or video consult for prescriptions, results, and minor concerns.', price: '$40' },
       { name: 'Full Health Check-Up', desc: 'Comprehensive 40-minute assessment including bloods and screening referrals.', price: '$95' },
     ],
-    stats: [{ value: '12', label: 'GPs On Staff' }, { value: 'Same-Day', label: 'Appointments' }, { value: '4.8★', label: 'Patient Rating' }],
+    stats: [{ value: '12', label: 'GPs On Staff' }, { value: 'Same-Day', label: 'Appointments' }, { value: '4.8Ôÿà', label: 'Patient Rating' }],
     reviews: [
       { name: 'Helen D.', rating: 5, text: 'Finally a GP who remembers my history without me repeating it every visit.', date: 'Dec 2025' },
       { name: 'Michael C.', rating: 5, text: 'Got a same-day appointment when I was genuinely unwell. Huge relief.', date: 'Nov 2025' },
       { name: 'Fiona S.', rating: 4, text: 'Telehealth option saved me so much time for a simple repeat script.', date: 'Oct 2025' },
     ],
-    address: '14 Wellness Way, North Sydney NSW', phone: '+61 2 9018 1010', email: 'reception@harborviewmedical.com', hours: 'Mon–Fri 7:30am–7pm, Sat 9am–1pm'
+    address: '14 Wellness Way, North Sydney NSW', phone: '+61 2 9018 1010', email: 'reception@harborviewmedical.com', hours: 'MonÔÇôFri 7:30amÔÇô7pm, Sat 9amÔÇô1pm'
   },
   'veterinary': {
     name: 'Pawsitive Care Veterinary Hospital', tagline: 'Every Pet. Every Visit. Pure Care.',
     headline: 'Compassionate Veterinary Care for Your Best Friend',
     subheadline: 'Wellness exams, surgery, dental care, and 24/7 emergency support for cats and dogs.',
-    about: 'From routine vaccinations to emergency surgery, our hospital is built around fear-free handling and genuine compassion — for your pet and for you.',
+    about: 'From routine vaccinations to emergency surgery, our hospital is built around fear-free handling and genuine compassion ÔÇö for your pet and for you.',
     services: [
       { name: 'Wellness Exam & Vaccination', desc: 'Full physical exam, vaccination updates, and parasite prevention plan.', price: '$85' },
       { name: 'Dental Cleaning & Scaling', desc: 'Anesthetic dental clean with full mouth X-rays and assessment.', price: '$320' },
       { name: 'Desexing Surgery', desc: 'Routine spay/neuter with pre-surgical bloods and pain management included.', price: 'From $250' },
       { name: 'Emergency Consultation', desc: '24/7 urgent care for injuries, poisoning, or sudden illness.', price: 'From $150' },
     ],
-    stats: [{ value: '24/7', label: 'Emergency Line' }, { value: '6', label: 'Vets On Staff' }, { value: '4.9★', label: 'Pet Parent Rating' }],
+    stats: [{ value: '24/7', label: 'Emergency Line' }, { value: '6', label: 'Vets On Staff' }, { value: '4.9Ôÿà', label: 'Pet Parent Rating' }],
     reviews: [
       { name: 'Jess O.', rating: 5, text: 'They saved my dog after he ate something toxic at midnight. Forever grateful.', date: 'Dec 2025' },
       { name: 'Ryan L.', rating: 5, text: 'My cat is terrified of vets but somehow stayed calm through her whole exam here.', date: 'Nov 2025' },
       { name: 'Amanda P.', rating: 5, text: 'Transparent pricing and they explained every option before any procedure.', date: 'Oct 2025' },
     ],
-    address: '7 Companion Court, Lane Cove NSW', phone: '+61 2 9019 1212', email: 'frontdesk@pawsitivecare.com', hours: 'Daily 7am–9pm, Emergency 24/7'
+    address: '7 Companion Court, Lane Cove NSW', phone: '+61 2 9019 1212', email: 'frontdesk@pawsitivecare.com', hours: 'Daily 7amÔÇô9pm, Emergency 24/7'
   },
   'pharmacy': {
     name: 'HealthPoint Pharmacy & Compounding', tagline: 'Your Health, Personally Prepared.',
-    headline: 'More Than a Pharmacy — A Health Partner',
+    headline: 'More Than a Pharmacy ÔÇö A Health Partner',
     subheadline: 'Prescription dispensing, custom compounding, vaccinations, and free medication reviews.',
-    about: 'HealthPoint blends traditional pharmacy care with custom compounding for patients who need doses or formulations not available off the shelf — backed by pharmacists who actually have time to talk.',
+    about: 'HealthPoint blends traditional pharmacy care with custom compounding for patients who need doses or formulations not available off the shelf ÔÇö backed by pharmacists who actually have time to talk.',
     services: [
       { name: 'Prescription Dispensing', desc: 'Fast turnaround, automatic refill reminders, and home delivery available.', price: 'PBS pricing' },
       { name: 'Custom Compounding', desc: 'Personalized dosage forms, flavoring, and combinations for unique patient needs.', price: 'From $35' },
       { name: 'Flu & Travel Vaccinations', desc: 'Walk-in vaccination service, no appointment required.', price: 'From $25' },
       { name: 'Free MedsCheck Review', desc: 'A pharmacist reviews all your medications for interactions and adherence.', price: 'Free' },
     ],
-    stats: [{ value: '7', label: 'Pharmacists On-Site' }, { value: '15min', label: 'Avg. Wait Time' }, { value: '4.8★', label: 'Customer Rating' }],
+    stats: [{ value: '7', label: 'Pharmacists On-Site' }, { value: '15min', label: 'Avg. Wait Time' }, { value: '4.8Ôÿà', label: 'Customer Rating' }],
     reviews: [
       { name: 'Carol N.', rating: 5, text: 'They compounded a formulation my old pharmacy said was impossible. Life-changing.', date: 'Dec 2025' },
       { name: 'David W.', rating: 5, text: 'The MedsCheck review caught an interaction my doctor had missed. Thank you.', date: 'Nov 2025' },
       { name: 'Linda T.', rating: 4, text: 'Quick, friendly, and they actually explain what each medication does.', date: 'Oct 2025' },
     ],
-    address: '50 Remedy Road, Chatswood NSW', phone: '+61 2 9020 1313', email: 'info@healthpointpharmacy.com', hours: 'Mon–Sat 8am–8pm, Sun 9am–5pm'
+    address: '50 Remedy Road, Chatswood NSW', phone: '+61 2 9020 1313', email: 'info@healthpointpharmacy.com', hours: 'MonÔÇôSat 8amÔÇô8pm, Sun 9amÔÇô5pm'
   },
   'chiropractor': {
     name: 'Align & Restore Chiropractic', tagline: 'Move Better. Feel Better. Live Better.',
@@ -950,13 +950,13 @@ const INDUSTRIES_DATA: Record<string, IndustryConfig> = {
       { name: 'Postural Correction Program', desc: '6-week structured plan combining adjustments and corrective exercises.', price: '$420' },
       { name: 'Sports Injury Rehab', desc: 'Assessment and treatment plan for sport-related strains and joint issues.', price: '$80' },
     ],
-    stats: [{ value: '4.9★', label: 'Patient Rating' }, { value: '10yr', label: 'Clinical Experience' }, { value: '90%', label: 'Pain Improvement Rate' }],
+    stats: [{ value: '4.9Ôÿà', label: 'Patient Rating' }, { value: '10yr', label: 'Clinical Experience' }, { value: '90%', label: 'Pain Improvement Rate' }],
     reviews: [
       { name: 'Steve K.', rating: 5, text: 'Three years of lower back pain gone after one month of treatment here.', date: 'Dec 2025' },
       { name: 'Mia R.', rating: 5, text: 'Finally someone explained WHY my neck hurt, not just cracked it and sent me off.', date: 'Nov 2025' },
       { name: 'Andre L.', rating: 5, text: 'The postural program fixed years of desk-job slouching. Genuinely changed my posture.', date: 'Oct 2025' },
     ],
-    address: '18 Spinal Row, Crows Nest NSW', phone: '+61 2 9021 1414', email: 'book@alignrestore.com', hours: 'Mon–Fri 7am–7pm, Sat 8am–1pm'
+    address: '18 Spinal Row, Crows Nest NSW', phone: '+61 2 9021 1414', email: 'book@alignrestore.com', hours: 'MonÔÇôFri 7amÔÇô7pm, Sat 8amÔÇô1pm'
   },
   'physio': {
     name: 'Momentum Physiotherapy', tagline: 'Recover Stronger. Move Freer.',
@@ -969,35 +969,35 @@ const INDUSTRIES_DATA: Record<string, IndustryConfig> = {
       { name: 'Sports Injury Program', desc: 'Structured multi-week plan to return safely to training and competition.', price: 'From $450' },
       { name: 'Post-Surgery Rehabilitation', desc: 'Progressive rehab program coordinated with your surgeon\'s recovery timeline.', price: '$95/session' },
     ],
-    stats: [{ value: '4.9★', label: 'Patient Rating' }, { value: '6', label: 'Senior Physiotherapists' }, { value: '95%', label: 'Return-to-Sport Rate' }],
+    stats: [{ value: '4.9Ôÿà', label: 'Patient Rating' }, { value: '6', label: 'Senior Physiotherapists' }, { value: '95%', label: 'Return-to-Sport Rate' }],
     reviews: [
       { name: 'Jordan F.', rating: 5, text: 'Got me back to running 8 weeks after my ACL surgery, ahead of schedule.', date: 'Dec 2025' },
       { name: 'Kelly N.', rating: 5, text: 'Best physio I have been to. Every session had a clear plan and progress.', date: 'Nov 2025' },
       { name: 'Patrick D.', rating: 5, text: 'My shoulder pain that lingered for a year finally resolved in 6 sessions.', date: 'Oct 2025' },
     ],
-    address: '26 Recovery Lane, Manly NSW', phone: '+61 2 9022 1515', email: 'hello@momentumphysio.com', hours: 'Mon–Fri 7am–7pm, Sat 8am–2pm'
+    address: '26 Recovery Lane, Manly NSW', phone: '+61 2 9022 1515', email: 'hello@momentumphysio.com', hours: 'MonÔÇôFri 7amÔÇô7pm, Sat 8amÔÇô2pm'
   },
   'optometrist': {
     name: 'ClearView Optometry', tagline: 'See Life More Clearly.',
     headline: 'Precision Eye Care for Every Stage of Life',
     subheadline: 'Comprehensive eye exams, designer frames, and advanced retinal screening technology.',
-    about: 'ClearView combines thorough clinical eye exams with a genuinely enjoyable frame-fitting experience — because finding glasses you love shouldn\'t feel like a chore.',
+    about: 'ClearView combines thorough clinical eye exams with a genuinely enjoyable frame-fitting experience ÔÇö because finding glasses you love shouldn\'t feel like a chore.',
     services: [
-      { name: 'Comprehensive Eye Exam', desc: 'Full vision test, eye health check, and retinal photography screening.', price: '$0–$80' },
+      { name: 'Comprehensive Eye Exam', desc: 'Full vision test, eye health check, and retinal photography screening.', price: '$0ÔÇô$80' },
       { name: 'Designer Frame Fitting', desc: 'Personalized styling session across our curated designer frame collection.', price: 'From $199' },
       { name: 'Contact Lens Fitting', desc: 'Initial fitting, trial lenses, and training for new contact lens wearers.', price: '$60' },
       { name: 'OCT Retinal Scan', desc: 'Advanced 3D imaging to detect early signs of glaucoma and macular issues.', price: '$45' },
     ],
-    stats: [{ value: '4.9★', label: 'Patient Rating' }, { value: '40+', label: 'Designer Frame Brands' }, { value: '15yr', label: 'Clinical Experience' }],
+    stats: [{ value: '4.9Ôÿà', label: 'Patient Rating' }, { value: '40+', label: 'Designer Frame Brands' }, { value: '15yr', label: 'Clinical Experience' }],
     reviews: [
       { name: 'Natalie B.', rating: 5, text: 'The retinal scan caught an issue my old optometrist missed for years. So thorough.', date: 'Dec 2025' },
       { name: 'Eric H.', rating: 5, text: 'Spent 45 minutes helping me find frames that actually suited my face. No rush at all.', date: 'Nov 2025' },
       { name: 'Sandra Y.', rating: 5, text: 'First time wearing contacts and they were so patient teaching me the technique.', date: 'Oct 2025' },
     ],
-    address: '41 Vision Plaza, Chatswood NSW', phone: '+61 2 9023 1616', email: 'reception@clearviewoptometry.com', hours: 'Mon–Fri 9am–6pm, Sat 9am–3pm'
+    address: '41 Vision Plaza, Chatswood NSW', phone: '+61 2 9023 1616', email: 'reception@clearviewoptometry.com', hours: 'MonÔÇôFri 9amÔÇô6pm, Sat 9amÔÇô3pm'
   },
 
-  // ── FOOD (7) ─────────────────────────────────────────────────────────────────
+  // ÔöÇÔöÇ FOOD (7) ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
   'restaurant': {
     name: 'The Hearth Kitchen', tagline: 'From Earth to Table.',
     headline: 'Gastronomy Built on Local Harvests',
@@ -1015,7 +1015,7 @@ const INDUSTRIES_DATA: Record<string, IndustryConfig> = {
       { name: 'Olivia C.', rating: 5, text: 'That wood-fired ribeye is the best steak I have had in my life. No exaggeration.', date: 'Nov 2025' },
       { name: 'Mark D.', rating: 4, text: 'Exceptional food, beautiful room, and a wine list that rivals any in the country.', date: 'Oct 2025' },
     ],
-    address: '45 Ember Lane, Paddington NSW', phone: '+61 2 9100 4321', email: 'reserve@hearthkitchen.com', hours: 'Wed–Sun 6pm–10:30pm'
+    address: '45 Ember Lane, Paddington NSW', phone: '+61 2 9100 4321', email: 'reserve@hearthkitchen.com', hours: 'WedÔÇôSun 6pmÔÇô10:30pm'
   },
   'cafe': {
     name: 'Origin Coffee Roasters', tagline: 'Ethically Sourced. Micro-Roasted.',
@@ -1028,13 +1028,13 @@ const INDUSTRIES_DATA: Record<string, IndustryConfig> = {
       { name: 'Smashed Avocado Toast', desc: 'Sourdough toast, whipped feta, heirloom tomatoes, and microgreens.', price: '$14' },
       { name: 'Cold Brew Flight', desc: 'Three 80ml cold brew varieties including nitro, oat milk, and black.', price: '$12' },
     ],
-    stats: [{ value: '86+', label: 'SCA Bean Rating' }, { value: 'Direct', label: 'Trade Only' }, { value: '4.9★', label: 'Google Score' }],
+    stats: [{ value: '86+', label: 'SCA Bean Rating' }, { value: 'Direct', label: 'Trade Only' }, { value: '4.9Ôÿà', label: 'Google Score' }],
     reviews: [
       { name: 'Ben T.', rating: 5, text: 'The best flat white in the city, hands down. I come here every single morning.', date: 'Dec 2025' },
       { name: 'Sarah J.', rating: 5, text: 'The pour-over flight changed how I think about coffee. Truly exceptional.', date: 'Nov 2025' },
       { name: 'Mike L.', rating: 5, text: 'Great beans, great people, great vibes. My perfect morning spot.', date: 'Oct 2025' },
     ],
-    address: '7 Roaster Row, Newtown NSW', phone: '+61 2 9005 3456', email: 'hello@origincoffee.com', hours: 'Mon–Fri 6am–4pm, Sat–Sun 7am–3pm'
+    address: '7 Roaster Row, Newtown NSW', phone: '+61 2 9005 3456', email: 'hello@origincoffee.com', hours: 'MonÔÇôFri 6amÔÇô4pm, SatÔÇôSun 7amÔÇô3pm'
   },
   'bakery': {
     name: 'Flour & Crumb Bakehouse', tagline: 'Baked Before Dawn, Gone by Noon.',
@@ -1047,32 +1047,32 @@ const INDUSTRIES_DATA: Record<string, IndustryConfig> = {
       { name: 'Seasonal Fruit Danish', desc: 'Flaky pastry filled with vanilla custard and whatever fruit is in season.', price: '$7.5' },
       { name: 'Custom Celebration Cake', desc: 'Made-to-order cakes with 48-hour notice, naturally sweetened.', price: 'From $65' },
     ],
-    stats: [{ value: '24hr', label: 'Fermentation Time' }, { value: '5am', label: 'Daily Bake Start' }, { value: '4.9★', label: 'Google Rating' }],
+    stats: [{ value: '24hr', label: 'Fermentation Time' }, { value: '5am', label: 'Daily Bake Start' }, { value: '4.9Ôÿà', label: 'Google Rating' }],
     reviews: [
       { name: 'Hannah G.', rating: 5, text: 'This is the only sourdough I will buy now. The crust is unreal.', date: 'Dec 2025' },
       { name: 'Leo M.', rating: 5, text: 'Ordered a birthday cake here and it disappeared in 10 minutes at the party.', date: 'Nov 2025' },
       { name: 'Priya D.', rating: 5, text: 'Their croissants ruined every other croissant in the city for me.', date: 'Oct 2025' },
     ],
-    address: '3 Millstone Lane, Rozelle NSW', phone: '+61 2 9024 1717', email: 'hello@flourandcrumb.com', hours: 'Tue–Sun 6am–2pm (closed Mon)'
+    address: '3 Millstone Lane, Rozelle NSW', phone: '+61 2 9024 1717', email: 'hello@flourandcrumb.com', hours: 'TueÔÇôSun 6amÔÇô2pm (closed Mon)'
   },
   'food-truck': {
     name: 'Bao & Street Kitchen', tagline: 'Street Food, Done Properly.',
     headline: 'Bold Street Eats, No Compromises',
     subheadline: 'Hand-folded bao, loaded fries, and bold Asian-fusion flavors served fast and fresh.',
-    about: 'We started as one truck with one recipe — a steamed bao filling passed down from a family kitchen. Now we bring that same obsession with flavor to every market, festival, and lunch crowd we serve.',
+    about: 'We started as one truck with one recipe ÔÇö a steamed bao filling passed down from a family kitchen. Now we bring that same obsession with flavor to every market, festival, and lunch crowd we serve.',
     services: [
       { name: 'Crispy Pork Belly Bao', desc: 'Steamed bao bun, slow-braised pork belly, pickled slaw, and hoisin glaze.', price: '$9' },
       { name: 'Korean BBQ Loaded Fries', desc: 'Hand-cut fries topped with bulgogi beef, kimchi mayo, and scallions.', price: '$14' },
       { name: 'Crispy Chicken Bao Trio', desc: 'Three mini bao with crispy chicken, spicy slaw, and sesame drizzle.', price: '$15' },
       { name: 'Iced Pandan Coconut Drink', desc: 'House-made pandan syrup with coconut milk over ice.', price: '$6' },
     ],
-    stats: [{ value: '5★', label: 'Festival Rating' }, { value: '8', label: 'Markets Weekly' }, { value: '2k+', label: 'Bao Sold Per Week' }],
+    stats: [{ value: '5Ôÿà', label: 'Festival Rating' }, { value: '8', label: 'Markets Weekly' }, { value: '2k+', label: 'Bao Sold Per Week' }],
     reviews: [
       { name: 'Connor B.', rating: 5, text: 'Found this truck at a market and now I track their schedule weekly. Obsessed.', date: 'Dec 2025' },
       { name: 'Vy N.', rating: 5, text: 'The pork belly bao tastes exactly like my grandmother\'s recipe. Incredible.', date: 'Nov 2025' },
       { name: 'Ash R.', rating: 5, text: 'Loaded fries are a full meal on their own. Worth the queue every time.', date: 'Oct 2025' },
     ],
-    address: 'Mobile — check schedule, based in Inner West Sydney NSW', phone: '+61 2 9025 1818', email: 'bookings@baostreetkitchen.com', hours: 'Varies by market — see social for weekly schedule'
+    address: 'Mobile ÔÇö check schedule, based in Inner West Sydney NSW', phone: '+61 2 9025 1818', email: 'bookings@baostreetkitchen.com', hours: 'Varies by market ÔÇö see social for weekly schedule'
   },
   'wine-bar': {
     name: 'Somm & Cellar', tagline: 'Small Plates. Honest Wine.',
@@ -1085,32 +1085,32 @@ const INDUSTRIES_DATA: Record<string, IndustryConfig> = {
       { name: 'Burrata & Heirloom Tomato', desc: 'Creamy burrata, basil oil, and seasonal heirloom tomatoes.', price: '$24' },
       { name: 'Natural Wine Subscription', desc: 'Monthly two-bottle delivery curated to your taste profile.', price: '$85/mo' },
     ],
-    stats: [{ value: '200+', label: 'Wines on List' }, { value: '40+', label: 'Independent Producers' }, { value: '4.8★', label: 'Google Rating' }],
+    stats: [{ value: '200+', label: 'Wines on List' }, { value: '40+', label: 'Independent Producers' }, { value: '4.8Ôÿà', label: 'Google Rating' }],
     reviews: [
       { name: 'Isabelle K.', rating: 5, text: 'The flight they recommended completely changed how I think about natural wine.', date: 'Dec 2025' },
       { name: 'Daniel V.', rating: 5, text: 'Cozy, candlelit, and the staff actually know every bottle on the list.', date: 'Nov 2025' },
       { name: 'Renee P.', rating: 4, text: 'My new go-to for date night. The cheese board alone is worth the visit.', date: 'Oct 2025' },
     ],
-    address: '19 Cellar Lane, Surry Hills NSW', phone: '+61 2 9026 1919', email: 'reserve@sommandcellar.com', hours: 'Tue–Sat 4pm–midnight'
+    address: '19 Cellar Lane, Surry Hills NSW', phone: '+61 2 9026 1919', email: 'reserve@sommandcellar.com', hours: 'TueÔÇôSat 4pmÔÇômidnight'
   },
   'sushi-restaurant': {
     name: 'Mori Sushi & Izakaya', tagline: 'Precision. Tradition. Umami.',
     headline: 'Sushi Crafted the Edomae Way',
     subheadline: 'Daily flown-in seafood, hand-pressed nigiri, and an intimate omakase counter experience.',
-    about: 'Trained in Tokyo\'s Tsukiji tradition, our head chef sources fish daily and ages each cut precisely to its peak. Every piece of nigiri is pressed to order — never pre-made, never rushed.',
+    about: 'Trained in Tokyo\'s Tsukiji tradition, our head chef sources fish daily and ages each cut precisely to its peak. Every piece of nigiri is pressed to order ÔÇö never pre-made, never rushed.',
     services: [
       { name: 'Chef\'s Omakase Experience', desc: '12-piece seasonal omakase selected fresh by the chef that day.', price: '$95' },
       { name: 'Premium Nigiri Set', desc: 'Eight-piece selection of seasonal nigiri including bluefin tuna and uni.', price: '$58' },
       { name: 'Izakaya Small Plates', desc: 'Grilled skewers, agedashi tofu, and tempura for sharing.', price: 'From $12' },
       { name: 'Sake Pairing Flight', desc: 'Three premium sake pours matched to your meal course.', price: '$35' },
     ],
-    stats: [{ value: 'Daily', label: 'Fresh Fish Flights' }, { value: '12yr', label: 'Head Chef Experience' }, { value: '4.9★', label: 'Google Rating' }],
+    stats: [{ value: 'Daily', label: 'Fresh Fish Flights' }, { value: '12yr', label: 'Head Chef Experience' }, { value: '4.9Ôÿà', label: 'Google Rating' }],
     reviews: [
       { name: 'Kenji R.', rating: 5, text: 'Closest thing to Tokyo-quality sushi I have found outside Japan. The omakase is worth every dollar.', date: 'Dec 2025' },
-      { name: 'Amelia S.', rating: 5, text: 'The nigiri texture is unreal — clearly pressed fresh, not pre-made like most places.', date: 'Nov 2025' },
+      { name: 'Amelia S.', rating: 5, text: 'The nigiri texture is unreal ÔÇö clearly pressed fresh, not pre-made like most places.', date: 'Nov 2025' },
       { name: 'Brett W.', rating: 5, text: 'Sake pairing elevated the whole meal. Intimate counter seating made it feel special.', date: 'Oct 2025' },
     ],
-    address: '8 Edomae Lane, Sydney CBD NSW', phone: '+61 2 9027 2020', email: 'reserve@morisushi.com', hours: 'Tue–Sun 5:30pm–10pm'
+    address: '8 Edomae Lane, Sydney CBD NSW', phone: '+61 2 9027 2020', email: 'reserve@morisushi.com', hours: 'TueÔÇôSun 5:30pmÔÇô10pm'
   },
   'ice-cream-shop': {
     name: 'Frostbite Artisan Gelato', tagline: 'Churned Small. Tasted Big.',
@@ -1123,16 +1123,16 @@ const INDUSTRIES_DATA: Record<string, IndustryConfig> = {
       { name: 'Sorbetto (Dairy-Free)', desc: 'Fruit-forward dairy-free sorbet made with seasonal in-season fruit.', price: '$7' },
       { name: 'Gelato Cake (Custom Order)', desc: 'Layered gelato cake made to order, 48-hour notice required.', price: 'From $55' },
     ],
-    stats: [{ value: '16', label: 'Daily Flavors' }, { value: '5L', label: 'Small Batches' }, { value: '4.9★', label: 'Google Rating' }],
+    stats: [{ value: '16', label: 'Daily Flavors' }, { value: '5L', label: 'Small Batches' }, { value: '4.9Ôÿà', label: 'Google Rating' }],
     reviews: [
       { name: 'Zoe H.', rating: 5, text: 'The pistachio gelato here tastes like actual pistachios, not green sugar. Amazing.', date: 'Dec 2025' },
       { name: 'Marco T.', rating: 5, text: 'Closest thing to real Italian gelato I have found in this country.', date: 'Nov 2025' },
-      { name: 'Lily F.', rating: 5, text: 'Ordered a gelato cake for my daughter\'s birthday — it stole the whole party.', date: 'Oct 2025' },
+      { name: 'Lily F.', rating: 5, text: 'Ordered a gelato cake for my daughter\'s birthday ÔÇö it stole the whole party.', date: 'Oct 2025' },
     ],
-    address: '27 Frost Lane, Bondi Beach NSW', phone: '+61 2 9028 2121', email: 'hello@frostbitegelato.com', hours: 'Daily 11am–10pm'
+    address: '27 Frost Lane, Bondi Beach NSW', phone: '+61 2 9028 2121', email: 'hello@frostbitegelato.com', hours: 'Daily 11amÔÇô10pm'
   },
 
-  // ── RETAIL / BOUTIQUE (6) ─────────────────────────────────────────────────────
+  // ÔöÇÔöÇ RETAIL / BOUTIQUE (6) ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
   'florist': {
     name: 'Bella Bloom Florist', tagline: 'Earthy. Wild. Beautiful.',
     headline: 'Artisanal Florals, Freshly Cut Daily',
@@ -1144,13 +1144,13 @@ const INDUSTRIES_DATA: Record<string, IndustryConfig> = {
       { name: 'Weekly Office Vase', desc: 'Fresh ceramic vase arrangement delivered and set up every Monday.', price: '$55/wk' },
       { name: 'Dried Botanical Wreath', desc: 'Hand-foraged dried botanicals, pampas, and seed pods in a ring.', price: '$95' },
     ],
-    stats: [{ value: 'Daily', label: 'Farm Picked' }, { value: 'Native', label: 'Focus' }, { value: '4.9★', label: 'Google Review' }],
+    stats: [{ value: 'Daily', label: 'Farm Picked' }, { value: 'Native', label: 'Focus' }, { value: '4.9Ôÿà', label: 'Google Review' }],
     reviews: [
       { name: 'Jessica M.', rating: 5, text: 'The wedding arch was beyond stunning. Guests could not stop talking about it.', date: 'Dec 2025' },
       { name: 'Kate B.', rating: 5, text: 'Our weekly office flowers brighten everyone\'s Monday. Absolutely love them.', date: 'Nov 2025' },
       { name: 'Olivia H.', rating: 5, text: 'Ordered a bouquet for my mum\'s birthday and she cried. Perfect.', date: 'Oct 2025' },
     ],
-    address: '44 Garden Row, Newtown NSW', phone: '+61 2 9014 6666', email: 'hello@bellabloom.com', hours: 'Mon–Sat 8am–5pm'
+    address: '44 Garden Row, Newtown NSW', phone: '+61 2 9014 6666', email: 'hello@bellabloom.com', hours: 'MonÔÇôSat 8amÔÇô5pm'
   },
   'jewellery': {
     name: 'Aurelia Fine Jewellery', tagline: 'Heirlooms in the Making.',
@@ -1163,97 +1163,97 @@ const INDUSTRIES_DATA: Record<string, IndustryConfig> = {
       { name: 'Diamond Stud Earrings', desc: 'Ethically sourced round-brilliant diamonds in 18k gold settings.', price: 'From $890' },
       { name: 'Jewellery Repair & Resizing', desc: 'Professional resizing, prong retipping, and chain repair.', price: 'From $40' },
     ],
-    stats: [{ value: 'Conflict-Free', label: 'Diamond Sourcing' }, { value: '20yr', label: 'Goldsmith Experience' }, { value: '4.9★', label: 'Google Rating' }],
+    stats: [{ value: 'Conflict-Free', label: 'Diamond Sourcing' }, { value: '20yr', label: 'Goldsmith Experience' }, { value: '4.9Ôÿà', label: 'Google Rating' }],
     reviews: [
       { name: 'Victoria L.', rating: 5, text: 'My engagement ring is exactly what I dreamed of, designed from scratch with them.', date: 'Dec 2025' },
       { name: 'Henry C.', rating: 5, text: 'They remade my grandmother\'s ring into something I wear every day. So emotional.', date: 'Nov 2025' },
       { name: 'Sophia R.', rating: 5, text: 'Transparent about sourcing and pricing, no upselling pressure at all. Refreshing.', date: 'Oct 2025' },
     ],
-    address: '5 Heritage Arcade, Sydney CBD NSW', phone: '+61 2 9029 2222', email: 'enquiries@aureliafine.com', hours: 'Mon–Sat 10am–6pm'
+    address: '5 Heritage Arcade, Sydney CBD NSW', phone: '+61 2 9029 2222', email: 'enquiries@aureliafine.com', hours: 'MonÔÇôSat 10amÔÇô6pm'
   },
   'boutique-clothing': {
     name: 'Maison Luxe Boutique', tagline: 'Considered Pieces. Quiet Luxury.',
     headline: 'Wardrobe Staples That Actually Last',
     subheadline: 'Hand-selected designer pieces, tailored fits, and a personal styling service for every visit.',
-    about: 'Maison Luxe curates a tightly edited collection of timeless, well-made pieces from independent and emerging designers — no fast fashion, no fleeting trends, just clothing built to last seasons.',
+    about: 'Maison Luxe curates a tightly edited collection of timeless, well-made pieces from independent and emerging designers ÔÇö no fast fashion, no fleeting trends, just clothing built to last seasons.',
     services: [
       { name: 'Personal Styling Session', desc: 'One-on-one styling appointment with a curated capsule wardrobe pull.', price: '$80 (credited to purchase)' },
       { name: 'In-House Tailoring', desc: 'Professional alterations for the perfect fit on any piece purchased.', price: 'From $35' },
       { name: 'Seasonal Capsule Edit', desc: 'A pre-styled 8-piece capsule wardrobe delivered each new season.', price: 'From $650' },
       { name: 'VIP Styling Membership', desc: 'Quarterly styling sessions plus early access to new designer drops.', price: '$120/quarter' },
     ],
-    stats: [{ value: '30+', label: 'Independent Designers' }, { value: 'Hand', label: 'Curated Collection' }, { value: '4.8★', label: 'Google Rating' }],
+    stats: [{ value: '30+', label: 'Independent Designers' }, { value: 'Hand', label: 'Curated Collection' }, { value: '4.8Ôÿà', label: 'Google Rating' }],
     reviews: [
       { name: 'Charlotte W.', rating: 5, text: 'The styling session completely changed how I shop. Every piece they picked, I still wear.', date: 'Dec 2025' },
       { name: 'Maxwell J.', rating: 5, text: 'Found pieces here I have not seen anywhere else. Genuinely unique collection.', date: 'Nov 2025' },
       { name: 'Ella P.', rating: 4, text: 'In-house tailoring made a $300 jacket fit like it was made for me.', date: 'Oct 2025' },
     ],
-    address: '62 Atelier Walk, Paddington NSW', phone: '+61 2 9030 2323', email: 'style@maisonluxe.com', hours: 'Mon–Sat 10am–6pm, Sun 11am–4pm'
+    address: '62 Atelier Walk, Paddington NSW', phone: '+61 2 9030 2323', email: 'style@maisonluxe.com', hours: 'MonÔÇôSat 10amÔÇô6pm, Sun 11amÔÇô4pm'
   },
   'clothing': {
     name: 'Northside Streetwear Co.', tagline: 'Everyday Fits. Real Comfort.',
     headline: 'Streetwear Built for Actual Life',
     subheadline: 'Affordable everyday essentials, limited weekly drops, and a fit for every body type.',
-    about: 'Northside is built around accessible streetwear that does not sacrifice quality for price. We restock weekly, run limited capsule drops, and keep sizing genuinely inclusive — XS to 4XL, always in stock.',
+    about: 'Northside is built around accessible streetwear that does not sacrifice quality for price. We restock weekly, run limited capsule drops, and keep sizing genuinely inclusive ÔÇö XS to 4XL, always in stock.',
     services: [
       { name: 'Essentials Bundle (3 Tees)', desc: 'Heavyweight cotton tees in your choice of 3 core colors.', price: '$65' },
       { name: 'Weekly Capsule Drop', desc: 'Limited-run designs released every Friday, restocked rarely.', price: 'From $45' },
       { name: 'Custom Embroidery Add-On', desc: 'Add personalized embroidery to any hoodie or jacket purchase.', price: '+$15' },
       { name: 'Style Box Subscription', desc: 'Monthly curated box of 3 pieces matched to your size and style.', price: '$89/mo' },
     ],
-    stats: [{ value: 'XS–4XL', label: 'Inclusive Sizing' }, { value: 'Weekly', label: 'New Drops' }, { value: '4.7★', label: 'Customer Rating' }],
+    stats: [{ value: 'XSÔÇô4XL', label: 'Inclusive Sizing' }, { value: 'Weekly', label: 'New Drops' }, { value: '4.7Ôÿà', label: 'Customer Rating' }],
     reviews: [
       { name: 'Jaylen R.', rating: 5, text: 'Finally a streetwear brand that actually fits past a size large. Quality is solid too.', date: 'Dec 2025' },
       { name: 'Mia T.', rating: 5, text: 'The Friday drops sell out so fast but the quality is genuinely worth chasing.', date: 'Nov 2025' },
       { name: 'Cody B.', rating: 4, text: 'Style box has introduced me to combos I never would have picked myself.', date: 'Oct 2025' },
     ],
-    address: '101 Northside Mall, Parramatta NSW', phone: '+61 2 9031 2424', email: 'support@northsidestreet.com', hours: 'Daily 10am–9pm'
+    address: '101 Northside Mall, Parramatta NSW', phone: '+61 2 9031 2424', email: 'support@northsidestreet.com', hours: 'Daily 10amÔÇô9pm'
   },
   'pet-shop': {
     name: 'Paws & Whiskers Pet Co.', tagline: 'Everything Your Pet Actually Needs.',
     headline: 'Quality Pet Care, No Filler Products',
     subheadline: 'Premium nutrition, grooming services, and a genuinely knowledgeable team that loves animals.',
-    about: 'We only stock food and products we would actually feed our own pets — no fillers, no junk brands. Our team includes a certified pet nutritionist available for free in-store consultations.',
+    about: 'We only stock food and products we would actually feed our own pets ÔÇö no fillers, no junk brands. Our team includes a certified pet nutritionist available for free in-store consultations.',
     services: [
       { name: 'Premium Nutrition Consultation', desc: 'Free in-store consultation with our certified pet nutritionist.', price: 'Free' },
       { name: 'Full Grooming Package', desc: 'Bath, brush-out, nail trim, ear cleaning, and breed-specific styling.', price: 'From $55' },
       { name: 'Puppy Starter Kit', desc: 'Curated bundle of food, toys, crate essentials, and training treats.', price: '$120' },
       { name: 'Monthly Subscription Box', desc: 'Personalized toys and treats delivered monthly based on your pet\'s profile.', price: '$39/mo' },
     ],
-    stats: [{ value: 'Certified', label: 'In-Store Nutritionist' }, { value: '200+', label: 'Premium Brands Stocked' }, { value: '4.9★', label: 'Google Rating' }],
+    stats: [{ value: 'Certified', label: 'In-Store Nutritionist' }, { value: '200+', label: 'Premium Brands Stocked' }, { value: '4.9Ôÿà', label: 'Google Rating' }],
     reviews: [
       { name: 'Holly N.', rating: 5, text: 'The nutritionist helped me find food that finally fixed my dog\'s allergies. Free, too!', date: 'Dec 2025' },
       { name: 'Brendan K.', rating: 5, text: 'Grooming team is so gentle with my anxious rescue cat. Never an issue.', date: 'Nov 2025' },
       { name: 'Tara S.', rating: 5, text: 'The puppy starter kit had literally everything we needed for our first week home.', date: 'Oct 2025' },
     ],
-    address: '14 Companion Plaza, Lane Cove NSW', phone: '+61 2 9032 2525', email: 'hello@pawsandwhiskers.com', hours: 'Daily 9am–7pm'
+    address: '14 Companion Plaza, Lane Cove NSW', phone: '+61 2 9032 2525', email: 'hello@pawsandwhiskers.com', hours: 'Daily 9amÔÇô7pm'
   },
   'bookshop': {
     name: 'The Cozy Nook Bookshop', tagline: 'A Chapter Waiting to Be Found.',
     headline: 'Independent Books, Curated With Care',
     subheadline: 'Hand-picked fiction, local author spotlights, and a reading nook that invites you to stay a while.',
-    about: 'The Cozy Nook is run by readers, for readers. Every title on our shelves has been personally read and recommended by our staff — no algorithm picks, no bestseller-only walls.',
+    about: 'The Cozy Nook is run by readers, for readers. Every title on our shelves has been personally read and recommended by our staff ÔÇö no algorithm picks, no bestseller-only walls.',
     services: [
       { name: 'Staff-Picked Book Bundle', desc: 'A surprise 3-book bundle hand-selected to match your favorite genres.', price: '$55' },
       { name: 'Local Author Signing Event', desc: 'Monthly in-store signing and reading events with regional authors.', price: 'Free entry' },
       { name: 'Book Club Membership', desc: 'Monthly themed pick plus discussion night and 10% off all purchases.', price: '$25/mo' },
       { name: 'Gift Wrapping & Personalization', desc: 'Hand-wrapped gifting with a custom handwritten note card.', price: '+$5' },
     ],
-    stats: [{ value: 'Staff', label: 'Curated Shelves' }, { value: 'Monthly', label: 'Author Events' }, { value: '4.9★', label: 'Google Rating' }],
+    stats: [{ value: 'Staff', label: 'Curated Shelves' }, { value: 'Monthly', label: 'Author Events' }, { value: '4.9Ôÿà', label: 'Google Rating' }],
     reviews: [
       { name: 'Margaret O.', rating: 5, text: 'Every staff recommendation has been a five-star read for me. They just get it.', date: 'Dec 2025' },
       { name: 'Felix A.', rating: 5, text: 'The book club introduced me to authors I never would have found on my own.', date: 'Nov 2025' },
       { name: 'Diana W.', rating: 5, text: 'Such a warm, cozy space. I came for a book and stayed for two hours reading.', date: 'Oct 2025' },
     ],
-    address: '9 Pageturner Lane, Glebe NSW', phone: '+61 2 9033 2626', email: 'hello@cozynookbooks.com', hours: 'Mon–Sat 9am–7pm, Sun 10am–5pm'
+    address: '9 Pageturner Lane, Glebe NSW', phone: '+61 2 9033 2626', email: 'hello@cozynookbooks.com', hours: 'MonÔÇôSat 9amÔÇô7pm, Sun 10amÔÇô5pm'
   },
 
-  // ── FITNESS (5) ───────────────────────────────────────────────────────────────
+  // ÔöÇÔöÇ FITNESS (5) ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
   'gym': {
     name: 'Ironworks Athletic Club', tagline: 'Forged in Sweat. Defined by Results.',
     headline: 'State-of-the-Art Training Facility',
     subheadline: 'Heavy steel platforms, custom lifting rigs, and elite performance coaches.',
-    about: 'Ironworks is a community dedicated to real training. No gimmicks — just professional barbell equipment, specialty strength gear, and a culture that drives you forward every session.',
+    about: 'Ironworks is a community dedicated to real training. No gimmicks ÔÇö just professional barbell equipment, specialty strength gear, and a culture that drives you forward every session.',
     services: [
       { name: 'Elite Club Access Pass', desc: 'Full 24/7 access to heavy steel zone, lifting platforms, and recovery sauna.', price: '$75/mo' },
       { name: 'Small Group Strength Class', desc: 'Structured barbell coaching covering squats, presses, and athletic power moves.', price: '$120/mo' },
@@ -1279,32 +1279,32 @@ const INDUSTRIES_DATA: Record<string, IndustryConfig> = {
       { name: 'Restorative Sound Bath', desc: 'Passive holds supported by bolsters, finished with crystal singing bowls.', price: '$28' },
       { name: 'Unlimited Monthly Pass', desc: 'Access all daily classes plus 10% off workshops and retreats.', price: '$140' },
     ],
-    stats: [{ value: '20+', label: 'Weekly Classes' }, { value: '500+', label: 'Members' }, { value: '4.9★', label: 'Rating' }],
+    stats: [{ value: '20+', label: 'Weekly Classes' }, { value: '500+', label: 'Members' }, { value: '4.9Ôÿà', label: 'Rating' }],
     reviews: [
       { name: 'Sophia K.', rating: 5, text: 'The sound bath class changed my life. Pure peace. Pure healing.', date: 'Dec 2025' },
       { name: 'Anna L.', rating: 5, text: 'Best yoga studio I have ever attended. Teachers are world-class.', date: 'Nov 2025' },
       { name: 'Mia R.', rating: 5, text: 'Hot yoga here is intense but amazing. I leave feeling reborn every time.', date: 'Oct 2025' },
     ],
-    address: '5 Lotus Lane, Bondi NSW', phone: '+61 2 9012 4444', email: 'namaste@pranaflow.com', hours: 'Daily 6am–9pm'
+    address: '5 Lotus Lane, Bondi NSW', phone: '+61 2 9012 4444', email: 'namaste@pranaflow.com', hours: 'Daily 6amÔÇô9pm'
   },
   'personal-trainer': {
     name: 'Apex Athletic Coaching', tagline: 'One Coach. One Plan. Real Results.',
     headline: 'Personal Training That Actually Fits Your Life',
     subheadline: 'One-on-one programming, nutrition coaching, and flexible in-home or studio sessions.',
-    about: 'Apex builds programs around your actual schedule, injuries, and goals — not a one-size-fits-all template. Every client gets a dedicated coach who tracks progress weekly and adjusts in real time.',
+    about: 'Apex builds programs around your actual schedule, injuries, and goals ÔÇö not a one-size-fits-all template. Every client gets a dedicated coach who tracks progress weekly and adjusts in real time.',
     services: [
       { name: 'Initial Assessment & Goal Plan', desc: 'Movement screening, goal-setting session, and a custom 12-week roadmap.', price: '$85' },
       { name: '1-on-1 Coaching Session', desc: 'Fully personalized session with form correction and progressive overload tracking.', price: '$90' },
       { name: 'In-Home Training Package', desc: 'Eight sessions delivered at your home with all equipment provided.', price: '$680' },
       { name: 'Nutrition Coaching Add-On', desc: 'Weekly check-ins, macro planning, and habit coaching alongside training.', price: '$60/wk' },
     ],
-    stats: [{ value: '4.9★', label: 'Client Rating' }, { value: '10yr', label: 'Coaching Experience' }, { value: '300+', label: 'Transformations' }],
+    stats: [{ value: '4.9Ôÿà', label: 'Client Rating' }, { value: '10yr', label: 'Coaching Experience' }, { value: '300+', label: 'Transformations' }],
     reviews: [
       { name: 'Brad O.', rating: 5, text: 'First trainer who actually worked around my shoulder injury instead of ignoring it.', date: 'Dec 2025' },
       { name: 'Naomi T.', rating: 5, text: 'Down 14kg and stronger than I have ever been. The accountability made all the difference.', date: 'Nov 2025' },
       { name: 'Sam K.', rating: 5, text: 'In-home sessions fit perfectly around my crazy work schedule. Highly recommend.', date: 'Oct 2025' },
     ],
-    address: '12 Performance Plaza, Manly NSW', phone: '+61 2 9034 2727', email: 'coach@apexathletic.com', hours: 'Mon–Sat 6am–8pm, by appointment'
+    address: '12 Performance Plaza, Manly NSW', phone: '+61 2 9034 2727', email: 'coach@apexathletic.com', hours: 'MonÔÇôSat 6amÔÇô8pm, by appointment'
   },
   'pilates': {
     name: 'Form & Line Pilates Studio', tagline: 'Strength From the Inside Out.',
@@ -1317,13 +1317,13 @@ const INDUSTRIES_DATA: Record<string, IndustryConfig> = {
       { name: 'Beginner Foundations Course', desc: 'Four-week intro course covering reformer fundamentals and breathing technique.', price: '$180' },
       { name: 'Unlimited Monthly Membership', desc: 'Unlimited reformer classes plus priority booking for popular time slots.', price: '$220/mo' },
     ],
-    stats: [{ value: '6', label: 'Max Class Size' }, { value: '4.9★', label: 'Studio Rating' }, { value: '8yr', label: 'Studio Experience' }],
+    stats: [{ value: '6', label: 'Max Class Size' }, { value: '4.9Ôÿà', label: 'Studio Rating' }, { value: '8yr', label: 'Studio Experience' }],
     reviews: [
       { name: 'Claire D.', rating: 5, text: 'The small class size means the instructor actually notices when my form is off. Real difference.', date: 'Dec 2025' },
       { name: 'Ryan P.', rating: 5, text: 'Clinical Pilates helped my lower back more than six months of physio did. Incredible.', date: 'Nov 2025' },
       { name: 'Tara M.', rating: 5, text: 'My posture has genuinely improved after two months of classes here. Worth every cent.', date: 'Oct 2025' },
     ],
-    address: '21 Studio Row, Mosman NSW', phone: '+61 2 9035 2828', email: 'hello@formandline.com', hours: 'Mon–Fri 6am–7pm, Sat 8am–1pm'
+    address: '21 Studio Row, Mosman NSW', phone: '+61 2 9035 2828', email: 'hello@formandline.com', hours: 'MonÔÇôFri 6amÔÇô7pm, Sat 8amÔÇô1pm'
   },
   'martial-arts': {
     name: 'Apex Martial Arts Academy', tagline: 'Discipline. Respect. Strength.',
@@ -1336,16 +1336,16 @@ const INDUSTRIES_DATA: Record<string, IndustryConfig> = {
       { name: 'Kids Confidence Program', desc: 'Ages 6-12 program building discipline, focus, and anti-bullying confidence.', price: '$120/mo' },
       { name: 'Unlimited Adult Membership', desc: 'Unlimited access to all adult BJJ and Muay Thai classes.', price: '$190/mo' },
     ],
-    stats: [{ value: '15yr', label: 'Head Coach Experience' }, { value: '4.9★', label: 'Member Rating' }, { value: '400+', label: 'Active Students' }],
+    stats: [{ value: '15yr', label: 'Head Coach Experience' }, { value: '4.9Ôÿà', label: 'Member Rating' }, { value: '400+', label: 'Active Students' }],
     reviews: [
       { name: 'Tyler S.', rating: 5, text: 'My son\'s confidence has completely transformed since starting the kids program. Amazing coaches.', date: 'Dec 2025' },
       { name: 'Diego F.', rating: 5, text: 'The BJJ coaching here is world-class. Learned more in 3 months than a year elsewhere.', date: 'Nov 2025' },
       { name: 'Rachel N.', rating: 5, text: 'Muay Thai classes are intense but the coaches genuinely care about safe technique.', date: 'Oct 2025' },
     ],
-    address: '33 Dojo Lane, Marrickville NSW', phone: '+61 2 9036 2929', email: 'train@apexmartialarts.com', hours: 'Mon–Sat 6am–9pm'
+    address: '33 Dojo Lane, Marrickville NSW', phone: '+61 2 9036 2929', email: 'train@apexmartialarts.com', hours: 'MonÔÇôSat 6amÔÇô9pm'
   },
 
-  // ── LEGAL / FINANCE (5) ───────────────────────────────────────────────────────
+  // ÔöÇÔöÇ LEGAL / FINANCE (5) ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
   'law-firm': {
     name: 'Apex Legal Partners', tagline: 'Relentless Representation.',
     headline: 'High-Stakes Legal Representation',
@@ -1363,45 +1363,45 @@ const INDUSTRIES_DATA: Record<string, IndustryConfig> = {
       { name: 'Sandra M.', rating: 5, text: 'Won a complex dispute that two other firms said was impossible. Truly relentless advocates.', date: 'Nov 2025' },
       { name: 'Peter L.', rating: 5, text: 'The asset protection structures they set up for us have been invaluable.', date: 'Oct 2025' },
     ],
-    address: '1 Martin Place, Level 42, Sydney NSW', phone: '+61 2 9009 1111', email: 'matters@apexlegal.com', hours: 'Mon–Fri 8am–6pm'
+    address: '1 Martin Place, Level 42, Sydney NSW', phone: '+61 2 9009 1111', email: 'matters@apexlegal.com', hours: 'MonÔÇôFri 8amÔÇô6pm'
   },
   'accounting': {
     name: 'Vanguard Tax & Audit', tagline: 'Precision Numbers. Honest Advice.',
     headline: 'Accounting That Actually Saves You Money',
     subheadline: 'Tax planning, business advisory, and audit services for growing businesses and individuals.',
-    about: 'Vanguard goes beyond compliance — we proactively plan with clients throughout the year to legally minimize tax and improve cash flow, not just file paperwork once a year.',
+    about: 'Vanguard goes beyond compliance ÔÇö we proactively plan with clients throughout the year to legally minimize tax and improve cash flow, not just file paperwork once a year.',
     services: [
       { name: 'Individual Tax Return', desc: 'Comprehensive personal tax return with deduction maximization review.', price: 'From $180' },
       { name: 'Business Tax Planning', desc: 'Quarterly strategic tax planning sessions to legally minimize liability.', price: '$250/session' },
       { name: 'BAS & Bookkeeping Service', desc: 'Monthly bookkeeping and quarterly BAS lodgment, fully managed.', price: 'From $220/mo' },
       { name: 'Business Structure Advisory', desc: 'Trust, company, or partnership structuring for tax efficiency and asset protection.', price: '$450' },
     ],
-    stats: [{ value: '20yr', label: 'Firm Experience' }, { value: '500+', label: 'Business Clients' }, { value: '4.9★', label: 'Client Rating' }],
+    stats: [{ value: '20yr', label: 'Firm Experience' }, { value: '500+', label: 'Business Clients' }, { value: '4.9Ôÿà', label: 'Client Rating' }],
     reviews: [
       { name: 'Patricia W.', rating: 5, text: 'Their tax planning saved my business over $30,000 last financial year. Genuinely proactive advice.', date: 'Dec 2025' },
       { name: 'Greg H.', rating: 5, text: 'Finally an accountant who explains things in plain English and actually returns calls.', date: 'Nov 2025' },
       { name: 'Monica F.', rating: 5, text: 'Restructured my business entity and the tax savings paid for their fee within months.', date: 'Oct 2025' },
     ],
-    address: '88 Ledger Lane, North Sydney NSW', phone: '+61 2 9037 3030', email: 'advice@vanguardtax.com', hours: 'Mon–Fri 8:30am–5:30pm'
+    address: '88 Ledger Lane, North Sydney NSW', phone: '+61 2 9037 3030', email: 'advice@vanguardtax.com', hours: 'MonÔÇôFri 8:30amÔÇô5:30pm'
   },
   'financial-advisor': {
     name: 'Beacon Wealth Advisory', tagline: 'Clarity for Every Stage of Wealth.',
     headline: 'Financial Advice Built Around Your Life',
     subheadline: 'Retirement planning, investment strategy, and superannuation advice from independent advisors.',
-    about: 'Beacon is fee-for-service and product-independent — we are not paid commissions to recommend specific funds. Our only incentive is building a plan that genuinely works for your goals.',
+    about: 'Beacon is fee-for-service and product-independent ÔÇö we are not paid commissions to recommend specific funds. Our only incentive is building a plan that genuinely works for your goals.',
     services: [
       { name: 'Comprehensive Financial Plan', desc: 'Full review of assets, goals, and risk profile resulting in a written strategy.', price: '$1,500' },
       { name: 'Retirement Income Strategy', desc: 'Pension drawdown planning to maximize retirement income longevity.', price: '$800' },
       { name: 'Superannuation Review', desc: 'Fee, performance, and insurance audit across your current super fund.', price: '$350' },
       { name: 'Ongoing Advice Membership', desc: 'Quarterly portfolio reviews and unlimited advisor check-ins.', price: '$280/mo' },
     ],
-    stats: [{ value: 'Fee-Only', label: 'Independent Advice' }, { value: '$200M+', label: 'Assets Advised' }, { value: '4.9★', label: 'Client Rating' }],
+    stats: [{ value: 'Fee-Only', label: 'Independent Advice' }, { value: '$200M+', label: 'Assets Advised' }, { value: '4.9Ôÿà', label: 'Client Rating' }],
     reviews: [
       { name: 'Robert T.', rating: 5, text: 'First advisor who clearly was not just pushing me toward commission-based products. Trustworthy.', date: 'Dec 2025' },
       { name: 'Joanne K.', rating: 5, text: 'The super review found $40,000 in unnecessary fees over 10 years. Eye-opening.', date: 'Nov 2025' },
       { name: 'Bill S.', rating: 5, text: 'Retirement plan they built gives me genuine confidence I will not run out of money.', date: 'Oct 2025' },
     ],
-    address: '17 Beacon Tower, Sydney CBD NSW', phone: '+61 2 9038 3131', email: 'plan@beaconwealth.com', hours: 'Mon–Fri 9am–5:30pm'
+    address: '17 Beacon Tower, Sydney CBD NSW', phone: '+61 2 9038 3131', email: 'plan@beaconwealth.com', hours: 'MonÔÇôFri 9amÔÇô5:30pm'
   },
   'real-estate': {
     name: 'Maison Real Estate', tagline: 'Connecting People with Fine Homes.',
@@ -1414,35 +1414,35 @@ const INDUSTRIES_DATA: Record<string, IndustryConfig> = {
       { name: 'Premium Property Management', desc: 'Tenant vetting, rental collections, routine inspections, and maintenance.', price: '7% of rent' },
       { name: 'Property Valuation Report', desc: 'Comprehensive market analysis and professional property valuation.', price: '$350' },
     ],
-    stats: [{ value: '$250M+', label: 'Sales Volume' }, { value: '18d', label: 'Avg Days on Market' }, { value: '4.9★', label: 'Client Rating' }],
+    stats: [{ value: '$250M+', label: 'Sales Volume' }, { value: '18d', label: 'Avg Days on Market' }, { value: '4.9Ôÿà', label: 'Client Rating' }],
     reviews: [
       { name: 'Catherine W.', rating: 5, text: 'Maison sold our home $120k above asking price. Their marketing is in a league of its own.', date: 'Dec 2025' },
       { name: 'Robert H.', rating: 5, text: 'Found us our dream home off-market. The concierge service is genuinely exceptional.', date: 'Nov 2025' },
       { name: 'Lucy F.', rating: 5, text: 'As a first-time buyer, they made the whole process stress-free and transparent.', date: 'Oct 2025' },
     ],
-    address: '1 Harbour View, Kirribilli NSW', phone: '+61 2 9008 6789', email: 'luxury@maisonre.com', hours: 'Mon–Sat 8am–6pm'
+    address: '1 Harbour View, Kirribilli NSW', phone: '+61 2 9008 6789', email: 'luxury@maisonre.com', hours: 'MonÔÇôSat 8amÔÇô6pm'
   },
   'insurance': {
     name: 'Shield Mutual Insurance Advisory', tagline: 'Protection That Actually Pays Out.',
     headline: 'Insurance Advice, Not Just Policy Sales',
     subheadline: 'Independent life, income protection, and business insurance advice across every major insurer.',
-    about: 'Shield Mutual compares policies across the entire market rather than pushing one insurer\'s products. We are also there at claim time — most clients never hear from their insurance broker again after signing, we are different.',
+    about: 'Shield Mutual compares policies across the entire market rather than pushing one insurer\'s products. We are also there at claim time ÔÇö most clients never hear from their insurance broker again after signing, we are different.',
     services: [
       { name: 'Income Protection Review', desc: 'Full comparison of income protection policies across 12+ insurers.', price: 'Free quote' },
       { name: 'Life Insurance Consultation', desc: 'Needs analysis and tailored life insurance recommendation.', price: 'Free quote' },
       { name: 'Business Insurance Package', desc: 'Public liability, professional indemnity, and asset cover bundled for SMEs.', price: 'From $80/mo' },
       { name: 'Claims Advocacy Support', desc: 'We manage your claim paperwork and insurer negotiations on your behalf.', price: 'No extra charge' },
     ],
-    stats: [{ value: '12+', label: 'Insurers Compared' }, { value: '95%', label: 'Claims Approved' }, { value: '4.8★', label: 'Client Rating' }],
+    stats: [{ value: '12+', label: 'Insurers Compared' }, { value: '95%', label: 'Claims Approved' }, { value: '4.8Ôÿà', label: 'Client Rating' }],
     reviews: [
       { name: 'Karen J.', rating: 5, text: 'When I actually needed to claim, they handled everything. Made a stressful time so much easier.', date: 'Dec 2025' },
       { name: 'Anthony R.', rating: 5, text: 'Found me a better income protection policy for $40 less per month. Should have called sooner.', date: 'Nov 2025' },
       { name: 'Diane M.', rating: 5, text: 'Business insurance package was straightforward and saved us from being underinsured.', date: 'Oct 2025' },
     ],
-    address: '24 Assurance Avenue, North Sydney NSW', phone: '+61 2 9039 3232', email: 'advice@shieldmutual.com', hours: 'Mon–Fri 9am–5pm'
+    address: '24 Assurance Avenue, North Sydney NSW', phone: '+61 2 9039 3232', email: 'advice@shieldmutual.com', hours: 'MonÔÇôFri 9amÔÇô5pm'
   },
 
-  // ── CREATIVE / TRADES (9) ──────────────────────────────────────────────────────
+  // ÔöÇÔöÇ CREATIVE / TRADES (9) ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
   'web-agency': {
     name: 'Futurxt Digital Solutions', tagline: 'Fast Code. Flawless Design.',
     headline: 'Next-Generation Web Development',
@@ -1460,45 +1460,45 @@ const INDUSTRIES_DATA: Record<string, IndustryConfig> = {
       { name: 'Zara A.', rating: 5, text: 'The design sprint they ran transformed our brand presence completely. Worth every dollar.', date: 'Nov 2025' },
       { name: 'Tom B.', rating: 5, text: 'Best dev team we have ever worked with. On time, on budget, and incredibly talented.', date: 'Oct 2025' },
     ],
-    address: '88 Tech Hub, Ultimo NSW', phone: '+61 2 9010 2222', email: 'hello@futurxt.com', hours: 'Mon–Fri 9am–6pm'
+    address: '88 Tech Hub, Ultimo NSW', phone: '+61 2 9010 2222', email: 'hello@futurxt.com', hours: 'MonÔÇôFri 9amÔÇô6pm'
   },
   'photography': {
     name: 'Aperture Fine Art Photography', tagline: 'Capturing Truth in Light.',
     headline: 'Editorial Portrait & Brand Photography',
     subheadline: 'High-end studio sessions, product campaigns, and organic wedding storytelling.',
-    about: 'We use natural light and rich shadows to capture genuine emotion. No stiff poses — clean, timeless editorial framing that tells your story beautifully.',
+    about: 'We use natural light and rich shadows to capture genuine emotion. No stiff poses ÔÇö clean, timeless editorial framing that tells your story beautifully.',
     services: [
       { name: 'Studio Portrait Session', desc: '2 hours, 3 outfit changes, premium lighting, and 15 edited files.', price: '$450' },
       { name: 'Brand Product Campaign', desc: 'High-detail styling, macro shots, clean color correction, and catalog prep.', price: '$750' },
       { name: 'Wedding Day Coverage', desc: '8 hours documentary-style coverage, print box, and online gallery.', price: '$2,800' },
       { name: 'Content Creator Pack', desc: 'Monthly lifestyle shoot, 30+ edited images for social channels.', price: '$600' },
     ],
-    stats: [{ value: '15yr', label: 'Experience' }, { value: 'Top 50', label: 'Editorial Award' }, { value: '4.9★', label: 'Rating' }],
+    stats: [{ value: '15yr', label: 'Experience' }, { value: 'Top 50', label: 'Editorial Award' }, { value: '4.9Ôÿà', label: 'Rating' }],
     reviews: [
       { name: 'Claire H.', rating: 5, text: 'The wedding photos made me cry. Every single frame is perfect.', date: 'Dec 2025' },
       { name: 'Brendan L.', rating: 5, text: 'Our brand campaign photos tripled our engagement rate. Incredible work.', date: 'Nov 2025' },
       { name: 'Amy S.', rating: 5, text: 'Portrait session was so fun and relaxed. The results blew my mind.', date: 'Oct 2025' },
     ],
-    address: '18 Lens Lane, Surry Hills NSW', phone: '+61 2 9013 5555', email: 'shoot@aperturefine.com', hours: 'Mon–Sat 9am–6pm'
+    address: '18 Lens Lane, Surry Hills NSW', phone: '+61 2 9013 5555', email: 'shoot@aperturefine.com', hours: 'MonÔÇôSat 9amÔÇô6pm'
   },
   'graphic-design': {
     name: 'Chroma Design Studio', tagline: 'Visual Identity, Sharpened.',
     headline: 'Branding That Actually Gets Remembered',
     subheadline: 'Logo design, full brand systems, and packaging design for businesses ready to stand out.',
-    about: 'Chroma builds complete visual identity systems — not just a logo, but a cohesive language across packaging, digital, and print that makes your brand instantly recognizable.',
+    about: 'Chroma builds complete visual identity systems ÔÇö not just a logo, but a cohesive language across packaging, digital, and print that makes your brand instantly recognizable.',
     services: [
       { name: 'Logo & Brand Identity', desc: 'Logo suite, color palette, typography system, and brand guidelines document.', price: '$2,200' },
       { name: 'Packaging Design Package', desc: 'Custom packaging design across up to 3 product SKUs, print-ready files.', price: '$1,800' },
       { name: 'Social Media Brand Kit', desc: 'Templated post designs, story templates, and highlight covers matched to your brand.', price: '$650' },
       { name: 'Pitch Deck Design', desc: 'Investor-ready slide deck design built around your existing content.', price: '$900' },
     ],
-    stats: [{ value: '120+', label: 'Brands Designed' }, { value: '4.9★', label: 'Client Rating' }, { value: '9yr', label: 'Studio Experience' }],
+    stats: [{ value: '120+', label: 'Brands Designed' }, { value: '4.9Ôÿà', label: 'Client Rating' }, { value: '9yr', label: 'Studio Experience' }],
     reviews: [
       { name: 'Sienna P.', rating: 5, text: 'Our rebrand led directly to a 60% increase in social engagement. Stunning work.', date: 'Dec 2025' },
       { name: 'Marcus D.', rating: 5, text: 'The packaging design they created got us picked up by two new retailers. Incredible ROI.', date: 'Nov 2025' },
       { name: 'Ivy R.', rating: 5, text: 'Pitch deck design helped us close our seed round. Investors specifically complimented it.', date: 'Oct 2025' },
     ],
-    address: '40 Palette Plaza, Chippendale NSW', phone: '+61 2 9040 3333', email: 'studio@chromadesign.com', hours: 'Mon–Fri 9am–6pm'
+    address: '40 Palette Plaza, Chippendale NSW', phone: '+61 2 9040 3333', email: 'studio@chromadesign.com', hours: 'MonÔÇôFri 9amÔÇô6pm'
   },
   'electrician': {
     name: 'VoltGuard Electrical Services', tagline: 'Wired Right. Every Time.',
@@ -1511,114 +1511,114 @@ const INDUSTRIES_DATA: Record<string, IndustryConfig> = {
       { name: 'Home Rewiring', desc: 'Complete or partial home rewiring with minimal disruption to your space.', price: 'Quote on inspection' },
       { name: 'Electrical Safety Inspection', desc: 'Full property safety check with detailed report and compliance certificate.', price: '$180' },
     ],
-    stats: [{ value: 'Licensed', label: '& Fully Insured' }, { value: '24/7', label: 'Emergency Service' }, { value: '4.9★', label: 'Customer Rating' }],
+    stats: [{ value: 'Licensed', label: '& Fully Insured' }, { value: '24/7', label: 'Emergency Service' }, { value: '4.9Ôÿà', label: 'Customer Rating' }],
     reviews: [
       { name: 'Wayne T.', rating: 5, text: 'Came out at 11pm for a power emergency and fixed it in 40 minutes. Lifesavers.', date: 'Dec 2025' },
       { name: 'Julie B.', rating: 5, text: 'Upfront quote, no surprises on the invoice. Such a relief compared to past electricians.', date: 'Nov 2025' },
       { name: 'Frank S.', rating: 5, text: 'Switchboard upgrade was done in half a day and the work is immaculate.', date: 'Oct 2025' },
     ],
-    address: '55 Circuit Street, Bankstown NSW', phone: '+61 2 9041 3434', email: 'jobs@voltguardelectrical.com', hours: 'Mon–Sat 7am–6pm, Emergency 24/7'
+    address: '55 Circuit Street, Bankstown NSW', phone: '+61 2 9041 3434', email: 'jobs@voltguardelectrical.com', hours: 'MonÔÇôSat 7amÔÇô6pm, Emergency 24/7'
   },
   'plumber': {
     name: 'FlowRight Plumbing Co.', tagline: 'No Leaks. No Excuses.',
     headline: 'Reliable Plumbing, Done Right the First Time',
     subheadline: 'Blocked drains, hot water systems, and emergency leak repairs across the region.',
-    about: 'FlowRight has built a reputation on showing up when promised and fixing it properly the first time — no callbacks, no shortcuts. Every plumber is fully licensed with upfront written quotes.',
+    about: 'FlowRight has built a reputation on showing up when promised and fixing it properly the first time ÔÇö no callbacks, no shortcuts. Every plumber is fully licensed with upfront written quotes.',
     services: [
       { name: 'Blocked Drain Clearing', desc: 'CCTV drain inspection and high-pressure jet clearing for stubborn blockages.', price: 'From $180' },
       { name: 'Hot Water System Replacement', desc: 'Same-day installation of gas, electric, or heat pump hot water systems.', price: 'From $1,200' },
       { name: 'Emergency Leak Repair', desc: '24/7 emergency response for burst pipes and major leaks.', price: 'From $150' },
       { name: 'Bathroom Plumbing Renovation', desc: 'Full repipe and fixture installation for bathroom renovation projects.', price: 'Quote on inspection' },
     ],
-    stats: [{ value: 'Licensed', label: 'Master Plumbers' }, { value: '24/7', label: 'Emergency Callout' }, { value: '4.9★', label: 'Customer Rating' }],
+    stats: [{ value: 'Licensed', label: 'Master Plumbers' }, { value: '24/7', label: 'Emergency Callout' }, { value: '4.9Ôÿà', label: 'Customer Rating' }],
     reviews: [
       { name: 'Gary M.', rating: 5, text: 'Hot water died on a Sunday and they had a new system installed by that afternoon.', date: 'Dec 2025' },
       { name: 'Donna K.', rating: 5, text: 'Drain has been blocked three times by other plumbers. FlowRight actually fixed the root cause.', date: 'Nov 2025' },
       { name: 'Tony R.', rating: 5, text: 'Upfront pricing before any work started. Refreshingly honest compared to past experiences.', date: 'Oct 2025' },
     ],
-    address: '67 Pipeline Road, Liverpool NSW', phone: '+61 2 9042 3535', email: 'jobs@flowrightplumbing.com', hours: 'Mon–Sat 6am–7pm, Emergency 24/7'
+    address: '67 Pipeline Road, Liverpool NSW', phone: '+61 2 9042 3535', email: 'jobs@flowrightplumbing.com', hours: 'MonÔÇôSat 6amÔÇô7pm, Emergency 24/7'
   },
   'landscaping': {
     name: 'GreenScapes Design & Build', tagline: 'Gardens Built to Outlast Trends.',
     headline: 'Landscape Design That Transforms Your Outdoor Space',
     subheadline: 'Custom garden design, turf installation, and full outdoor renovation builds.',
-    about: 'GreenScapes designs landscapes around how you actually live outdoors — entertaining, relaxing, or growing your own food. Every design is climate-appropriate and built for low long-term maintenance.',
+    about: 'GreenScapes designs landscapes around how you actually live outdoors ÔÇö entertaining, relaxing, or growing your own food. Every design is climate-appropriate and built for low long-term maintenance.',
     services: [
       { name: 'Garden Design Consultation', desc: 'On-site consultation and 3D landscape design concept for your property.', price: '$250' },
       { name: 'Turf Installation', desc: 'Full site prep, premium turf supply, and professional installation.', price: 'From $25/sqm' },
       { name: 'Outdoor Entertainment Build', desc: 'Custom decking, pergola, and garden lighting design and build.', price: 'Quote on inspection' },
       { name: 'Garden Maintenance Plan', desc: 'Fortnightly mowing, edging, and seasonal pruning service.', price: 'From $90/visit' },
     ],
-    stats: [{ value: '4.9★', label: 'Customer Rating' }, { value: '14yr', label: 'Design Experience' }, { value: '600+', label: 'Gardens Built' }],
+    stats: [{ value: '4.9Ôÿà', label: 'Customer Rating' }, { value: '14yr', label: 'Design Experience' }, { value: '600+', label: 'Gardens Built' }],
     reviews: [
       { name: 'Susan P.', rating: 5, text: 'Transformed our backyard from a mud patch into something out of a magazine. Stunning.', date: 'Dec 2025' },
       { name: 'Mark F.', rating: 5, text: 'The deck and pergola build exceeded what we imagined. Quality craftsmanship throughout.', date: 'Nov 2025' },
       { name: 'Wendy H.', rating: 5, text: 'New turf looks incredible and their maintenance plan keeps it looking fresh year-round.', date: 'Oct 2025' },
     ],
-    address: '29 Garden Grove Road, Penrith NSW', phone: '+61 2 9043 3636', email: 'design@greenscapesbuild.com', hours: 'Mon–Sat 7am–5pm'
+    address: '29 Garden Grove Road, Penrith NSW', phone: '+61 2 9043 3636', email: 'design@greenscapesbuild.com', hours: 'MonÔÇôSat 7amÔÇô5pm'
   },
   'cleaning-service': {
     name: 'Sparkle Premium Cleaners', tagline: 'Spotless. Reliable. Trusted.',
     headline: 'Professional Cleaning You Can Actually Rely On',
     subheadline: 'Recurring home cleaning, end-of-lease cleans, and fully insured commercial cleaning teams.',
-    about: 'Every Sparkle cleaner is police-checked, fully insured, and trained to our exact 40-point checklist — so every clean is consistent, whether it is your first visit or your fiftieth.',
+    about: 'Every Sparkle cleaner is police-checked, fully insured, and trained to our exact 40-point checklist ÔÇö so every clean is consistent, whether it is your first visit or your fiftieth.',
     services: [
       { name: 'Recurring Home Clean', desc: 'Weekly or fortnightly clean covering kitchen, bathrooms, and all living areas.', price: 'From $120/visit' },
       { name: 'End-of-Lease Deep Clean', desc: 'Comprehensive bond-back guaranteed clean including ovens and windows.', price: 'From $280' },
       { name: 'Commercial Office Cleaning', desc: 'After-hours office cleaning with flexible scheduling for businesses.', price: 'Quote on inspection' },
       { name: 'One-Off Deep Clean', desc: 'Top-to-bottom deep clean for move-ins, special occasions, or spring cleaning.', price: 'From $220' },
     ],
-    stats: [{ value: 'Police-Checked', label: 'All Cleaners' }, { value: '100%', label: 'Bond-Back Guarantee' }, { value: '4.9★', label: 'Customer Rating' }],
+    stats: [{ value: 'Police-Checked', label: 'All Cleaners' }, { value: '100%', label: 'Bond-Back Guarantee' }, { value: '4.9Ôÿà', label: 'Customer Rating' }],
     reviews: [
       { name: 'Angela V.', rating: 5, text: 'Got my full bond back thanks to their end-of-lease clean. Worth every dollar.', date: 'Dec 2025' },
       { name: 'Steven L.', rating: 5, text: 'Same two cleaners every fortnight, always thorough, always on time. Genuinely reliable.', date: 'Nov 2025' },
       { name: 'Rebecca J.', rating: 5, text: 'Our office has never looked better. The team is professional and discreet after hours.', date: 'Oct 2025' },
     ],
-    address: '83 Spotless Street, Parramatta NSW', phone: '+61 2 9044 3737', email: 'bookings@sparklecleaners.com', hours: 'Mon–Sat 7am–6pm'
+    address: '83 Spotless Street, Parramatta NSW', phone: '+61 2 9044 3737', email: 'bookings@sparklecleaners.com', hours: 'MonÔÇôSat 7amÔÇô6pm'
   },
   'interior-design': {
     name: 'Maison Interior Studio', tagline: 'Spaces That Feel Like You.',
     headline: 'Interior Design for Homes With Real Personality',
     subheadline: 'Full home styling, renovation design consultation, and custom furniture sourcing.',
-    about: 'Maison Studio designs around how clients actually live — not just how a space photographs. Every project blends function, comfort, and a genuinely personal aesthetic built to last well beyond trends.',
+    about: 'Maison Studio designs around how clients actually live ÔÇö not just how a space photographs. Every project blends function, comfort, and a genuinely personal aesthetic built to last well beyond trends.',
     services: [
       { name: 'Interior Design Consultation', desc: 'In-home consultation, mood board, and initial design direction.', price: '$280' },
       { name: 'Full Room Styling Package', desc: 'Complete design, furniture sourcing, and styling for one room.', price: 'From $3,500' },
       { name: 'Renovation Design Planning', desc: 'Full floor plan and material selection for kitchen or bathroom renovations.', price: 'From $1,800' },
       { name: 'Custom Furniture Sourcing', desc: 'Bespoke furniture sourcing and procurement matched to your design vision.', price: '10% of spend' },
     ],
-    stats: [{ value: '4.9★', label: 'Client Rating' }, { value: '150+', label: 'Homes Styled' }, { value: '11yr', label: 'Studio Experience' }],
+    stats: [{ value: '4.9Ôÿà', label: 'Client Rating' }, { value: '150+', label: 'Homes Styled' }, { value: '11yr', label: 'Studio Experience' }],
     reviews: [
       { name: 'Vanessa K.', rating: 5, text: 'They turned our awkward living room into the favorite room in the house. Genuinely transformative.', date: 'Dec 2025' },
       { name: 'Oliver T.', rating: 5, text: 'The renovation planning saved us from costly mistakes before builders even started.', date: 'Nov 2025' },
       { name: 'Pauline D.', rating: 5, text: 'Every furniture piece they sourced felt curated specifically for our taste. Loved the result.', date: 'Oct 2025' },
     ],
-    address: '52 Atelier Court, Woollahra NSW', phone: '+61 2 9045 3838', email: 'studio@maisoninterior.com', hours: 'Mon–Fri 9am–6pm, by appointment'
+    address: '52 Atelier Court, Woollahra NSW', phone: '+61 2 9045 3838', email: 'studio@maisoninterior.com', hours: 'MonÔÇôFri 9amÔÇô6pm, by appointment'
   },
   'video-production': {
     name: 'Volt Cinema Productions', tagline: 'Stories, Shot to Move People.',
     headline: 'Cinematic Video Production for Brands',
     subheadline: 'Brand films, product launch videos, and social-first content shot and edited in-house.',
-    about: 'Volt Cinema treats every brand video like a short film — proper storyboarding, lighting, and sound design, not just a camera pointed at a product. We handle everything from concept to final cut.',
+    about: 'Volt Cinema treats every brand video like a short film ÔÇö proper storyboarding, lighting, and sound design, not just a camera pointed at a product. We handle everything from concept to final cut.',
     services: [
       { name: 'Brand Story Film', desc: 'Full concept, filming, and edit of a 2-3 minute cinematic brand story.', price: '$4,500' },
       { name: 'Product Launch Video', desc: 'High-energy product showcase video optimized for social and ads.', price: '$2,800' },
       { name: 'Social Content Bundle', desc: 'One filming day producing 10 short-form videos for social channels.', price: '$1,900' },
       { name: 'Event Coverage & Highlight Reel', desc: 'Full-day event filming with a 90-second highlight reel delivered within 5 days.', price: '$1,600' },
     ],
-    stats: [{ value: '4.9★', label: 'Client Rating' }, { value: '200+', label: 'Brand Films Produced' }, { value: '10yr', label: 'Production Experience' }],
+    stats: [{ value: '4.9Ôÿà', label: 'Client Rating' }, { value: '200+', label: 'Brand Films Produced' }, { value: '10yr', label: 'Production Experience' }],
     reviews: [
       { name: 'Felix N.', rating: 5, text: 'Our product launch video drove more sales in one week than our entire ad budget last quarter.', date: 'Dec 2025' },
       { name: 'Camille R.', rating: 5, text: 'The brand film they produced gave me chills watching it back. Genuinely cinematic quality.', date: 'Nov 2025' },
       { name: 'Lucas B.', rating: 5, text: 'Event highlight reel was ready in 3 days and captured the night perfectly. Exceeded expectations.', date: 'Oct 2025' },
     ],
-    address: '36 Lumière Lane, Alexandria NSW', phone: '+61 2 9046 3939', email: 'produce@voltcinema.com', hours: 'Mon–Fri 9am–6pm, by appointment'
+    address: '36 Lumi├¿re Lane, Alexandria NSW', phone: '+61 2 9046 3939', email: 'produce@voltcinema.com', hours: 'MonÔÇôFri 9amÔÇô6pm, by appointment'
   },
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
 // TRACKING
-// ═══════════════════════════════════════════════════════════════════════════
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
 const _sb_track = typeof window !== 'undefined' ? createSupabaseBrowserClient() : null
 
 async function trackEvent(slug: string, eventType: 'view_demo' | 'contact_click') {
@@ -1631,9 +1631,9 @@ async function trackEvent(slug: string, eventType: 'view_demo' | 'contact_click'
   } catch (err) { console.error('[trackEvent]', err) }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// resolveData — ghép nội dung (INDUSTRIES_DATA) + ảnh (IMAGE_BASE_ID)
-// ═══════════════════════════════════════════════════════════════════════════
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+// resolveData ÔÇö gh├®p nß╗Öi dung (INDUSTRIES_DATA) + ß║únh (IMAGE_BASE_ID)
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
 interface FullSiteData extends IndustryConfig {
   heroImage: string
   galleryImages: string[]
@@ -1688,9 +1688,9 @@ function resolveData(slug: string, supabaseOverride?: any): FullSiteData {
   }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ALL_INDUSTRIES — danh sách cho switcher
-// ═══════════════════════════════════════════════════════════════════════════
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+// ALL_INDUSTRIES ÔÇö danh s├ích cho switcher
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
 const ALL_INDUSTRIES = [
   { id: 'nail-salon', name: 'Luxe Nail Studio', cat: 'Beauty' },
   { id: 'beauty-salon', name: 'Glow Hair & Beauty', cat: 'Beauty' },
@@ -1740,9 +1740,9 @@ const ALL_INDUSTRIES = [
   { id: 'video-production', name: 'Volt Cinema Productions', cat: 'Creative' },
 ]
 
-// ═══════════════════════════════════════════════════════════════════════════
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
 // UI HELPERS
-// ═══════════════════════════════════════════════════════════════════════════
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
 function StarRating({ rating, size = 14 }: { rating: number; size?: number }) {
   return (
     <div className="flex items-center gap-0.5">
@@ -1771,7 +1771,7 @@ function ContactSectionWithMap({ data }: { data: FullSiteData }) {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 content-start">
           {[
             { label: 'Address', val: data.address },
-            { label: 'Contact', val: `${data.phone} · ${data.email}` },
+            { label: 'Contact', val: `${data.phone} ┬À ${data.email}` },
             { label: 'Hours', val: data.hours },
           ].map((c, i) => (
             <div key={i}>
@@ -1786,9 +1786,9 @@ function ContactSectionWithMap({ data }: { data: FullSiteData }) {
   )
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
 // LAYOUT 1: EDITORIAL (Beauty / Retail-luxury)
-// ═══════════════════════════════════════════════════════════════════════════
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
 function EditorialLayout({ data, onContact }: { data: FullSiteData; onContact: () => void }) {
   const [slot, setSlot] = useState('')
   const [booked, setBooked] = useState(false)
@@ -1905,7 +1905,7 @@ function EditorialLayout({ data, onContact }: { data: FullSiteData; onContact: (
                   </div>
                   <p className="text-xs leading-relaxed" style={{ color:'var(--text-muted)' }}>{s.desc}</p>
                   <a href="#book" className="inline-flex text-[10px] font-bold uppercase tracking-widest transition pt-1 hover:opacity-80" style={{ color:'var(--accent)' }}>
-                    Book this service →
+                    Book this service ÔåÆ
                   </a>
                 </div>
               </div>
@@ -1963,7 +1963,7 @@ function EditorialLayout({ data, onContact }: { data: FullSiteData; onContact: (
           </div>
           {booked ? (
             <div className="text-center py-10 space-y-4 anim-in">
-              <div className="w-14 h-14 rounded-full border flex items-center justify-center mx-auto text-2xl" style={{ borderColor:'var(--accent)', color:'var(--accent)' }}>✓</div>
+              <div className="w-14 h-14 rounded-full border flex items-center justify-center mx-auto text-2xl" style={{ borderColor:'var(--accent)', color:'var(--accent)' }}>Ô£ô</div>
               <h3 className="text-xl text-white" style={{ fontFamily:'var(--heading-font)' }}>Booking Confirmed!</h3>
               <p className="text-xs max-w-[300px] mx-auto leading-relaxed" style={{ color:'var(--text-muted)' }}>
                 Thank you, {form.name}. We will confirm your {slot} slot within 2 hours.
@@ -2012,9 +2012,9 @@ function EditorialLayout({ data, onContact }: { data: FullSiteData; onContact: (
   )
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
 // LAYOUT 2: HOSPITALITY (Food & Dining)
-// ═══════════════════════════════════════════════════════════════════════════
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
 function HospitalityLayout({ data, onContact }: { data: FullSiteData; onContact: () => void }) {
   const [guests, setGuests] = useState('2')
   const [time, setTime] = useState('7:00 PM')
@@ -2058,7 +2058,7 @@ function HospitalityLayout({ data, onContact }: { data: FullSiteData; onContact:
           <div className="flex items-center gap-3 pt-1">
             <StarRating rating={5} size={16}/>
             <span className="text-xs text-white/70">{data.stats[0]?.value}</span>
-            <span className="text-white/30">·</span>
+            <span className="text-white/30">┬À</span>
             <span className="text-xs text-white/70">{data.stats[2]?.value}</span>
           </div>
           <div className="flex gap-4 pt-2">
@@ -2158,7 +2158,7 @@ function HospitalityLayout({ data, onContact }: { data: FullSiteData; onContact:
           </div>
           {reserved ? (
             <div className="text-center py-8 space-y-3 anim-in">
-              <div className="text-3xl">🍽️</div>
+              <div className="text-3xl">­ƒì¢´©Å</div>
               <h3 className="font-bold text-white">Reservation Confirmed!</h3>
               <p className="text-xs leading-relaxed" style={{ color:'var(--text-muted)' }}>We have reserved a table for {guests} guests at {time}. See you soon, {name}!</p>
             </div>
@@ -2202,9 +2202,9 @@ function HospitalityLayout({ data, onContact }: { data: FullSiteData; onContact:
   )
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
 // LAYOUT 3: CLINICAL (Medical / Dental / Health)
-// ═══════════════════════════════════════════════════════════════════════════
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
 function ClinicalLayout({ data, onContact }: { data: FullSiteData; onContact: () => void }) {
   const [selectedService, setSelectedService] = useState('')
   const [step, setStep] = useState(1)
@@ -2251,7 +2251,7 @@ function ClinicalLayout({ data, onContact }: { data: FullSiteData; onContact: ()
           <p className="text-sm leading-relaxed max-w-[50ch]" style={{ color:'var(--text-muted)' }}>{data.subheadline}</p>
           <div className="flex items-center gap-3">
             <StarRating rating={5} size={16}/>
-            <span className="text-xs" style={{ color:'var(--text-muted)' }}>{data.stats[0]?.value} · {data.stats[2]?.value} patients</span>
+            <span className="text-xs" style={{ color:'var(--text-muted)' }}>{data.stats[0]?.value} ┬À {data.stats[2]?.value} patients</span>
           </div>
           <div className="flex flex-wrap gap-4 pt-2">
             <a href="#book" className="px-8 py-4 text-xs font-bold uppercase tracking-widest transition hover:opacity-90"
@@ -2298,7 +2298,7 @@ function ClinicalLayout({ data, onContact }: { data: FullSiteData; onContact: ()
                   </div>
                   <p className="text-[11px] leading-relaxed" style={{ color:'var(--text-muted)' }}>{s.desc}</p>
                   <a href="#book" className="inline-block text-[10px] font-bold uppercase tracking-widest pt-2 transition hover:opacity-70" style={{ color:'var(--accent)' }}>
-                    Book →
+                    Book ÔåÆ
                   </a>
                 </div>
               </div>
@@ -2367,7 +2367,7 @@ function ClinicalLayout({ data, onContact }: { data: FullSiteData; onContact: ()
           </div>
           {booked ? (
             <div className="text-center py-8 space-y-4 anim-in">
-              <div className="w-14 h-14 rounded-full border flex items-center justify-center mx-auto text-xl" style={{ borderColor:'var(--accent)', color:'var(--accent)' }}>✓</div>
+              <div className="w-14 h-14 rounded-full border flex items-center justify-center mx-auto text-xl" style={{ borderColor:'var(--accent)', color:'var(--accent)' }}>Ô£ô</div>
               <h3 className="text-xl font-bold text-white" style={{ fontFamily:'var(--heading-font)' }}>Appointment Confirmed!</h3>
               <p className="text-xs leading-relaxed max-w-[300px] mx-auto" style={{ color:'var(--text-muted)' }}>
                 Thank you, {form.name}. We'll call {form.phone} to confirm your {selectedService} appointment.
@@ -2375,7 +2375,7 @@ function ClinicalLayout({ data, onContact }: { data: FullSiteData; onContact: ()
             </div>
           ) : step === 1 ? (
             <div className="space-y-4 anim-in">
-              <label className="block text-[10px] font-bold uppercase tracking-wider" style={{ color:'var(--text-muted)' }}>Step 1 — Select a Treatment</label>
+              <label className="block text-[10px] font-bold uppercase tracking-wider" style={{ color:'var(--text-muted)' }}>Step 1 ÔÇö Select a Treatment</label>
               <div className="space-y-2">
                 {data.servicesWithImages.map((s,i) => (
                   <button key={i} type="button" onClick={() => { setSelectedService(s.name); setStep(2) }}
@@ -2395,7 +2395,7 @@ function ClinicalLayout({ data, onContact }: { data: FullSiteData; onContact: ()
             </div>
           ) : step === 2 ? (
             <div className="space-y-4 anim-in">
-              <label className="block text-[10px] font-bold uppercase tracking-wider" style={{ color:'var(--text-muted)' }}>Step 2 — Choose a Time</label>
+              <label className="block text-[10px] font-bold uppercase tracking-wider" style={{ color:'var(--text-muted)' }}>Step 2 ÔÇö Choose a Time</label>
               <div className="grid grid-cols-2 gap-2">
                 {['08:00 AM','10:30 AM','01:00 PM','03:30 PM'].map(t => (
                   <button key={t} type="button" onClick={() => setStep(3)}
@@ -2405,11 +2405,11 @@ function ClinicalLayout({ data, onContact }: { data: FullSiteData; onContact: ()
                   </button>
                 ))}
               </div>
-              <button onClick={() => setStep(1)} className="text-[10px] font-bold uppercase tracking-widest" style={{ color:'var(--accent)' }}>← Back</button>
+              <button onClick={() => setStep(1)} className="text-[10px] font-bold uppercase tracking-widest" style={{ color:'var(--accent)' }}>ÔåÉ Back</button>
             </div>
           ) : (
             <form onSubmit={submitBooking} className="space-y-4 anim-in">
-              <label className="block text-[10px] font-bold uppercase tracking-wider" style={{ color:'var(--text-muted)' }}>Step 3 — Your Details</label>
+              <label className="block text-[10px] font-bold uppercase tracking-wider" style={{ color:'var(--text-muted)' }}>Step 3 ÔÇö Your Details</label>
               <input type="text" placeholder="Full Name" required value={form.name} onChange={e => setForm({...form,name:e.target.value})}
                 className="w-full h-11 border px-4 text-xs text-white focus:outline-none"
                 style={{ background:'var(--bg-deep)', borderColor:'var(--border)', borderRadius:'var(--radius)' }}/>
@@ -2421,7 +2421,7 @@ function ClinicalLayout({ data, onContact }: { data: FullSiteData; onContact: ()
                 style={{ background:'var(--bg-deep)', borderColor:'var(--border)', borderRadius:'var(--radius)' }}/>
               <div className="flex gap-3">
                 <button type="button" onClick={() => setStep(2)} className="px-5 h-12 border text-xs font-bold transition"
-                  style={{ borderColor:'var(--border)', color:'var(--text-muted)', borderRadius:'var(--radius)' }}>← Back</button>
+                  style={{ borderColor:'var(--border)', color:'var(--text-muted)', borderRadius:'var(--radius)' }}>ÔåÉ Back</button>
                 <button type="submit" className="flex-1 h-12 font-bold text-xs uppercase tracking-widest transition hover:opacity-90"
                   style={{ background:'var(--accent)', color:'var(--accent-text)', borderRadius:'var(--radius)' }}>
                   Confirm Appointment
@@ -2441,9 +2441,9 @@ function ClinicalLayout({ data, onContact }: { data: FullSiteData; onContact: ()
   )
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
 // LAYOUT 4: EXECUTIVE (Legal / Finance / Real Estate)
-// ═══════════════════════════════════════════════════════════════════════════
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
 function ExecutiveLayout({ data, onContact }: { data: FullSiteData; onContact: () => void }) {
   const [activeService, setActiveService] = useState(0)
   const [form, setForm] = useState({ name:'', company:'', email:'', message:'' })
@@ -2623,7 +2623,7 @@ function ExecutiveLayout({ data, onContact }: { data: FullSiteData; onContact: (
           <div className="border p-8 lg:p-12" style={{ background:'var(--bg-alt)', borderColor:'var(--border)', borderRadius:'var(--radius)' }}>
             {sent ? (
               <div className="text-center py-10 space-y-4 anim-in">
-                <div className="w-14 h-14 rounded-full border flex items-center justify-center mx-auto text-xl" style={{ borderColor:'var(--accent)', color:'var(--accent)' }}>✓</div>
+                <div className="w-14 h-14 rounded-full border flex items-center justify-center mx-auto text-xl" style={{ borderColor:'var(--accent)', color:'var(--accent)' }}>Ô£ô</div>
                 <h3 className="text-xl text-white" style={{ fontFamily:'var(--heading-font)' }}>Message Received</h3>
                 <p className="text-xs max-w-[300px] mx-auto leading-relaxed" style={{ color:'var(--text-muted)' }}>
                   Thank you, {form.name}. A partner will be in touch within 24 hours.
@@ -2664,9 +2664,9 @@ function ExecutiveLayout({ data, onContact }: { data: FullSiteData; onContact: (
   )
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
 // LAYOUT 5: ENERGY (Fitness / Gym / Sports)
-// ═══════════════════════════════════════════════════════════════════════════
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
 function EnergyLayout({ data, onContact }: { data: FullSiteData; onContact: () => void }) {
   const [form, setForm] = useState({ name:'', phone:'' })
   const [sent, setSent] = useState(false)
@@ -2828,7 +2828,7 @@ function EnergyLayout({ data, onContact }: { data: FullSiteData; onContact: () =
           </div>
           {sent ? (
             <div className="py-10 space-y-3 anim-in">
-              <div className="text-3xl" style={{ color:'var(--accent)' }}>💪</div>
+              <div className="text-3xl" style={{ color:'var(--accent)' }}>­ƒÆ¬</div>
               <h3 className="font-black uppercase text-white" style={{ fontFamily:'var(--heading-font)' }}>Welcome Aboard!</h3>
               <p className="text-xs" style={{ color:'var(--text-muted)' }}>We'll call {form.phone || 'you'} shortly, {form.name}.</p>
             </div>
@@ -2858,9 +2858,9 @@ function EnergyLayout({ data, onContact }: { data: FullSiteData; onContact: () =
   )
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
 // LAYOUT 6: CREATIVE (Agency / Tech / Trades / Photography)
-// ═══════════════════════════════════════════════════════════════════════════
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
 function CreativeLayout({ data, onContact }: { data: FullSiteData; onContact: () => void }) {
   const [hovered, setHovered] = useState<number|null>(null)
   const [form, setForm] = useState({ name:'', email:'', brief:'' })
@@ -2908,7 +2908,7 @@ function CreativeLayout({ data, onContact }: { data: FullSiteData; onContact: ()
               Start a Project
             </a>
             <a href="#work" className="px-8 py-4 text-xs font-bold uppercase tracking-widest text-white/70 transition hover:text-white">
-              See Our Work ↓
+              See Our Work Ôåô
             </a>
           </div>
         </div>
@@ -3018,7 +3018,7 @@ function CreativeLayout({ data, onContact }: { data: FullSiteData; onContact: ()
           <div className="border p-8 lg:p-12" style={{ background:'var(--bg-alt)', borderColor:'var(--border)', borderRadius:'var(--radius)' }}>
             {sent ? (
               <div className="text-center py-10 space-y-4 anim-in">
-                <div className="w-14 h-14 rounded-full border flex items-center justify-center mx-auto text-xl" style={{ borderColor:'var(--accent)', color:'var(--accent)' }}>✓</div>
+                <div className="w-14 h-14 rounded-full border flex items-center justify-center mx-auto text-xl" style={{ borderColor:'var(--accent)', color:'var(--accent)' }}>Ô£ô</div>
                 <h3 className="text-xl text-white" style={{ fontFamily:'var(--heading-font)' }}>Brief Received</h3>
                 <p className="text-xs max-w-[300px] mx-auto leading-relaxed" style={{ color:'var(--text-muted)' }}>
                   Thanks {form.name}. We'll review your brief and be in touch within 24 hours.
@@ -3039,7 +3039,7 @@ function CreativeLayout({ data, onContact }: { data: FullSiteData; onContact: ()
                   style={{ background:'var(--bg-deep)', borderColor:'var(--border)', borderRadius:'var(--radius)' }}/>
                 <button type="submit" className="w-full h-12 font-bold text-xs uppercase tracking-widest transition hover:opacity-80 border-2 border-white text-white hover:bg-white hover:text-black"
                   style={{ borderRadius:'var(--radius)' }}>
-                  Send Brief →
+                  Send Brief ÔåÆ
                 </button>
               </form>
             )}
@@ -3056,9 +3056,9 @@ function CreativeLayout({ data, onContact }: { data: FullSiteData; onContact: ()
   )
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
 // LAYOUT 7: RETAIL / BOUTIQUE (Pet Shop / Bookshop)
-// ═══════════════════════════════════════════════════════════════════════════
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
 function RetailLayout({ data, onContact }: { data: FullSiteData; onContact: () => void }) {
   const [cart, setCart] = useState<string[]>([])
   const [cartOpen, setCartOpen] = useState(false)
@@ -3114,7 +3114,7 @@ function RetailLayout({ data, onContact }: { data: FullSiteData; onContact: () =
           <div className="w-full max-w-[420px] h-full border-l flex flex-col anim-in" style={{ background:'var(--bg-deep)', borderColor:'var(--border)' }}>
             <div className="flex items-center justify-between px-6 py-5 border-b" style={{ borderColor:'var(--border)' }}>
               <span className="font-bold text-sm text-white uppercase tracking-widest">Your Bag ({cart.length})</span>
-              <button onClick={() => setCartOpen(false)} style={{ color:'var(--text-muted)' }}>✕</button>
+              <button onClick={() => setCartOpen(false)} style={{ color:'var(--text-muted)' }}>Ô£ò</button>
             </div>
             <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
               {cart.length === 0 && (
@@ -3140,7 +3140,7 @@ function RetailLayout({ data, onContact }: { data: FullSiteData; onContact: () =
               <div className="px-6 py-5 border-t space-y-4" style={{ borderColor:'var(--border)' }}>
                 {checkoutDone ? (
                   <div className="text-center py-4 space-y-2 anim-in">
-                    <div className="text-xl" style={{ color:'var(--accent)' }}>✓</div>
+                    <div className="text-xl" style={{ color:'var(--accent)' }}>Ô£ô</div>
                     <p className="text-xs font-bold text-white">Order Received!</p>
                     <p className="text-[11px]" style={{ color:'var(--text-muted)' }}>We'll email {form.email} with details.</p>
                   </div>
@@ -3224,7 +3224,7 @@ function RetailLayout({ data, onContact }: { data: FullSiteData; onContact: () =
                       <button onClick={() => { toggleCart(s.name); setCartOpen(true) }}
                         className="w-full py-3 text-[11px] font-bold uppercase tracking-widest transition"
                         style={{ background: inCart ? 'var(--accent-soft)' : 'var(--accent)', color: inCart ? 'var(--accent)' : 'var(--accent-text)', borderRadius:'var(--radius)' }}>
-                        {inCart ? '✓ Added to Bag' : 'Add to Bag'}
+                        {inCart ? 'Ô£ô Added to Bag' : 'Add to Bag'}
                       </button>
                     </div>
                     {i === 0 && (
@@ -3241,7 +3241,7 @@ function RetailLayout({ data, onContact }: { data: FullSiteData; onContact: () =
                     <button onClick={() => { toggleCart(s.name); setCartOpen(true) }}
                       className="text-[10px] font-bold uppercase tracking-widest pt-1 transition hover:opacity-70"
                       style={{ color: inCart ? 'var(--accent)' : 'var(--text-muted)' }}>
-                      {inCart ? '✓ In Bag' : '+ Add to Bag'}
+                      {inCart ? 'Ô£ô In Bag' : '+ Add to Bag'}
                     </button>
                   </div>
                 </div>
@@ -3298,7 +3298,7 @@ function RetailLayout({ data, onContact }: { data: FullSiteData; onContact: () =
             <h2 className="text-3xl font-normal text-white" style={{ fontFamily:'var(--heading-font)' }}>What People Are Saying</h2>
             <div className="flex items-center justify-center gap-2">
               <StarRating rating={5} size={16}/>
-              <span className="text-xs" style={{ color:'var(--text-muted)' }}>{data.stats[0]?.value} · {data.stats[2]?.value} reviews</span>
+              <span className="text-xs" style={{ color:'var(--text-muted)' }}>{data.stats[0]?.value} ┬À {data.stats[2]?.value} reviews</span>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -3346,9 +3346,9 @@ function RetailLayout({ data, onContact }: { data: FullSiteData; onContact: () =
   )
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
 // MAIN ROUTER
-// ═══════════════════════════════════════════════════════════════════════════
+// ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
 export default function DemoPage() {
   const params = useParams()
   const router = useRouter()
@@ -3430,7 +3430,7 @@ const industrySlug = supabaseOverride?.industry
             style={{ background:'var(--bg-deep)', borderColor:'var(--border-strong)' }}>
             <div className="flex justify-between items-center border-b pb-3 mb-3" style={{ borderColor:'var(--border)' }}>
               <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color:'var(--text-muted)' }}>Browse Industries</span>
-              <button onClick={() => setShowSwitcher(false)} className="text-xs font-bold" style={{ color:'var(--text-muted)' }}>✕ Close</button>
+              <button onClick={() => setShowSwitcher(false)} className="text-xs font-bold" style={{ color:'var(--text-muted)' }}>Ô£ò Close</button>
             </div>
             <input type="text" placeholder="Search industries..." value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
