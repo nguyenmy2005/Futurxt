@@ -5,11 +5,6 @@ import { useState, useEffect, Suspense } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import { ArrowRight, CheckCircle2 } from 'lucide-react'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
-
 interface ReportItem {
   title: string
   impact: string
@@ -197,6 +192,10 @@ function ReportContent() {
 
   const handleContact = async () => {
     setSubmitting(true)
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
     await supabase.from('leads').insert({
       company_name: company,
       email,
