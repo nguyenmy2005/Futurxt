@@ -5,11 +5,6 @@ import { useState, useEffect, Suspense } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import { ArrowRight, CheckCircle2 } from 'lucide-react'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
-
 interface ReportItem {
   title: string
   impact: string
@@ -143,36 +138,37 @@ function ReportContent() {
   }
 
   const handleContact = async () => {
-  setSubmitting(true)
-
-  try {
-    await supabase.from('leads').insert({
-      company_name: company,
-      email,
-      website,
-      review,
-      score,
-      status: 'contacted'
-    })
-  } catch (e) {
-    console.log('Supabase error (ignored):', e)
+    setSubmitting(true)
+    try {
+      const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      )
+      await supabase.from('leads').insert({
+        company_name: company,
+        email,
+        website,
+        review,
+        score,
+        status: 'contacted'
+      })
+    } catch (e) {
+      console.log('Supabase error (ignored):', e)
+    }
+    try {
+      const res = await fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ company, email, website, score, review })
+      })
+      const data = await res.json()
+      console.log('Notify result:', data)
+    } catch (e) {
+      console.log('Notify error:', e)
+    }
+    setSubmitting(false)
+    setDone(true)
   }
-
-  try {
-    const res = await fetch('/api/notify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ company, email, website, score, review })
-    })
-    const data = await res.json()
-    console.log('Notify result:', data)
-  } catch (e) {
-    console.log('Notify error:', e)
-  }
-
-  setSubmitting(false)
-  setDone(true)
-}
 
   if (done) {
     return (
