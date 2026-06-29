@@ -22,15 +22,15 @@ interface Report {
 }
 
 function useSystemTheme() {
-  const [dark, setDark] = useState(true)
+  const [isDark, setIsDark] = useState(true)
   useEffect(() => {
     const mq = window.matchMedia('(prefers-color-scheme: dark)')
-    setDark(mq.matches)
-    const handler = (e: MediaQueryListEvent) => setDark(e.matches)
+    setIsDark(mq.matches)
+    const handler = (e: MediaQueryListEvent) => setIsDark(e.matches)
     mq.addEventListener('change', handler)
     return () => mq.removeEventListener('change', handler)
   }, [])
-  return dark
+  return isDark
 }
 
 async function generateReport(
