@@ -16,8 +16,9 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
     const { name, email, phone, company, service, budget, timeline, referral, message } = body;
+    const safeMessage = message || "(No message provided)";
 
-    if (!name || !email || !message) {
+    if (!name) {
       return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
     }
 
@@ -66,7 +67,7 @@ export async function POST(req: NextRequest) {
             </table>
             <div style="margin-top:24px;padding:20px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-radius:12px;">
               <p style="margin:0 0 8px;color:rgba(255,255,255,0.40);font-size:11px;font-family:monospace;letter-spacing:0.15em;text-transform:uppercase;">💬 Message</p>
-              <p style="margin:0;color:rgba(255,255,255,0.85);font-size:14px;line-height:1.7;">${message}</p>
+              <p style="margin:0;color:rgba(255,255,255,0.85);font-size:14px;line-height:1.7;">${safeMessage}</p>
             </div>
             <div style="margin-top:24px;text-align:center;">
               <a href="${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/admin" 
@@ -79,7 +80,8 @@ export async function POST(req: NextRequest) {
       `,
     });
 
-    // ── 3. Gửi email xác nhận cho khách ──
+    // ── 3. Gửi email xác nhận cho khách (chỉ khi có email) ──
+    if (email) {
     await resend.emails.send({
       from: "FuturXT <onboarding@resend.dev>",
       to: email,
@@ -107,6 +109,7 @@ export async function POST(req: NextRequest) {
         </div>
       `,
     });
+    }
 
     return NextResponse.json({ ok: true });
   } catch (err) {

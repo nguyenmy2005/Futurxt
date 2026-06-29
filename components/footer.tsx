@@ -22,15 +22,15 @@ const footerLinks = {
 };
 
 const socialLinks = [
-  { icon: Github,   href: "#",                             label: "GitHub"   },
-  { icon: Twitter,  href: "#",                             label: "Twitter"  },
-  { icon: Linkedin, href: "#",                             label: "LinkedIn" },
-  { icon: Mail,     href: "mailto:hellofuturxt@gmail.com", label: "Email"    },
+  { icon: Github,   href: "#",                                    label: "GitHub"   },
+  { icon: Twitter,  href: "#",                                    label: "Twitter"  },
+  { icon: Linkedin, href: "https://www.linkedin.com/in/futurxt/", label: "LinkedIn" },
+  { icon: Mail,     href: "mailto:hellofuturxt@gmail.com",        label: "Email"    },
 ];
 
 const contactInfo = [
   { icon: Mail,   value: "hellofuturxt@gmail.com", href: "mailto:hellofuturxt@gmail.com" },
-  { icon: Phone,  value: "+84 0977 535 103",        href: "tel:+840977535103"             },
+  { icon: Phone,  value: "+84 977 535 103", href: "tel:+84977535103" },          
   { icon: MapPin, value: "Remote / Worldwide",      href: "#"                             },
 ];
 

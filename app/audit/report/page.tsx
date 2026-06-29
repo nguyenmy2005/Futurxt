@@ -33,35 +33,61 @@ function useSystemTheme() {
   return dark
 }
 
-async function generateReport(company: string, website: string, review: string, score: string): Promise<Report> {
+async function generateReport(
+  company: string,
+  website: string,
+  review: string,
+  score: string,
+  type: string
+): Promise<Report> {
   const groqKey = process.env.NEXT_PUBLIC_GROQ_API_KEY
 
-  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${groqKey}`
-    },
-    body: JSON.stringify({
-      model: 'llama-3.3-70b-versatile',
-      max_tokens: 1000,
-      temperature: 0.3,
-      messages: [{
-        role: 'user',
-        content: `You are a web design consultant writing a website audit report for a business owner who is NOT technical. They don't understand developer terms.
+  const prompt = type === 'noweb'
+    ? `You are a web design consultant writing a report for a business owner who has NO website at all. They are not technical. Write in plain English — no jargon.
+
+Business: ${company}
+Location context: ${review}
+
+Write a JSON report explaining what they are losing by not having a website, and what we would build for them.
+
+RULES:
+- Never use technical terms like "SEO", "meta", "CSS", "HTTP", "PageSpeed"
+- Always explain in terms of: lost customers, competitors winning, invisible on Google, missed bookings
+- Keep each sentence under 15 words
+- Be specific to THIS type of business
+- Sound like a real person, not a corporate brochure
+- NEVER mention specific dollar amounts or revenue figures — no "$X monthly", no "losing $X"
+
+Return ONLY valid JSON, no markdown, no backticks:
+{
+  "summary": "2 sentences max. What not having a website is costing them right now.",
+  "items": [
+    {
+      "title": "Short problem name (5 words max)",
+      "impact": "What this costs them in business terms (1 sentence)",
+      "fix": "What we would build to solve it (1 sentence)"
+    }
+  ]
+}
+
+Generate 3-4 items about what they are missing without a website.`
+    : `You are a web design consultant writing a website audit report for a business owner who is NOT technical. They don't understand developer terms.
 
 Business: ${company}
 Website: ${website}
 Technical assessment: ${review}
 Score: ${score}/10
 
-Write a JSON report that translates technical problems into business impact language.
+Write a JSON report that translates the problems from the technical assessment into plain business language.
 
 RULES:
+- ONLY include issues that are clearly supported by the technical assessment above. Do NOT invent or add generic issues not mentioned in the assessment.
 - Never use technical terms like "title tag", "meta description", "PageSpeed", "SEO score", "CSS", "JavaScript", "HTTP"
-- Always explain in terms of: lost customers, lost revenue, looking unprofessional, hard to find on Google
+- Always explain in terms of: lost customers, looking unprofessional, hard to find on Google, missed bookings
 - Keep each sentence under 15 words
 - Be specific to THIS business
+- Sound like a real person, not a corporate brochure
+- NEVER mention specific dollar amounts or revenue figures — no "$X monthly", no "losing $X"
 
 Return ONLY valid JSON, no markdown, no backticks:
 {
@@ -75,8 +101,19 @@ Return ONLY valid JSON, no markdown, no backticks:
   ]
 }
 
-Generate 3-5 items based on the assessment.`
-      }]
+Generate 3-5 items based strictly on the assessment above.`
+
+  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${groqKey}`
+    },
+    body: JSON.stringify({
+      model: 'llama-3.3-70b-versatile',
+      max_tokens: 1000,
+      temperature: 0.3,
+      messages: [{ role: 'user', content: prompt }]
     })
   })
 
@@ -87,6 +124,17 @@ Generate 3-5 items based on the assessment.`
     const clean = text.replace(/```json|```/g, '').trim()
     return JSON.parse(clean)
   } catch {
+    if (type === 'noweb') {
+      return {
+        summary: `${company} has no website. Customers searching online cannot find you at all.`,
+        items: [
+          { title: 'Invisible on Google', impact: 'Anyone searching for your services nearby finds your competitors instead.', fix: 'We\'ll build a site Google can find and rank for your area.' },
+          { title: 'No way to book online', impact: 'Customers who want to book after hours have nowhere to go.', fix: 'We\'ll add a simple booking or contact form that works 24/7.' },
+          { title: 'Looks less credible', impact: 'People trust businesses with websites more than those without.', fix: 'We\'ll build a clean, professional site that builds trust fast.' },
+          { title: 'Competitors are winning', impact: 'Every nearby competitor with a site is capturing customers you\'re missing.', fix: 'We\'ll get you online quickly so you stop losing ground.' }
+        ]
+      }
+    }
     return {
       summary: `We found several issues on ${company}'s website that may be costing you customers.`,
       items: [
@@ -108,6 +156,8 @@ function ReportContent() {
   const website = params?.get('website') ?? ''
   const review  = params?.get('review') ?? ''
   const score   = params?.get('score') ?? ''
+  const type    = params?.get('type') ?? 'redesign'
+  const isNoweb = type === 'noweb'
 
   const [report, setReport] = useState<Report | null>(null)
   const [loading, setLoading] = useState(true)
@@ -115,7 +165,7 @@ function ReportContent() {
   const [done, setDone] = useState(false)
 
   useEffect(() => {
-    generateReport(company, website, review, score).then(r => {
+    generateReport(company, website, review, score, type).then(r => {
       setReport(r)
       setLoading(false)
     })
@@ -218,8 +268,18 @@ function ReportContent() {
             lineHeight: 1.08, letterSpacing: '-0.038em',
             margin: '0 0 16px'
           }}>
-            Here's what we found on{' '}
-            <span style={{ color: t.accentBlue }}>{company}</span>'s site
+            {isNoweb ? (
+              <>
+                We found that{' '}
+                <span style={{ color: t.accentBlue }}>{company}</span>
+                {' '}does not have a website yet
+              </>
+            ) : (
+              <>
+                Here's what we found on{' '}
+                <span style={{ color: t.accentBlue }}>{company}</span>'s site
+              </>
+            )}
           </h1>
           {report?.summary && (
             <p style={{ color: t.textSub, fontSize: 15, lineHeight: 1.75, margin: 0 }}>

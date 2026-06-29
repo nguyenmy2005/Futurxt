@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { ThemeProvider } from '@/components/theme-provider'
 import { DoubleTapToTop } from '@/components/double-tap-to-top'
+import { PromoPopup } from '@/components/promo-popup'
 import './globals.css'
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -19,16 +20,16 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Futurxt | Web & SaaS Development Agency',
     description: 'We build fast, scalable web apps and SaaS platforms for clients worldwide.',
-    url: 'https://futurxt.dev',
+    url: 'https://futurxt.com',
     siteName: 'Futurxt',
-    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Futurxt - Building the Future' }],
+    images: [{ url: 'https://futurxt.com/og-image.png', width: 1200, height: 630, alt: 'Futurxt - Building the Future' }],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Futurxt | Web & SaaS Development Agency',
     description: 'We build fast, scalable web apps and SaaS platforms for clients worldwide.',
-    images: ['/og-image.png'],
+    images: ['https://futurxt.com/og-image.png'],
   },
 }
 
@@ -48,6 +49,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <DoubleTapToTop />
+          <PromoPopup />
           {children}
         </ThemeProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}

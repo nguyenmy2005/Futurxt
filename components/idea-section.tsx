@@ -4,7 +4,7 @@ import { useRef, useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "next-themes";
 
-function HyperspaceCanvas({ onDone }: { onDone: () => void }) {
+function HyperspaceCanvas({ onDone, isDark }: { onDone: () => void; isDark: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -40,7 +40,7 @@ function HyperspaceCanvas({ onDone }: { onDone: () => void }) {
         ? W * 0.09 * (1 - progress * 0.15)
         : W * 0.05 * (1 - progress);
 
-      ctx.fillStyle = "rgba(0,0,0,0.22)";
+      ctx.fillStyle = isDark ? "rgba(0,0,0,0.22)" : "rgba(255,255,255,0.22)";
       ctx.fillRect(0, 0, W, H);
 
       for (const s of stars) {
@@ -58,11 +58,12 @@ function HyperspaceCanvas({ onDone }: { onDone: () => void }) {
         const py = (s.y / s.pz) * H + cy;
         const size = Math.max(0.1, (1 - s.z / W) * 3);
         const b = Math.floor((1 - s.z / W) * 255);
+        const starVal = isDark ? b : 255 - b;
         const alpha = Math.min(1, (1 - s.z / W) * 1.8);
         ctx.beginPath();
         ctx.moveTo(px, py);
         ctx.lineTo(sx, sy);
-        ctx.strokeStyle = `rgba(${b},${b},${b},${alpha.toFixed(2)})`;
+        ctx.strokeStyle = `rgba(${starVal},${starVal},${starVal},${alpha.toFixed(2)})`;
         ctx.lineWidth = size;
         ctx.stroke();
       }
@@ -73,7 +74,7 @@ function HyperspaceCanvas({ onDone }: { onDone: () => void }) {
         let a = 1;
         const fade = () => {
           a -= 0.25;
-          ctx.fillStyle = "rgba(0,0,0,0.32)";
+          ctx.fillStyle = isDark ? "rgba(0,0,0,0.32)" : "rgba(255,255,255,0.32)";
           ctx.fillRect(0, 0, W, H);
           if (a > 0) requestAnimationFrame(fade);
           else { ctx.clearRect(0, 0, W, H); onDone(); }
@@ -84,7 +85,7 @@ function HyperspaceCanvas({ onDone }: { onDone: () => void }) {
 
     const tid = setTimeout(draw, 60);
     return () => { clearTimeout(tid); cancelAnimationFrame(animId); };
-  }, [onDone]);
+  }, [onDone, isDark]);
 
   return (
     <canvas
@@ -203,9 +204,9 @@ export function IdeaSection() {
             key="hs"
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            style={{ position: "absolute", inset: 0, zIndex: 49, background: "#000" }}
+            style={{ position: "absolute", inset: 0, zIndex: 49, background: isDark ? "#000" : "#fff" }}
           >
-            <HyperspaceCanvas onDone={onHyperspaceDone} />
+            <HyperspaceCanvas onDone={onHyperspaceDone} isDark={isDark} />
           </motion.div>
         )}
       </AnimatePresence>
